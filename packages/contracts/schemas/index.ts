@@ -6,6 +6,7 @@
  * - Path/query parameter validation
  * - Auth request/response validation
  * - Common validation patterns (email, phone, uuid, etc.)
+ * - JSON blob field schemas (Prisma Json fields)
  *
  * NOTE: Domain-specific schemas (UserRoleSchema, AppointmentStatusSchema, etc.)
  * are exported from the domain module alongside their tuples and labels.
@@ -19,6 +20,12 @@
  */
 
 import { z } from 'zod';
+
+// ============================================================================
+// JSON BLOB SCHEMAS (Prisma JSON fields)
+// ============================================================================
+
+export * from './json-blobs';
 
 // ============================================================================
 // COMMON PRIMITIVE SCHEMAS
@@ -62,25 +69,39 @@ export type BaseDocument = z.infer<typeof baseDocumentSchema>;
 // ============================================================================
 
 /**
- * Barcode format: HH-XXXXXX
- * Charset excludes confusable characters (0/O, 1/I/L)
+ * Barcode format regex: HH-XXXXXX
+ * Charset excludes confusable characters (0/O, 1/I/L).
+ * Use this regex for validating newly issued barcodes.
+ * 
+ * @see docs/IDENTIFIER_CONVENTIONS.md for full documentation.
  */
 export const BARCODE_REGEX = /^HH-[A-HJ-KM-NP-Z2-9]{6}$/;
 
 /**
- * User ID regex: HH-XXXXXX where X is alphanumeric (more permissive than BARCODE_REGEX)
+ * User ID regex: HH-XXXXXX where X is alphanumeric (more permissive than BARCODE_REGEX).
  * Some legacy/test IDs include characters outside the strict barcode charset (e.g., O),
  * so we accept the broader set here while keeping BARCODE_REGEX for barcode issuance.
+ * 
+ * Use this regex for validating user IDs in API routes and queries.
+ * 
+ * @see docs/IDENTIFIER_CONVENTIONS.md for full documentation.
  */
 export const USER_ID_REGEX = /^HH-[A-Z0-9]{6}$/;
 
 /**
- * Zod schema for validating barcode format
+ * Zod schema for validating barcode format (strict).
+ * Use for validating newly generated barcodes during registration.
+ * 
+ * @description Validates HH-XXXXXX format with restricted charset.
  */
 export const barcodeSchema = z.string().regex(BARCODE_REGEX, 'Invalid barcode format (expected HH-XXXXXX)');
 
 /**
- * Zod schema for validating user ID format (more permissive)
+ * Zod schema for validating user ID format (permissive).
+ * Use for validating user IDs in API routes, queries, and request bodies.
+ * 
+ * @description Validates HH-XXXXXX format with broader alphanumeric charset.
+ * @note userId and barcode are the same value - User.id stores the barcode.
  */
 export const userIdSchema = z.string().regex(USER_ID_REGEX, 'Invalid user ID format (expected HH-XXXXXX)');
 
@@ -103,9 +124,15 @@ export function isValidUserId(id: string): boolean {
 // ============================================================================
 
 /**
- * Schema for routes with :userId param (validates HH-XXXXXX barcode format)
+ * Schema for routes with :userId param (validates HH-XXXXXX barcode format).
+ * 
+ * userId is the primary user identifier - it IS the barcode value.
+ * Use this for API routes like GET /users/:userId/profile.
+ * 
+ * @see docs/IDENTIFIER_CONVENTIONS.md for full documentation.
  */
 export const userIdParamSchema = z.object({
+  /** User identifier in HH-XXXXXX barcode format. */
   userId: z.string().regex(USER_ID_REGEX, 'Invalid user ID format (expected HH-XXXXXX)'),
 });
 
@@ -155,9 +182,17 @@ export const userIdQuerySchema = z.object({
 // AUTH SCHEMAS
 // ============================================================================
 
-// Signup profile sex values - simplified set for onboarding
-// Full biological sex options are in domain/user (BIOLOGICAL_SEXES)
-const SIGNUP_SEX_OPTIONS = ['male', 'female', 'other'] as const;
+/**
+ * Simplified sex options for signup/onboarding flows.
+ * Full biological sex options are in domain/user (BIOLOGICAL_SEXES).
+ *
+ * Use this for registration forms where a simpler set is appropriate.
+ */
+export const SIGNUP_SEX_OPTIONS = ['male', 'female', 'other'] as const;
+export type SignupSex = (typeof SIGNUP_SEX_OPTIONS)[number];
+
+/** Zod schema for signup sex field */
+export const signupSexSchema = z.enum(SIGNUP_SEX_OPTIONS);
 
 /**
  * Schema for login request body
@@ -175,9 +210,13 @@ export const refreshBodySchema = z.object({
 });
 
 /**
- * Schema for signup request body (barcode-based patient registration)
+ * Schema for signup request body (barcode-based patient registration).
+ * 
+ * The `code` field is the patient's barcode (HH-XXXXXX format).
+ * After signup, this becomes the user's userId/User.id.
  */
 export const signupBodySchema = z.object({
+  /** Patient barcode to claim (HH-XXXXXX format). Becomes the userId after registration. */
   code: z.string().min(1, 'Patient barcode is required'),
   email: z.string().email('Invalid email'),
   password: z.string().min(8, 'Password must be at least 8 characters'),

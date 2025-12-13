@@ -6,6 +6,8 @@
  * - Domain contracts (types, schemas, constants)
  * - Shared Zod schemas for validation
  * - Common constants and enums
+ * - Admin contracts for CRM/admin operations
+ * - AI contracts for AI-powered features
  *
  * IMPORTANT: This module must remain pure TypeScript + Zod only.
  * - NO React/React Native imports
@@ -31,3 +33,9 @@ export * from './schemas';
 
 // Constants
 export * from './constants';
+
+// Admin contracts (types, routes, schemas)
+export * from './admin';
+
+// AI contracts (types, validation, prompts)
+export * from './ai';

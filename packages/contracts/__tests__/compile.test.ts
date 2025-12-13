@@ -107,6 +107,23 @@ describe('Shared Contracts Compilation', () => {
       expect(contracts.APPOINTMENT_TYPES).toContain('TRAINING_SESSION');
     });
 
+    it('should export STRATEGY_STATUSES', () => {
+      expect(contracts.STRATEGY_STATUSES).toBeDefined();
+      expect(Array.isArray(contracts.STRATEGY_STATUSES)).toBe(true);
+      expect(contracts.STRATEGY_STATUSES).toContain('active');
+      expect(contracts.STRATEGY_STATUSES).toContain('completed');
+      expect(contracts.STRATEGY_STATUSES).toContain('paused');
+      expect(contracts.STRATEGY_STATUSES).toContain('cancelled');
+    });
+
+    it('should export STRATEGY_STATUS constants', () => {
+      expect(contracts.STRATEGY_STATUS).toBeDefined();
+      expect(contracts.STRATEGY_STATUS.ACTIVE).toBe('active');
+      expect(contracts.STRATEGY_STATUS.COMPLETED).toBe('completed');
+      expect(contracts.STRATEGY_STATUS.PAUSED).toBe('paused');
+      expect(contracts.STRATEGY_STATUS.CANCELLED).toBe('cancelled');
+    });
+
     it('should export USER_TIERS', () => {
       expect(contracts.USER_TIERS).toBeDefined();
       expect(contracts.USER_TIERS).toContain('ESSENTIALS');
@@ -313,6 +330,12 @@ describe('Shared Contracts Compilation', () => {
       expect(contracts.isAppointmentStatus('INVALID')).toBe(false);
     });
 
+    it('should export isStrategyStatus', () => {
+      expect(typeof contracts.isStrategyStatus).toBe('function');
+      expect(contracts.isStrategyStatus('active')).toBe(true);
+      expect(contracts.isStrategyStatus('INVALID')).toBe(false);
+    });
+
     it('should export isAppointmentType', () => {
       expect(typeof contracts.isAppointmentType).toBe('function');
       expect(contracts.isAppointmentType('CHECK_IN')).toBe(true);
@@ -379,6 +402,14 @@ describe('Type Coherence', () => {
     });
   });
 
+  it('should have matching tuple and schema for STRATEGY_STATUSES', () => {
+    const tupleValues = contracts.STRATEGY_STATUSES;
+    tupleValues.forEach((status) => {
+      const result = contracts.StrategyStatusSchema.safeParse(status);
+      expect(result.success).toBe(true);
+    });
+  });
+
   it('should have labels for all USER_ROLES', () => {
     const roles = contracts.USER_ROLES;
     roles.forEach((role) => {
@@ -395,11 +426,67 @@ describe('Type Coherence', () => {
     });
   });
 
+  it('should have labels for all STRATEGY_STATUSES', () => {
+    const statuses = contracts.STRATEGY_STATUSES;
+    statuses.forEach((status) => {
+      expect(contracts.STRATEGY_STATUS_LABELS[status]).toBeDefined();
+      expect(typeof contracts.STRATEGY_STATUS_LABELS[status]).toBe('string');
+    });
+  });
+
   it('should have labels for all APPOINTMENT_TYPES', () => {
     const types = contracts.APPOINTMENT_TYPES;
     types.forEach((type) => {
       expect(contracts.APPOINTMENT_TYPE_LABELS[type]).toBeDefined();
       expect(typeof contracts.APPOINTMENT_TYPE_LABELS[type]).toBe('string');
+    });
+  });
+
+  it('should have matching tuple and schema for LAB_RESULT_STATUSES', () => {
+    const tupleValues = contracts.LAB_RESULT_STATUSES;
+    tupleValues.forEach((status) => {
+      const result = contracts.LabResultStatusSchema.safeParse(status);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  it('should have labels for all LAB_RESULT_STATUSES', () => {
+    const statuses = contracts.LAB_RESULT_STATUSES;
+    statuses.forEach((status) => {
+      expect(contracts.LAB_RESULT_STATUS_LABELS[status]).toBeDefined();
+      expect(typeof contracts.LAB_RESULT_STATUS_LABELS[status]).toBe('string');
+    });
+  });
+
+  it('should have matching tuple and schema for LAB_RESULT_FLAGS', () => {
+    const tupleValues = contracts.LAB_RESULT_FLAGS;
+    tupleValues.forEach((flag) => {
+      const result = contracts.LabResultFlagSchema.safeParse(flag);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  it('should have labels for all LAB_RESULT_FLAGS', () => {
+    const flags = contracts.LAB_RESULT_FLAGS;
+    flags.forEach((flag) => {
+      expect(contracts.LAB_RESULT_FLAG_LABELS[flag]).toBeDefined();
+      expect(typeof contracts.LAB_RESULT_FLAG_LABELS[flag]).toBe('string');
+    });
+  });
+
+  it('should have matching tuple and schema for REGISTRATION_STATUSES', () => {
+    const tupleValues = contracts.REGISTRATION_STATUSES;
+    tupleValues.forEach((status) => {
+      const result = contracts.RegistrationStatusSchema.safeParse(status);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  it('should have labels for all REGISTRATION_STATUSES', () => {
+    const statuses = contracts.REGISTRATION_STATUSES;
+    statuses.forEach((status) => {
+      expect(contracts.REGISTRATION_STATUS_LABELS[status]).toBeDefined();
+      expect(typeof contracts.REGISTRATION_STATUS_LABELS[status]).toBe('string');
     });
   });
 });

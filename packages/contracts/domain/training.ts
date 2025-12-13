@@ -49,6 +49,13 @@ export const STRATEGY_TYPE_LABELS: Record<StrategyType, string> = {
   custom: 'Custom',
 };
 
+/**
+ * Check if a string is a valid strategy type
+ */
+export function isStrategyType(value: string): value is StrategyType {
+  return (STRATEGY_TYPES as readonly string[]).includes(value);
+}
+
 // ============================================================================
 // STRATEGY STATUSES
 // ============================================================================
@@ -100,6 +107,16 @@ export type GoalCategory = (typeof GOAL_CATEGORIES)[number];
 
 export const GoalCategorySchema = z.enum(GOAL_CATEGORIES);
 
+/** Centralized goal category constants for equality checks */
+export const GOAL_CATEGORY = {
+  FITNESS: 'fitness' as GoalCategory,
+  BODY_COMPOSITION: 'body_composition' as GoalCategory,
+  CARDIOVASCULAR: 'cardiovascular' as GoalCategory,
+  METABOLIC: 'metabolic' as GoalCategory,
+  HORMONAL: 'hormonal' as GoalCategory,
+  PERFORMANCE: 'performance' as GoalCategory,
+} as const;
+
 /** Human-readable labels for goal categories */
 export const GOAL_CATEGORY_LABELS: Record<GoalCategory, string> = {
   fitness: 'Fitness',
@@ -109,6 +126,13 @@ export const GOAL_CATEGORY_LABELS: Record<GoalCategory, string> = {
   hormonal: 'Hormonal',
   performance: 'Performance',
 };
+
+/**
+ * Check if a string is a valid goal category
+ */
+export function isGoalCategory(value: string): value is GoalCategory {
+  return (GOAL_CATEGORIES as readonly string[]).includes(value);
+}
 
 // ============================================================================
 // GOAL DATA SOURCES
@@ -128,6 +152,14 @@ export type GoalDataSource = (typeof GOAL_DATA_SOURCES)[number];
 
 export const GoalDataSourceSchema = z.enum(GOAL_DATA_SOURCES);
 
+/** Centralized goal data source constants for equality checks */
+export const GOAL_DATA_SOURCE = {
+  BIOMETRIC: 'biometric' as GoalDataSource,
+  LAB: 'lab' as GoalDataSource,
+  EXERCISE_LOG: 'exercise_log' as GoalDataSource,
+  MANUAL: 'manual' as GoalDataSource,
+} as const;
+
 /** Human-readable labels for data sources */
 export const GOAL_DATA_SOURCE_LABELS: Record<GoalDataSource, string> = {
   biometric: 'Biometric',
@@ -135,6 +167,13 @@ export const GOAL_DATA_SOURCE_LABELS: Record<GoalDataSource, string> = {
   exercise_log: 'Exercise Log',
   manual: 'Manual Entry',
 };
+
+/**
+ * Check if a string is a valid goal data source
+ */
+export function isGoalDataSource(value: string): value is GoalDataSource {
+  return (GOAL_DATA_SOURCES as readonly string[]).includes(value);
+}
 
 // ============================================================================
 // HEALTH METRIC DIRECTION
@@ -185,3 +224,50 @@ export const HEALTH_METRIC_CATEGORY_LABELS: Record<HealthMetricCategory, string>
   inflammatory: 'Inflammatory',
   nutritional: 'Nutritional',
 };
+
+// ============================================================================
+// WORKOUT TYPES
+// ============================================================================
+
+/**
+ * Valid workout types for training sessions and load tracking.
+ * Used in analytics algorithms, training load calculations, and workout logging.
+ */
+export const WORKOUT_TYPES = [
+  'strength',
+  'cardio',
+  'mixed',
+  'recovery',
+  'flexibility',
+  'sports',
+] as const;
+export type WorkoutType = (typeof WORKOUT_TYPES)[number];
+
+export const WorkoutTypeSchema = z.enum(WORKOUT_TYPES);
+
+/** Centralized workout type constants for equality checks */
+export const WORKOUT_TYPE = {
+  STRENGTH: 'strength' as WorkoutType,
+  CARDIO: 'cardio' as WorkoutType,
+  MIXED: 'mixed' as WorkoutType,
+  RECOVERY: 'recovery' as WorkoutType,
+  FLEXIBILITY: 'flexibility' as WorkoutType,
+  SPORTS: 'sports' as WorkoutType,
+} as const;
+
+/** Human-readable labels for workout types */
+export const WORKOUT_TYPE_LABELS: Record<WorkoutType, string> = {
+  strength: 'Strength',
+  cardio: 'Cardio',
+  mixed: 'Mixed',
+  recovery: 'Recovery',
+  flexibility: 'Flexibility',
+  sports: 'Sports',
+};
+
+/**
+ * Check if a string is a valid workout type
+ */
+export function isWorkoutType(value: string): value is WorkoutType {
+  return (WORKOUT_TYPES as readonly string[]).includes(value);
+}
