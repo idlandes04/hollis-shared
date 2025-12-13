@@ -266,6 +266,142 @@ export const NUTRITION_ROUTES = {
 } as const;
 
 // ============================================================================
+// PLANS ROUTES
+// ============================================================================
+
+/**
+ * Plans API routes (workout and nutrition plans).
+ * Base path: /api/plans
+ *
+ * @group PLANS
+ */
+export const PLANS_ROUTES = {
+  /**
+   * GET /api/plans/workout - Get workout plan
+   * Query params: userId, date (or userId, startDate, endDate for range)
+   */
+  WORKOUT: '/api/plans/workout',
+
+  /**
+   * POST /api/plans/workout - Create/update workout plan
+   */
+  WORKOUT_UPSERT: '/api/plans/workout',
+
+  /**
+   * PUT /api/plans/workout/:workoutId/toggle-complete - Toggle workout completion
+   * @param workoutId - Workout's unique identifier
+   */
+  toggleWorkoutComplete: (workoutId: string) => `/api/plans/workout/${workoutId}/toggle-complete` as const,
+
+  /**
+   * GET /api/plans/nutrition - Get nutrition plan
+   * Query params: userId, date
+   */
+  NUTRITION: '/api/plans/nutrition',
+
+  /**
+   * POST /api/plans/nutrition - Create/update nutrition plan
+   */
+  NUTRITION_UPSERT: '/api/plans/nutrition',
+
+  /**
+   * POST /api/plans/nutrition/simple - Create/update simple nutrition plan
+   */
+  NUTRITION_SIMPLE: '/api/plans/nutrition/simple',
+} as const;
+
+// ============================================================================
+// TRAINING STRATEGIES ROUTES
+// ============================================================================
+
+/**
+ * Training strategies API routes.
+ * Base path: /users/:userId/strategies
+ *
+ * @group STRATEGIES
+ */
+export const STRATEGIES_ROUTES = {
+  /**
+   * GET /users/:userId/strategies - List user's training strategies
+   * Query params: status, includePhases
+   * @param userId - User's unique identifier
+   */
+  list: (userId: string) => `/users/${userId}/strategies` as const,
+
+  /**
+   * GET /users/:userId/strategies/active - Get active strategy (deprecated, use list with status filter)
+   * @param userId - User's unique identifier
+   */
+  active: (userId: string) => `/users/${userId}/strategies/active` as const,
+
+  /**
+   * GET /users/:userId/strategies/:strategyId - Get strategy details
+   * @param userId - User's unique identifier
+   * @param strategyId - Strategy's unique identifier
+   */
+  get: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}` as const,
+
+  /**
+   * POST /users/:userId/strategies - Create new strategy
+   * @param userId - User's unique identifier
+   */
+  create: (userId: string) => `/users/${userId}/strategies` as const,
+
+  /**
+   * PUT /users/:userId/strategies/:strategyId - Update strategy
+   * @param userId - User's unique identifier
+   * @param strategyId - Strategy's unique identifier
+   */
+  update: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}` as const,
+
+  /**
+   * DELETE /users/:userId/strategies/:strategyId - Delete strategy
+   * @param userId - User's unique identifier
+   * @param strategyId - Strategy's unique identifier
+   */
+  delete: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}` as const,
+
+  /**
+   * POST /users/:userId/strategies/:strategyId/sync - Sync progress from data source
+   * @param userId - User's unique identifier
+   * @param strategyId - Strategy's unique identifier
+   */
+  sync: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}/sync` as const,
+
+  /**
+   * PUT /users/:userId/strategies/:strategyId/progress - Update goal progress
+   * @param userId - User's unique identifier
+   * @param strategyId - Strategy's unique identifier
+   */
+  updateProgress: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}/progress` as const,
+
+  /**
+   * POST /users/:userId/strategies/:strategyId/goals - Add goal to strategy
+   * @param userId - User's unique identifier
+   * @param strategyId - Strategy's unique identifier
+   */
+  addGoal: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}/goals` as const,
+
+  /**
+   * PUT /users/:userId/strategies/:strategyId/goals/:goalId - Update goal
+   * @param userId - User's unique identifier
+   * @param strategyId - Strategy's unique identifier
+   * @param goalId - Goal's unique identifier
+   */
+  updateGoal: (userId: string, strategyId: string, goalId: string) =>
+    `/users/${userId}/strategies/${strategyId}/goals/${goalId}` as const,
+
+  /**
+   * DELETE /users/:userId/strategies/:strategyId/goals/:goalId - Remove goal
+   * @param userId - User's unique identifier
+   * @param strategyId - Strategy's unique identifier
+   * @param goalId - Goal's unique identifier
+   */
+  deleteGoal: (userId: string, strategyId: string, goalId: string) =>
+    `/users/${userId}/strategies/${strategyId}/goals/${goalId}` as const,
+} as const;
+
+// ============================================================================
 // APPOINTMENTS ROUTES
 // ============================================================================
 
@@ -313,6 +449,91 @@ export const APPOINTMENTS_ROUTES = {
 } as const;
 
 // ============================================================================
+// LABS ROUTES
+// ============================================================================
+
+/**
+ * Labs API routes.
+ * Base path: /api/labs
+ *
+ * @group LABS
+ */
+export const LABS_ROUTES = {
+  /**
+   * GET /api/labs - Get lab panels for user
+   * Query params: userId, includePanels
+   */
+  LIST: '/api/labs',
+
+  /**
+   * GET /api/labs/panels/:panelId - Get specific lab panel
+   * @param panelId - Lab panel's unique identifier
+   */
+  getPanel: (panelId: string) => `/api/labs/panels/${panelId}` as const,
+
+  /**
+   * POST /api/labs/panels - Create new lab panel
+   */
+  CREATE_PANEL: '/api/labs/panels',
+
+  /**
+   * POST /api/labs/auto-ingest - Auto-ingest lab data
+   */
+  AUTO_INGEST: '/api/labs/auto-ingest',
+} as const;
+
+// ============================================================================
+// MESSAGES ROUTES
+// ============================================================================
+
+/**
+ * Messages API routes.
+ * Base path: /api/messages
+ *
+ * @group MESSAGES
+ */
+export const MESSAGES_ROUTES = {
+  /**
+   * GET /api/messages - Get messages
+   * Query params: userId, role
+   */
+  LIST: '/api/messages',
+
+  /**
+   * POST /api/messages - Send a message
+   */
+  SEND: '/api/messages',
+
+  /**
+   * PUT /api/messages/read - Mark messages as read
+   */
+  MARK_READ: '/api/messages/read',
+
+  /**
+   * GET /api/messages/unread - Get unread message counts
+   * Query params: userId
+   */
+  UNREAD: '/api/messages/unread',
+} as const;
+
+// ============================================================================
+// UPLOAD ROUTES
+// ============================================================================
+
+/**
+ * Upload API routes.
+ * Base path: /api/upload
+ *
+ * @group UPLOAD
+ */
+export const UPLOAD_ROUTES = {
+  /**
+   * POST /api/upload - Upload a file
+   */
+  UPLOAD: '/api/upload',
+} as const;
+
+// ============================================================================
 // ADMIN ROUTES
 // ============================================================================
 
@@ -354,6 +575,186 @@ export const CRM_ROUTES = {
 export type CrmRoute = (typeof CRM_ROUTES)[keyof typeof CRM_ROUTES];
 
 // ============================================================================
+// SESSIONS ROUTES
+// ============================================================================
+
+/**
+ * Session balance/usage API routes.
+ * Base path: /users/:userId/sessions
+ *
+ * @group SESSIONS
+ */
+export const SESSIONS_ROUTES = {
+  /**
+   * GET /users/:userId/sessions/balances - Get session balance info
+   * @param userId - User's unique identifier
+   */
+  balances: (userId: string) => `/users/${userId}/sessions/balances` as const,
+
+  /**
+   * POST /users/:userId/sessions/use - Use a session
+   * @param userId - User's unique identifier
+   */
+  use: (userId: string) => `/users/${userId}/sessions/use` as const,
+
+  /**
+   * POST /users/:userId/sessions/adjust - Admin adjustment to session balance
+   * @param userId - User's unique identifier
+   */
+  adjust: (userId: string) => `/users/${userId}/sessions/adjust` as const,
+
+  /**
+   * POST /users/:userId/sessions/check - Check session availability
+   * @param userId - User's unique identifier
+   */
+  check: (userId: string) => `/users/${userId}/sessions/check` as const,
+
+  /**
+   * GET /users/:userId/sessions/history - Get session usage history
+   * @param userId - User's unique identifier
+   */
+  history: (userId: string) => `/users/${userId}/sessions/history` as const,
+
+  /**
+   * PATCH /users/:userId/sessions/billing-anchor - Update billing anchor date
+   * @param userId - User's unique identifier
+   */
+  billingAnchor: (userId: string) => `/users/${userId}/sessions/billing-anchor` as const,
+
+  /**
+   * POST /users/:userId/sessions/tier-change - Handle tier change
+   * @param userId - User's unique identifier
+   */
+  tierChange: (userId: string) => `/users/${userId}/sessions/tier-change` as const,
+} as const;
+
+/** Type for sessions route values */
+export type SessionsRoute = ReturnType<(typeof SESSIONS_ROUTES)[keyof typeof SESSIONS_ROUTES]>;
+
+// ============================================================================
+// PROVIDERS ROUTES
+// ============================================================================
+
+/**
+ * Providers API routes.
+ * Base path: /api/providers
+ *
+ * @group PROVIDERS
+ */
+export const PROVIDERS_ROUTES = {
+  /** GET /api/providers - List all providers */
+  LIST: '/api/providers',
+
+  /**
+   * GET /api/providers/:providerId - Get single provider
+   * @param providerId - Provider's unique identifier
+   */
+  get: (providerId: string) => `/api/providers/${providerId}` as const,
+
+  /**
+   * GET /api/providers/:providerId/available-slots - Get available slots
+   * Query params: startDate, endDate
+   * @param providerId - Provider's unique identifier
+   */
+  availableSlots: (providerId: string) => `/api/providers/${providerId}/available-slots` as const,
+
+  /**
+   * GET/PUT /api/providers/:providerId/schedule - Get or update provider schedule
+   * @param providerId - Provider's unique identifier
+   */
+  schedule: (providerId: string) => `/api/providers/${providerId}/schedule` as const,
+} as const;
+
+/** Type for providers route values */
+export type ProvidersRoute =
+  | (typeof PROVIDERS_ROUTES)['LIST']
+  | ReturnType<Exclude<(typeof PROVIDERS_ROUTES)[keyof typeof PROVIDERS_ROUTES], string>>;
+
+// ============================================================================
+// DOCUMENTS ROUTES
+// ============================================================================
+
+/**
+ * Documents API routes.
+ * Base path: /api/documents
+ *
+ * @group DOCUMENTS
+ */
+export const DOCUMENTS_ROUTES = {
+  /** GET /api/documents - List all documents for user */
+  LIST: '/api/documents',
+
+  /** POST /api/documents - Create/upload document */
+  CREATE: '/api/documents',
+
+  /**
+   * GET /api/documents/:documentId - Get single document
+   * @param documentId - Document's unique identifier
+   */
+  get: (documentId: string) => `/api/documents/${documentId}` as const,
+
+  /**
+   * DELETE /api/documents/:documentId - Delete document
+   * @param documentId - Document's unique identifier
+   */
+  delete: (documentId: string) => `/api/documents/${documentId}` as const,
+} as const;
+
+/** Type for documents route values */
+export type DocumentsRoute =
+  | (typeof DOCUMENTS_ROUTES)['LIST']
+  | (typeof DOCUMENTS_ROUTES)['CREATE']
+  | ReturnType<Exclude<(typeof DOCUMENTS_ROUTES)[keyof typeof DOCUMENTS_ROUTES], string>>;
+
+// ============================================================================
+// PUSH NOTIFICATION ROUTES
+// ============================================================================
+
+/**
+ * Push notification API routes.
+ * Base path: /api/push
+ *
+ * @group PUSH
+ */
+export const PUSH_ROUTES = {
+  /** POST /api/push/register - Register push notification token */
+  REGISTER: '/api/push/register',
+
+  /** DELETE /api/push/unregister - Unregister push notification token */
+  UNREGISTER: '/api/push/unregister',
+
+  /** POST /api/push/test - Send test notification */
+  TEST: '/api/push/test',
+} as const;
+
+/** Type for push route values */
+export type PushRoute = (typeof PUSH_ROUTES)[keyof typeof PUSH_ROUTES];
+
+// ============================================================================
+// SSE (Server-Sent Events) ROUTES
+// ============================================================================
+
+/**
+ * SSE API routes.
+ * Base path: /api/sse
+ *
+ * @group SSE
+ */
+export const SSE_ROUTES = {
+  /** POST /api/sse/token - Exchange JWT for SSE token */
+  TOKEN: '/api/sse/token',
+
+  /** GET /api/sse/connect - SSE stream connection */
+  CONNECT: '/api/sse/connect',
+
+  /** GET /api/sse/stats - Get connection stats (admin only) */
+  STATS: '/api/sse/stats',
+} as const;
+
+/** Type for SSE route values */
+export type SseRoute = (typeof SSE_ROUTES)[keyof typeof SSE_ROUTES];
+
+// ============================================================================
 // AGGREGATED API ROUTES
 // ============================================================================
 
@@ -380,9 +781,19 @@ export const API_ROUTES = {
   BIOMETRICS: BIOMETRICS_ROUTES,
   JOURNAL: JOURNAL_ROUTES,
   NUTRITION: NUTRITION_ROUTES,
+  PLANS: PLANS_ROUTES,
+  STRATEGIES: STRATEGIES_ROUTES,
   APPOINTMENTS: APPOINTMENTS_ROUTES,
+  LABS: LABS_ROUTES,
+  MESSAGES: MESSAGES_ROUTES,
+  UPLOAD: UPLOAD_ROUTES,
   ADMIN: ADMIN_ROUTES,
   CRM: CRM_ROUTES,
+  SESSIONS: SESSIONS_ROUTES,
+  PROVIDERS: PROVIDERS_ROUTES,
+  DOCUMENTS: DOCUMENTS_ROUTES,
+  PUSH: PUSH_ROUTES,
+  SSE: SSE_ROUTES,
 } as const;
 
 // ============================================================================

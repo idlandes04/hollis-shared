@@ -32,5 +32,12 @@ export * from './clinical';
 
 // Sessions domain - session types, reset frequencies
 export * from './sessions';
-// Including: biometrics, clinical, nutrition, training, appointments, etc.
-// ============================================================================
+
+// Labs domain - lab result statuses and flags
+export * from './labs';
+
+// Registration domain - registration statuses
+export * from './registration';
+
+// Analytics domain - trends, statuses, chart types, time ranges
+export * from './analytics';

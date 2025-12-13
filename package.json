@@ -27,6 +27,10 @@
       "default": "./constants/index.ts"
     }
   },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
+  },
   "peerDependencies": {
     "zod": "^3.25.76"
   },
