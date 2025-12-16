@@ -158,3 +158,41 @@ export const HTTP_STATUS = {
   INTERNAL_SERVER_ERROR: 500,
   SERVICE_UNAVAILABLE: 503,
 } as const;
+
+// ============================================================================
+// UNIT CONVERSION FACTORS
+// ============================================================================
+
+/**
+ * Canonical conversion factors for unit transformations.
+ * Base units: kg (weight), cm (length), g (food weight), ml (volume), m (distance), °C (temperature)
+ *
+ * INVARIANT: All persisted biometrics use metric. Convert at display boundary only.
+ *
+ * IMPORTANT: All codebases (mobile, server, web-admin) must import these constants
+ * from @hollis/contracts rather than defining local duplicates.
+ */
+export const UNIT_CONVERSION = {
+  // Weight (base: kg)
+  LBS_PER_KG: 2.20462,
+
+  // Length (base: cm)
+  CM_PER_INCH: 2.54,
+  INCHES_PER_FOOT: 12,
+
+  // Food weight (base: g)
+  OZ_PER_GRAM: 0.035274,
+  LBS_PER_GRAM: 0.00220462,
+
+  // Food volume (base: ml)
+  FL_OZ_PER_ML: 0.033814,
+  CUPS_PER_ML: 0.00422675,
+  TBSP_PER_ML: 0.067628,
+  TSP_PER_ML: 0.202884,
+  L_PER_ML: 0.001,
+
+  // Distance (base: m)
+  KM_PER_M: 0.001,
+  MI_PER_M: 0.000621371,
+  FT_PER_M: 3.28084,
+} as const;
