@@ -23,7 +23,8 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "strictNullChecks": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "types": ["node", "jest"]
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules", "dist"]
