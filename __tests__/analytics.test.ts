@@ -842,25 +842,25 @@ describe('Analytics Contracts', () => {
 
     describe('required fields enforcement', () => {
       it('should reject missing id', () => {
-        const { id, ...rest } = validChartItem;
+        const { id: _id, ...rest } = validChartItem;
         const result = ChartItemSchema.safeParse(rest);
         expect(result.success).toBe(false);
       });
 
       it('should reject missing title', () => {
-        const { title, ...rest } = validChartItem;
+        const { title: _title, ...rest } = validChartItem;
         const result = ChartItemSchema.safeParse(rest);
         expect(result.success).toBe(false);
       });
 
       it('should reject missing data', () => {
-        const { data, ...rest } = validChartItem;
+        const { data: _data, ...rest } = validChartItem;
         const result = ChartItemSchema.safeParse(rest);
         expect(result.success).toBe(false);
       });
 
       it('should reject missing type', () => {
-        const { type, ...rest } = validChartItem;
+        const { type: _type, ...rest } = validChartItem;
         const result = ChartItemSchema.safeParse(rest);
         expect(result.success).toBe(false);
       });
