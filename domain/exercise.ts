@@ -169,6 +169,26 @@ export const DIFFICULTY_LEVEL_LABELS: Record<DifficultyLevel, string> = {
 };
 
 // ============================================================================
+// TRACKING TYPES
+// ============================================================================
+
+export const TRACKING_TYPES = ['reps', 'time', 'distance'] as const;
+export type TrackingType = (typeof TRACKING_TYPES)[number];
+export const TrackingTypeSchema = z.enum(TRACKING_TYPES);
+
+export const TRACKING_TYPE = {
+  REPS: 'reps' as TrackingType,
+  TIME: 'time' as TrackingType,
+  DISTANCE: 'distance' as TrackingType,
+} as const;
+
+export const TRACKING_TYPE_LABELS: Record<TrackingType, string> = {
+  reps: 'Reps',
+  time: 'Time',
+  distance: 'Distance',
+};
+
+// ============================================================================
 // EXERCISE CONTRACT
 // ============================================================================
 

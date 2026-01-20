@@ -14,6 +14,14 @@
 
 import { z } from 'zod';
 
+import type { Injury, Limitation, MedicalCondition, Medication } from './clinical';
+import {
+    injurySchema,
+    limitationSchema,
+    medicalConditionSchema,
+    medicationSchema,
+} from './clinical';
+
 // ============================================================================
 // USER ROLES
 // ============================================================================
@@ -126,6 +134,51 @@ export const USER_ROLE_LABELS: Record<UserRole, string> = {
   TRAINER: 'Trainer',
   CLIENT: 'Client',
 };
+
+// ============================================================================
+// ROLE BADGES (for messaging/display)
+// ============================================================================
+
+/**
+ * Role badge configuration for display in messaging and UI.
+ */
+export interface RoleBadge {
+  label: string;
+  color: string;
+  bg: string;
+}
+
+/**
+ * Role badge colors - inline to avoid design-token dependency in contracts.
+ * These values mirror @hollis/design-tokens roleBadgeColors.
+ */
+const ROLE_BADGE_COLORS = {
+  admin: { color: '#7C3AED', bg: '#EDE9FE' },
+  clinician: { color: '#059669', bg: '#D1FAE5' },
+  trainer: { color: '#F59E0B', bg: '#FEF3C7' },
+  client: { color: '#2563EB', bg: '#DBEAFE' },
+  default: { color: '#6B7280', bg: '#F3F4F6' },
+} as const;
+
+/**
+ * Role badge configuration mapped by user role.
+ */
+export const ROLE_BADGE_CONFIG: Record<UserRole, RoleBadge> = {
+  ADMIN: { label: 'Admin', color: ROLE_BADGE_COLORS.admin.color, bg: ROLE_BADGE_COLORS.admin.bg },
+  CLINICIAN: { label: 'Clinician', color: ROLE_BADGE_COLORS.clinician.color, bg: ROLE_BADGE_COLORS.clinician.bg },
+  TRAINER: { label: 'Trainer', color: ROLE_BADGE_COLORS.trainer.color, bg: ROLE_BADGE_COLORS.trainer.bg },
+  CLIENT: { label: 'Patient', color: ROLE_BADGE_COLORS.client.color, bg: ROLE_BADGE_COLORS.client.bg },
+};
+
+/**
+ * Get role badge configuration for display.
+ * Returns badge config for known roles, or a default badge for unknown roles.
+ * Returns null if role is null/undefined.
+ */
+export function getRoleBadge(role: string | undefined | null): RoleBadge | null {
+  if (!role) return null;
+  return ROLE_BADGE_CONFIG[role as UserRole] ?? { label: role, color: ROLE_BADGE_COLORS.default.color, bg: ROLE_BADGE_COLORS.default.bg };
+}
 
 // ============================================================================
 // MEMBERSHIP TIERS
@@ -517,6 +570,14 @@ export interface UserProfileContract {
   timezone?: string;
   assignedClinicianId?: string | null;
   assignedTrainerId?: string | null;
+  /** Active medications for this user */
+  medications?: Medication[];
+  /** Physical limitations or restrictions */
+  limitations?: Limitation[];
+  /** Past or current injuries */
+  injuries?: Injury[];
+  /** Medical conditions (e.g., diabetes, hypertension) */
+  medicalConditions?: MedicalCondition[];
   onboardingCompleted: boolean;
   isActive?: boolean;
   createdAt: string; // IsoTimestampString
@@ -548,6 +609,10 @@ export const UserProfileSchema: z.ZodType<UserProfileContract> = z.object({
   timezone: z.string().optional(),
   assignedClinicianId: z.string().nullable().optional(),
   assignedTrainerId: z.string().nullable().optional(),
+  medications: z.array(medicationSchema).optional(),
+  limitations: z.array(limitationSchema).optional(),
+  injuries: z.array(injurySchema).optional(),
+  medicalConditions: z.array(medicalConditionSchema).optional(),
   onboardingCompleted: z.boolean(),
   isActive: z.boolean().optional(),
   createdAt: z.string(),

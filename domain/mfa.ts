@@ -13,6 +13,20 @@
 import { z } from 'zod';
 
 // ============================================================================
+// MFA CODE LENGTH CONSTANTS
+// ============================================================================
+
+/**
+ * Length of TOTP codes from authenticator apps (6 digits)
+ */
+export const MFA_TOTP_CODE_LENGTH = 6;
+
+/**
+ * Length of backup recovery codes (8 alphanumeric characters)
+ */
+export const MFA_BACKUP_CODE_LENGTH = 8;
+
+// ============================================================================
 // MFA CREDENTIAL TYPES
 // ============================================================================
 

@@ -278,6 +278,34 @@ export const CARE_TEAM_ROLE_LABELS: Record<CareTeamRole, string> = {
 };
 
 // ============================================================================
+// CLINICAL NOTE CONTRACT
+// ============================================================================
+
+/**
+ * Clinical note entry for patient records.
+ * Tagged clinical notes from care team members.
+ */
+export interface ClinicalNoteContract {
+  id: string;
+  patientId: string;
+  authorId: string;
+  content: string;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const ClinicalNoteContractSchema = z.object({
+  id: z.string(),
+  patientId: z.string(),
+  authorId: z.string(),
+  content: z.string(),
+  tags: z.array(z.string()),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+// ============================================================================
 // MOCK FACTORIES
 // ============================================================================
 

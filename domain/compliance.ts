@@ -71,3 +71,27 @@ export function getComplianceStatusFromScore(score: number): ComplianceStatus {
 export function isComplianceStatus(value: string): value is ComplianceStatus {
   return (COMPLIANCE_STATUSES as readonly string[]).includes(value);
 }
+
+// ============================================================================
+// COMPLIANCE METRICS
+// ============================================================================
+
+/**
+ * Compliance metrics for a user over a specific period.
+ * Tracks adherence to tier-specific requirements for workouts, diet logging, check-ins, and appointments.
+ */
+export interface ComplianceMetrics {
+  readonly patientId: string;
+  readonly periodStart: string;
+  readonly periodEnd: string;
+  readonly workoutAdherence: number;
+  readonly dietLoggingStreak: number;
+  readonly appointmentAttendanceRate: number;
+  readonly overallScore: number;
+  readonly avgWorkoutsPerWeek: number;
+  readonly avgFoodLoggingDaysPerWeek: number;
+  readonly avgEveningCheckinsPerWeek: number;
+  readonly nutritionQualityScore: number;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
