@@ -14,6 +14,41 @@
  */
 
 import { z } from 'zod';
+import { type BiometricSource, BiometricSourceSchema } from './clinical';
+
+// ============================================================================
+// BIOMETRIC ENTRY CONTRACT
+// ============================================================================
+
+/**
+ * Individual biometric data entry.
+ * Tracks measurements with source provenance for verification.
+ */
+export interface BiometricEntryContract {
+  id: string;
+  userId: string;
+  date: string;
+  key: string;
+  value: number;
+  unit: string;
+  source: BiometricSource;
+  isVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const BiometricEntryContractSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  date: z.string(),
+  key: z.string(),
+  value: z.number(),
+  unit: z.string(),
+  source: BiometricSourceSchema,
+  isVerified: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
 
 // ============================================================================
 // BIOMETRIC KEYS (Canonical Registry)

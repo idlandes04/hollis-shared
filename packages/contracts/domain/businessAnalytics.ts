@@ -164,6 +164,36 @@ export function isUserEventType(value: string): value is UserEventType {
 }
 
 // ============================================================================
+// USER EVENT CONTRACT
+// ============================================================================
+
+/**
+ * User event entry for analytics and timeline tracking.
+ * Records significant user actions and system events.
+ */
+export interface UserEventContract {
+  id: string;
+  userId: string;
+  type: UserEventType;
+  occurredAt: string;
+  source?: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const UserEventContractSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: UserEventTypeSchema,
+  occurredAt: z.string(),
+  source: z.string().optional(),
+  metadata: z.record(z.unknown()),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+// ============================================================================
 // BUSINESS DAILY SNAPSHOT
 // ============================================================================
 

@@ -404,6 +404,12 @@ export const ADMIN_ANALYTICS_ROUTES = {
 export const ADMIN_USERS_ROUTES = {
   /** GET - Search users */
   SEARCH: '/api/admin/users/search',
+
+  /** POST - Admin-initiated MFA reset for locked-out users (requires step-up auth) */
+  resetMfa: (userId: string) => `/api/admin/users/${userId}/mfa/reset` as const,
+
+  /** GET - Get MFA status for a specific user */
+  mfaStatus: (userId: string) => `/api/admin/users/${userId}/mfa/status` as const,
 } as const;
 
 // ============================================================================

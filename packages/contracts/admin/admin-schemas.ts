@@ -549,12 +549,62 @@ export const intakeQuestionnaireResponseSchema = z.object({
 
 /**
  * Client intake payload schema.
+ * 
+ * Supports both:
+ * - Structured data (arrays of objects) - preferred for new submissions
+ * - String data (semicolon-separated) - legacy format for backwards compatibility
+ * 
+ * Baseline metrics (height, weight, DOB, sex) update ClinicalProfile directly.
  */
 export const clientIntakePayloadSchema = z.object({
+  // Goals & Preferences
   goals: z.string().min(1).max(5000),
   experienceLevel: z.string().min(1).max(100),
-  injuries: z.string().max(5000).optional(),
   preferences: z.string().max(5000).optional(),
+  customPreferences: z.string().max(5000).optional(), // Free-form custom preferences
+
+  // Baseline Metrics (stored in ClinicalProfile)
+  baselineMetrics: z.object({
+    heightCm: z.number().positive().optional(),
+    weightKg: z.number().positive().optional(),
+    dateOfBirth: z.string().optional(), // ISO date
+    biologicalSex: BiologicalSexSchema.optional(),
+  }).optional(),
+
+  // Clinical Data - supports both structured arrays and legacy string format
+  // Structured format (preferred)
+  medicationsData: z.array(z.object({
+    id: z.string(),
+    name: z.string().min(1).max(200),
+    dosage: z.string().min(1).max(100),
+    frequency: z.string().min(1).max(200),
+    notes: z.string().max(5000).optional(),
+  })).optional(),
+  limitationsData: z.array(z.object({
+    id: z.string(),
+    description: z.string().min(1).max(500),
+    severity: z.enum(['mild', 'moderate', 'severe']).optional(),
+    notes: z.string().max(5000).optional(),
+  })).optional(),
+  injuriesData: z.array(z.object({
+    id: z.string(),
+    description: z.string().min(1).max(500),
+    bodyPart: z.string().max(100).optional(),
+    occurredAt: z.string().optional(),
+    severity: z.enum(['mild', 'moderate', 'severe']).optional(),
+    recoveryStatus: z.enum(['active', 'recovering', 'healed', 'chronic']).optional(),
+    notes: z.string().max(5000).optional(),
+  })).optional(),
+  medicalConditionsData: z.array(z.object({
+    id: z.string(),
+    name: z.string().min(1).max(200),
+    status: z.enum(['active', 'managed', 'resolved', 'monitoring']),
+    diagnosisDate: z.string().optional(),
+    notes: z.string().max(5000).optional(),
+  })).optional(),
+
+  // Legacy string format (for backwards compatibility)
+  injuries: z.string().max(5000).optional(),
   limitations: z.string().max(5000).optional(),
   medications: z.string().max(5000).optional(),
   medicalConditions: z.string().max(5000).optional(),

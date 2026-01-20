@@ -27,9 +27,12 @@ import type {
     FitnessExperience,
     GoalDataSource,
     GoalMetricKey,
+    InjuryRecoveryStatus,
     LabMappingStatus,
     LabMetricCategory,
     LabMetricDirectionality,
+    LimitationSeverity,
+    MedicalConditionStatus,
     MetricApprovalStatus,
     PregnancyStatus,
     PrimaryGoal,
@@ -579,12 +582,58 @@ export interface IntakeQuestionnaireResponse {
 
 /**
  * Client intake submission payload.
+ * 
+ * Supports both structured data (arrays) and legacy string format.
+ * Baseline metrics are used to initialize/update ClinicalProfile.
  */
 export interface ClientIntakePayload {
+  // Goals & Preferences
   goals: string;
   experienceLevel: string;
-  injuries?: string;
   preferences?: string;
+  customPreferences?: string; // Free-form custom preferences
+
+  // Baseline Metrics (stored in ClinicalProfile)
+  baselineMetrics?: {
+    heightCm?: number;
+    weightKg?: number;
+    dateOfBirth?: string; // ISO date
+    biologicalSex?: BiologicalSex;
+  };
+
+  // Structured clinical data (preferred)
+  medicationsData?: {
+    id: string;
+    name: string;
+    dosage: string;
+    frequency: string;
+    notes?: string;
+  }[];
+  limitationsData?: {
+    id: string;
+    description: string;
+    severity?: LimitationSeverity;
+    notes?: string;
+  }[];
+  injuriesData?: {
+    id: string;
+    description: string;
+    bodyPart?: string;
+    occurredAt?: string;
+    severity?: LimitationSeverity;
+    recoveryStatus?: InjuryRecoveryStatus;
+    notes?: string;
+  }[];
+  medicalConditionsData?: {
+    id: string;
+    name: string;
+    status: MedicalConditionStatus;
+    diagnosisDate?: string;
+    notes?: string;
+  }[];
+
+  // Legacy string format (for backwards compatibility)
+  injuries?: string;
   limitations?: string;
   medications?: string;
   medicalConditions?: string;

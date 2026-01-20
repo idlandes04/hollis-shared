@@ -348,6 +348,8 @@ export interface TrainingStrategyContract {
   targetWeeks: number;
   currentWeek?: number;
   phases: TrainingPhaseContract[];
+  goals?: StrategyGoalContract[];
+  overallProgress?: number;
   isAIGenerated?: boolean;
   aiPrompt?: string;
   notes?: string;
@@ -355,6 +357,57 @@ export interface TrainingStrategyContract {
   createdAt: string; // IsoTimestampString
   updatedAt: string; // IsoTimestampString
 }
+
+// ============================================================================
+// STRATEGY GOALS
+// ============================================================================
+
+/**
+ * Strategy goal contract - represents a measurable goal within a training strategy.
+ */
+export interface StrategyGoalContract {
+  id: string;
+  strategyId: string;
+  goalMetric: string;
+  goalTarget: number;
+  baselineValue?: number;
+  currentValue?: number;
+  progressPercent?: number;
+  weight?: number;
+  linkedExerciseId?: string;
+  dynamicMetricDefinition?: {
+    dataSource: 'lab' | 'biometric';
+    dataKey: string;
+    label: string;
+    unit: string;
+    direction: string;
+    category: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const StrategyGoalSchema: z.ZodType<StrategyGoalContract> = z.object({
+  id: z.string().uuid(),
+  strategyId: z.string().uuid(),
+  goalMetric: z.string(),
+  goalTarget: z.number(),
+  baselineValue: z.number().optional(),
+  currentValue: z.number().optional(),
+  progressPercent: z.number().optional(),
+  weight: z.number().optional(),
+  linkedExerciseId: z.string().uuid().optional(),
+  dynamicMetricDefinition: z.object({
+    dataSource: z.enum(['lab', 'biometric']),
+    dataKey: z.string(),
+    label: z.string(),
+    unit: z.string(),
+    direction: z.string(),
+    category: z.string(),
+  }).optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
 
 export const TrainingStrategySchema: z.ZodType<TrainingStrategyContract> = z.object({
   id: z.string().uuid(),
@@ -369,6 +422,8 @@ export const TrainingStrategySchema: z.ZodType<TrainingStrategyContract> = z.obj
   targetWeeks: z.number().int().positive(),
   currentWeek: z.number().int().min(0).optional(),
   phases: z.array(TrainingPhaseSchema),
+  goals: z.array(StrategyGoalSchema).optional(),
+  overallProgress: z.number().optional(),
   isAIGenerated: z.boolean().optional(),
   aiPrompt: z.string().optional(),
   notes: z.string().optional(),

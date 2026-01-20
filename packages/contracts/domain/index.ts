@@ -104,3 +104,6 @@ export * from './push';
 
 // Metric key conversion utilities - bidirectional mapping between GoalMetricKey and HealthMetricKey
 export * from './metric-key-conversion';
+
+// Units domain - unit systems and conversion constants for all measurement types
+export * from './units';

@@ -29,7 +29,7 @@ export * from './primitives';
 // API Routes
 export * from './api';
 
-// Domain contracts
+// Domain contracts (includes units, user, appointments, nutrition, training, clinical, etc.)
 export * from './domain';
 
 // Zod schemas

@@ -48,26 +48,10 @@ export const STORAGE_KEYS = {
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
 
 // ============================================================================
-// UNIT SYSTEMS
-// ============================================================================
-
-/**
- * Unit system preference for measurements.
- * All data is stored in metric; imperial is for display only.
- */
-export const UNIT_SYSTEMS = ['METRIC', 'IMPERIAL'] as const;
-export type UnitSystem = (typeof UNIT_SYSTEMS)[number];
-
-export const UNIT_SYSTEM = {
-  METRIC: 'METRIC' as UnitSystem,
-  IMPERIAL: 'IMPERIAL' as UnitSystem,
-} as const;
-
-export const DEFAULT_UNIT_SYSTEM: UnitSystem = 'METRIC';
-
-// ============================================================================
 // PAGINATION DEFAULTS
 // ============================================================================
+// NOTE: UNIT_SYSTEMS and UNIT_SYSTEM are now exported from domain/units
+// with more comprehensive values (metric, imperial, advanced)
 
 /**
  * Default pagination values used across the application.
