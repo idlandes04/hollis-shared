@@ -97,42 +97,7 @@ export type ShippingAddress = z.infer<typeof ShippingAddressSchema>;
 // ORDER
 // ============================================================================
 
-export interface OrderContract {
-  id: string;
-
-  // Customer
-  userId: string | null;
-  customerEmail: string;
-  customerName: string | null;
-
-  // Totals
-  subtotalInCents: number;
-  taxInCents: number;
-  shippingInCents: number;
-  totalInCents: number;
-  currency: string;
-
-  // Items
-  items: OrderItemContract[];
-  itemCount: number;
-
-  // Fulfillment
-  fulfillmentStatus: FulfillmentStatus;
-  shippingAddress: ShippingAddressContract | null;
-  trackingNumber: string | null;
-  carrier: string | null;
-  shippedAt: string | null;
-  deliveredAt: string | null;
-
-  // Payment
-  paymentStatus: OrderPaymentStatus;
-  paidAt: string | null;
-
-  createdAt: string;
-  updatedAt: string;
-}
-
-export const OrderSchema: z.ZodType<OrderContract> = z.object({
+export const OrderSchema = z.object({
   id: z.string().uuid(),
   /** userId uses HH-XXXXXX barcode format, not UUID */
   userId: z.string().min(1).nullable(),
@@ -156,6 +121,7 @@ export const OrderSchema: z.ZodType<OrderContract> = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
 });
+export type OrderContract = z.infer<typeof OrderSchema>;
 
 // ============================================================================
 // UPDATE FULFILLMENT REQUEST

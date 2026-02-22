@@ -33,32 +33,18 @@ export function getDurationForType(type: AppointmentType): number {
 }
 
 /** Time slot with timezone info */
-export interface TimeSlotContract {
-  date: string; // ISO date string (YYYY-MM-DD) in business timezone
-  time: string; // HH:mm format in business timezone
-  available: boolean;
-  /** UTC offset for this slot (e.g., "-06:00" for CST) */
-  utcOffset: string;
-}
-
-export const TimeSlotSchema: z.ZodType<TimeSlotContract> = z.object({
+export const TimeSlotSchema = z.object({
   date: z.string(),
   time: z.string(),
   available: z.boolean(),
   utcOffset: z.string(),
 });
+export type TimeSlotContract = z.infer<typeof TimeSlotSchema>;
 
 /** Availability response includes timezone metadata */
-export interface AvailabilityResponse {
-  slots: TimeSlotContract[];
-  /** Business timezone identifier */
-  timezone: string;
-  /** Current timezone abbreviation (CST/CDT) */
-  timezoneAbbr: string;
-}
-
-export const AvailabilityResponseSchema: z.ZodType<AvailabilityResponse> = z.object({
+export const AvailabilityResponseSchema = z.object({
   slots: z.array(TimeSlotSchema),
   timezone: z.string(),
   timezoneAbbr: z.string(),
 });
+export type AvailabilityResponse = z.infer<typeof AvailabilityResponseSchema>;

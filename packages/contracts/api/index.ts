@@ -12,3 +12,7 @@
 export * from './csrf';
 export * from './routes';
 
+// MFA and Assignment routes are defined in the modular routes/ directory (not in routes.ts).
+// Explicitly re-exported here so they are available via @hollis/contracts/api.
+export { MFA_ROUTES, type MfaRoute, ASSIGNMENT_ROUTES, type AssignmentRoute } from './routes/mfa';
+

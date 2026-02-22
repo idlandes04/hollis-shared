@@ -396,43 +396,7 @@ export const GoalTargetDirectionSchema = z.enum(GOAL_TARGET_DIRECTIONS);
 /**
  * Lab observation contract - represents a single lab result observation.
  */
-export interface LabObservationContract {
-  id: string;
-  /**
-   * Patient's user ID in HH-XXXXXX barcode format.
-   * References the patient this lab result belongs to.
-   *
-   * @format HH-XXXXXX
-   */
-  userId: string;
-  reportId: string;
-  metricDefinitionId: string;
-  observedAt: string; // IsoTimestampString
-  rawAnalyteName: string;
-  rawValueText?: string | null;
-  rawValueNumber?: number | null;
-  rawUnit?: string | null;
-  rawReferenceIntervalText?: string | null;
-  rawReferenceIntervalLow?: number | null;
-  rawReferenceIntervalHigh?: number | null;
-  rawFlag?: string | null;
-  canonicalValue?: number | null;
-  canonicalUnit?: string | null;
-  labReferenceIntervalLow?: number | null;
-  labReferenceIntervalHigh?: number | null;
-  labReferenceIntervalText?: string | null;
-  labFlag?: string | null;
-  mappingStatus: LabMappingStatus;
-  mappingConfidence?: number | null;
-  notes?: string | null;
-  tags?: string[] | null;
-  extractionConfidences?: Record<string, number> | null;
-  extractionFragments?: Record<string, string> | null;
-  createdAt: string; // IsoTimestampString
-  updatedAt: string; // IsoTimestampString
-}
-
-export const LabObservationSchema: z.ZodType<LabObservationContract> = z.object(
+export const LabObservationSchema = z.object(
   {
     id: z.string(),
     userId: z.string(),
@@ -466,6 +430,7 @@ export const LabObservationSchema: z.ZodType<LabObservationContract> = z.object(
     updatedAt: z.string(),
   },
 );
+export type LabObservationContract = z.infer<typeof LabObservationSchema>;
 
 // ============================================================================
 // LAB REPORT CONTRACT
@@ -474,32 +439,7 @@ export const LabObservationSchema: z.ZodType<LabObservationContract> = z.object(
 /**
  * Lab report contract - represents a complete lab report with observations.
  */
-export interface LabReportContract {
-  id: string;
-  /**
-   * Patient's user ID in HH-XXXXXX barcode format.
-   * References the patient this lab panel belongs to.
-   *
-   * @format HH-XXXXXX
-   */
-  userId: string;
-  reportDate: string; // IsoTimestampString
-  labName?: string | null;
-  labLocation?: string | null;
-  specimenType?: string | null;
-  orderingProvider?: string | null;
-  panelName?: string | null;
-  panelCode?: string | null;
-  sourceDocumentId?: string | null;
-  verifiedById?: string | null;
-  verifiedAt?: string | null; // IsoTimestampString
-  notes?: string | null;
-  observations: LabObservationContract[];
-  createdAt: string; // IsoTimestampString
-  updatedAt: string; // IsoTimestampString
-}
-
-export const LabReportSchema: z.ZodType<LabReportContract> = z.object({
+export const LabReportSchema = z.object({
   id: z.string(),
   userId: z.string(),
   reportDate: z.string(),
@@ -517,6 +457,7 @@ export const LabReportSchema: z.ZodType<LabReportContract> = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
 });
+export type LabReportContract = z.infer<typeof LabReportSchema>;
 
 // ============================================================================
 // MOCK FACTORIES

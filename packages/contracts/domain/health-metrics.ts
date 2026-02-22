@@ -13,18 +13,16 @@
  */
 
 import { z } from "zod";
-import { type BiometricSource, BiometricSourceSchema } from "./clinical";
+import { BiometricSourceSchema } from "./clinical";
 import { dailyMetricsSchema } from "./daily-metrics";
 import { DataQualityLevelSchema, HealthTrendSchema } from "./health-progress";
 import { journalEntrySchema } from "./journal";
 import {
-    type MetricDefinitionSummary,
-    MetricDefinitionSummarySchema,
+    MetricDefinitionSummarySchema
 } from "./metric-definition";
 import { DailyNutritionLogSchema } from "./nutrition";
 import {
-    type HealthMetricDirection,
-    HealthMetricDirectionSchema,
+    HealthMetricDirectionSchema
 } from "./training";
 import { BiologicalSexSchema } from "./user";
 
@@ -279,39 +277,6 @@ export type RangeDerivationModifier = z.infer<
 
 export type RangeDerivation = z.infer<typeof RangeDerivationSchema>;
 
-export interface HealthMetricGoalContract {
-  /** MetricDefinition code string (previously GoalMetricKey) */
-  metric: string;
-  targetValue: number | null;
-  targetDirection: HealthMetricDirection;
-  referenceRangeLow: number | null;
-  referenceRangeHigh: number | null;
-  defaultReferenceRangeLow: number | null;
-  defaultReferenceRangeHigh: number | null;
-  labReferenceRangeLow: number | null;
-  labReferenceRangeHigh: number | null;
-  isCustom: boolean;
-  setById: string | null;
-  currentValue: number | null;
-  currentValueDate: string | null;
-  currentValueUnit: string | null;
-  needsTargetSetting: boolean;
-  hasMissingRange: boolean;
-  isDerivedRange: boolean;
-  /** True if the reference range was adjusted for pregnancy (trimester-specific) */
-  isPregnancyAdjusted: boolean;
-  rangeSource:
-    | "guideline"
-    | "custom"
-    | "derived"
-    | "missing"
-    | "dynamic-db"
-    | "lab";
-  rangeDerivation: RangeDerivation | null;
-  /** MetricDefinition metadata (server-enriched) */
-  metricDefinition?: MetricDefinitionSummary;
-}
-
 export const RangeDerivationStepSchema = z.object({
   step: z.string(),
   modifier: z.string().optional(),
@@ -365,6 +330,8 @@ export const HealthMetricGoalSchema = z.object({
   metricDefinition: MetricDefinitionSummarySchema.optional(),
 });
 export type HealthMetricGoal = z.infer<typeof HealthMetricGoalSchema>;
+/** Health metric goal with clinician overrides, guideline defaults, and range derivation. */
+export type HealthMetricGoalContract = z.infer<typeof HealthMetricGoalSchema>;
 
 export const HealthMetricGoalUpsertSchema = z.object({
   targetValue: z.number().optional().nullable(),
@@ -380,26 +347,6 @@ export type HealthMetricGoalUpsert = z.infer<
 // ============================================================================
 // WEARABLES DATA CONTRACT
 // ============================================================================
-
-export interface WearablesDataContract {
-  steps?: number;
-  sleepHours?: number;
-  restingHeartRate?: number;
-  activeCalories?: number;
-  flightsClimbed?: number;
-  weight?: number;
-  heartRateVariability?: number;
-  oxygenSaturation?: number;
-  respiratoryRate?: number;
-  source?: BiometricSource;
-  isVerified: boolean;
-  syncedAt?: string;
-  rawSources?: {
-    source: BiometricSource;
-    data?: Record<string, string | number | boolean | null> | null;
-    isVerified: boolean;
-  }[];
-}
 
 export const WearablesDataSchema = z.object({
   steps: z.number().int().optional(),
@@ -431,6 +378,7 @@ export const WearablesDataSchema = z.object({
     .optional(),
 });
 export type WearablesData = z.infer<typeof WearablesDataSchema>;
+export type WearablesDataContract = z.infer<typeof WearablesDataSchema>;
 
 // ============================================================================
 // DAILY SUMMARY CONTRACT

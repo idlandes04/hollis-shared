@@ -24,9 +24,9 @@ import type {
     LabMetricDirectionality,
     StrategyStatus,
     StrategyType,
-    UserRole
-} from '../domain';
-import { type VolumeLevel } from '../primitives';
+    UserRole,
+} from "../domain";
+import { type VolumeLevel } from "../primitives";
 
 // ============================================================================
 // COMPLIANCE STATUS (admin-specific)
@@ -35,7 +35,12 @@ import { type VolumeLevel } from '../primitives';
 /**
  * Granular compliance status levels for admin views.
  */
-export const ADMIN_COMPLIANCE_STATUSES = ['excellent', 'good', 'at-risk', 'non-compliant'] as const;
+export const ADMIN_COMPLIANCE_STATUSES = [
+  "excellent",
+  "good",
+  "at-risk",
+  "non-compliant",
+] as const;
 
 // Note: VolumeLevel type is imported from primitives (canonical export location)
 
@@ -59,6 +64,7 @@ export interface TrainerSummary {
 
 /**
  * Input for creating a training phase.
+ * @deprecated Use `z.infer<typeof createPhaseInputSchema>` from admin-schemas instead.
  */
 export interface CreatePhaseInput {
   name: string;
@@ -74,6 +80,7 @@ export interface CreatePhaseInput {
 
 /**
  * Input for creating a strategy goal.
+ * @deprecated Use `z.infer<typeof createGoalInputSchema>` from admin-schemas instead.
  */
 export interface CreateGoalInput {
   /** MetricDefinition code string (previously GoalMetricKey) */
@@ -86,7 +93,7 @@ export interface CreateGoalInput {
   dataKey?: string;
   /** For non-hardcoded metrics (lab:/bio: prefix), store definition for reconstruction */
   dynamicMetricDefinition?: {
-    dataSource: 'lab' | 'biometric';
+    dataSource: "lab" | "biometric";
     dataKey: string;
     label: string;
     unit: string;
@@ -97,6 +104,7 @@ export interface CreateGoalInput {
 
 /**
  * Input for updating a strategy goal.
+ * @deprecated Use `z.infer<typeof updateGoalInputSchema>` from admin-schemas instead.
  */
 export interface UpdateGoalInput {
   goalTarget?: number;
@@ -107,6 +115,7 @@ export interface UpdateGoalInput {
 
 /**
  * Input for creating a training strategy.
+ * @deprecated Use `z.infer<typeof createStrategyInputSchema>` from admin-schemas instead.
  */
 export interface CreateStrategyInput {
   name: string;
@@ -162,17 +171,23 @@ interface SmartAssistActivity {
   /** Timestamp of the activity */
   timestamp: string;
   /** Type of activity */
-  type: 'search' | 'create' | 'select' | 'plan' | 'note' | 'thinking' | 'complete' | 'analyze';
+  type:
+    | "search"
+    | "create"
+    | "select"
+    | "plan"
+    | "note"
+    | "thinking"
+    | "complete"
+    | "analyze";
   /** Short description of the activity */
   message: string;
   /** Optional additional data (e.g., exercise names found) */
   data?: Record<string, unknown>;
 }
 
-/** @deprecated Use SmartAssistProgress instead */
+/** @deprecated Use SmartAssistProgress from admin-schemas instead */
 export type WorkoutGenerationProgress = SmartAssistProgress;
-/** @deprecated Use SmartAssistActivity instead */
-export type WorkoutGenerationActivity = SmartAssistActivity;
 
 /**
  * Workout plan SSE generation parameters.
@@ -181,7 +196,7 @@ export interface WorkoutPlanGenerationParams {
   userId: string;
   weekStartDate: string;
   customPrompt?: string;
-  overwriteMode?: 'overwrite' | 'fillEmpty';
+  overwriteMode?: "overwrite" | "fillEmpty";
   signal?: AbortSignal;
   onProgress?: (progress: SmartAssistProgress) => void;
 }
@@ -194,7 +209,12 @@ export interface WorkoutPlanGenerationParams {
  * Population qualifiers for race/ethnicity/sex-specific lab results.
  * Used for tests like eGFR that have population-specific reference equations.
  */
-type LabPopulationQualifier = 'african' | 'non_african' | 'male' | 'female' | null;
+type LabPopulationQualifier =
+  | "african"
+  | "non_african"
+  | "male"
+  | "female"
+  | null;
 
 /**
  * Extracted lab observation from PDF/image parsing.

@@ -14,9 +14,6 @@ import {
   BillingSourceSchema,
   ContractDurationSchema,
   SubscriptionStatusSchema,
-  type BillingSource,
-  type ContractDuration,
-  type SubscriptionStatus,
   type SubscriptionContract,
 } from './subscription';
 import {
@@ -24,10 +21,6 @@ import {
   OrderItemSchema,
   OrderPaymentStatusSchema,
   ShippingAddressSchema,
-  type FulfillmentStatus,
-  type OrderItemContract,
-  type OrderPaymentStatus,
-  type ShippingAddressContract,
   type OrderContract,
 } from './order';
 import type { PaymentMethodContract } from './payment';
@@ -36,33 +29,7 @@ import type { PaymentMethodContract } from './payment';
 // CUSTOMER SUBSCRIPTION (strips Stripe IDs, signed contract key)
 // ============================================================================
 
-export interface CustomerSubscriptionContract {
-  id: string;
-  tier: string;
-  status: SubscriptionStatus;
-  contractDuration: ContractDuration;
-  contractStartDate: string;
-  contractEndDate: string;
-  discountPercent: number;
-  billingSource: BillingSource;
-  monthlyPriceInCents: number;
-  currentPeriodStart: string;
-  currentPeriodEnd: string;
-  billingAnchorDay: number;
-  isInGracePeriod: boolean;
-  gracePeriodEndsAt: string | null;
-  isPaused: boolean;
-  pausedAt: string | null;
-  pauseResumeDate: string | null;
-  isCanceled: boolean;
-  canceledAt: string | null;
-  cancelEffectiveDate: string | null;
-  scheduledTierChange: string | null;
-  tierChangeEffectiveDate: string | null;
-  createdAt: string;
-}
-
-export const CustomerSubscriptionSchema: z.ZodType<CustomerSubscriptionContract> = z.object({
+export const CustomerSubscriptionSchema = z.object({
   id: z.string().uuid(),
   tier: z.enum(USER_TIERS),
   status: SubscriptionStatusSchema,
@@ -87,6 +54,7 @@ export const CustomerSubscriptionSchema: z.ZodType<CustomerSubscriptionContract>
   tierChangeEffectiveDate: z.string().nullable(),
   createdAt: z.string(),
 });
+export type CustomerSubscriptionContract = z.infer<typeof CustomerSubscriptionSchema>;
 
 // ============================================================================
 // CUSTOMER PAYMENT METHOD (strips Stripe PM id)
@@ -113,30 +81,7 @@ export type CustomerPaymentMethod = z.infer<typeof CustomerPaymentMethodSchema>;
 // CUSTOMER ORDER (strips userId)
 // ============================================================================
 
-export interface CustomerOrderContract {
-  id: string;
-  customerEmail: string;
-  customerName: string | null;
-  subtotalInCents: number;
-  taxInCents: number;
-  shippingInCents: number;
-  totalInCents: number;
-  currency: string;
-  items: OrderItemContract[];
-  itemCount: number;
-  fulfillmentStatus: FulfillmentStatus;
-  shippingAddress: ShippingAddressContract | null;
-  trackingNumber: string | null;
-  carrier: string | null;
-  shippedAt: string | null;
-  deliveredAt: string | null;
-  paymentStatus: OrderPaymentStatus;
-  paidAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export const CustomerOrderSchema: z.ZodType<CustomerOrderContract> = z.object({
+export const CustomerOrderSchema = z.object({
   id: z.string().uuid(),
   customerEmail: z.string().email(),
   customerName: z.string().nullable(),
@@ -158,6 +103,7 @@ export const CustomerOrderSchema: z.ZodType<CustomerOrderContract> = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
 });
+export type CustomerOrderContract = z.infer<typeof CustomerOrderSchema>;
 
 // ============================================================================
 // MAPPING HELPERS (server-side: full contract -> customer contract)
