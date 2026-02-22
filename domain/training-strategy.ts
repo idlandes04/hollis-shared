@@ -323,6 +323,7 @@ export type StrategyDraftContract = z.infer<typeof StrategyDraftSchema>;
 /**
  * Activity entry for real-time strategy generation progress display.
  */
+// schema-first-todo: data field type mismatch (interface: Record<string, unknown> vs schema: restricted union); defer migration
 export interface StrategyGenerationActivityContract {
   /** Timestamp of the activity */
   timestamp: string;

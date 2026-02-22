@@ -75,35 +75,23 @@ export function isPushAppRole(value: string): value is PushAppRole {
 /**
  * Register a native device push token (APNs/FCM).
  */
-export interface RegisterDevicePushTokenRequest {
-  platform: PushPlatform;
-  devicePushToken: string;
-  deviceId?: string;
-  appRole?: PushAppRole;
-}
-
-export const registerDevicePushTokenRequestSchema: z.ZodType<RegisterDevicePushTokenRequest> =
+export const registerDevicePushTokenRequestSchema =
   z.object({
     platform: PushPlatformSchema,
     devicePushToken: z.string().min(10).max(4096),
     deviceId: z.string().uuid().optional(),
     appRole: PushAppRoleSchema.optional(),
   });
+export type RegisterDevicePushTokenRequest = z.infer<typeof registerDevicePushTokenRequestSchema>;
 
 /**
  * Unregister a native device push token.
  */
-export interface UnregisterDevicePushTokenRequest {
-  platform: PushPlatform;
-  devicePushToken: string;
-  deviceId?: string;
-  appRole?: PushAppRole;
-}
-
-export const unregisterDevicePushTokenRequestSchema: z.ZodType<UnregisterDevicePushTokenRequest> =
+export const unregisterDevicePushTokenRequestSchema =
   z.object({
     platform: PushPlatformSchema,
     devicePushToken: z.string().min(10).max(4096),
     deviceId: z.string().uuid().optional(),
     appRole: PushAppRoleSchema.optional(),
   });
+export type UnregisterDevicePushTokenRequest = z.infer<typeof unregisterDevicePushTokenRequestSchema>;

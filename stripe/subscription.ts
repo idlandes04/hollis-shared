@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { USER_TIERS, type UserTier } from "../domain/user";
+import { USER_TIERS } from "../domain/user";
 
 // ============================================================================
 // SUBSCRIPTION STATUS
@@ -104,62 +104,7 @@ export type BillingSource = z.infer<typeof BillingSourceSchema>;
 // SUBSCRIPTION CONTRACT
 // ============================================================================
 
-export interface SubscriptionContract {
-  id: string;
-  userId: string;
-
-  // Stripe IDs
-  stripeSubscriptionId: string;
-  stripeCustomerId: string;
-
-  // Membership
-  tier: UserTier;
-  status: SubscriptionStatus;
-
-  // Contract
-  contractDuration: ContractDuration;
-  contractStartDate: string; // ISO date
-  contractEndDate: string; // ISO date
-  discountPercent: number;
-
-  // Billing
-  billingSource: BillingSource;
-  billingOrganizationId: string | null;
-  monthlyPriceInCents: number;
-
-  // Current period
-  currentPeriodStart: string;
-  currentPeriodEnd: string;
-  billingAnchorDay: number;
-
-  // Grace period (7 days after failed payment)
-  isInGracePeriod: boolean;
-  gracePeriodEndsAt: string | null;
-
-  // Pause info
-  isPaused: boolean;
-  pausedAt: string | null;
-  pauseResumeDate: string | null;
-  pauseMonthsUsed: number;
-  pauseMonthsRemaining: number; // 6 - pauseMonthsUsed
-
-  // Cancellation
-  isCanceled: boolean;
-  canceledAt: string | null;
-  cancelEffectiveDate: string | null;
-
-  // Scheduled changes
-  scheduledTierChange: UserTier | null;
-  tierChangeEffectiveDate: string | null;
-
-  // Contract document
-  signedContractKey: string | null;
-
-  createdAt: string;
-  updatedAt: string;
-}
-
-export const SubscriptionSchema: z.ZodType<SubscriptionContract> = z.object({
+export const SubscriptionSchema = z.object({
   id: z.string().uuid(),
   /** userId uses HH-XXXXXX barcode format, not UUID */
   userId: z.string().min(1),
@@ -193,6 +138,7 @@ export const SubscriptionSchema: z.ZodType<SubscriptionContract> = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
 });
+export type SubscriptionContract = z.infer<typeof SubscriptionSchema>;
 
 // ============================================================================
 // CREATE SUBSCRIPTION REQUEST

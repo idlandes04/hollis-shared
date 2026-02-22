@@ -37,17 +37,7 @@ export const ADMIN_REALTIME_NOTIFICATION_KIND = {
   PATIENT_ASSIGNED: "patient-assigned" as AdminRealtimeNotificationKind,
 } as const;
 
-export interface AdminRealtimeNotificationEventData {
-  kind: AdminRealtimeNotificationKind;
-  /** The user who triggered the action (used to filter "not by me"). */
-  actorUserId?: string;
-  /** Patient/user ID the event relates to. */
-  patientId?: string;
-  /** Appointment ID (when applicable). */
-  appointmentId?: string;
-}
-
-export const adminRealtimeNotificationEventDataSchema: z.ZodType<AdminRealtimeNotificationEventData> =
+export const adminRealtimeNotificationEventDataSchema =
   z
     .object({
       kind: adminRealtimeNotificationKindSchema,
@@ -56,3 +46,4 @@ export const adminRealtimeNotificationEventDataSchema: z.ZodType<AdminRealtimeNo
       appointmentId: z.string().optional(),
     })
     .strict();
+export type AdminRealtimeNotificationEventData = z.infer<typeof adminRealtimeNotificationEventDataSchema>;

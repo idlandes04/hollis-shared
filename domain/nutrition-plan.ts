@@ -89,27 +89,9 @@ export const DailyNutritionTargetSchema = z.object({
  * Nutrition plan assigned by a coach to a patient.
  * Contains macro targets for a date range.
  *
- * Note: This interface aligns with the server's NutritionPlanContract in plansService.ts.
+ * Note: This type aligns with the server's NutritionPlanContract in plansService.ts.
  * The dailyTargets field allows for day-specific overrides of the plan defaults.
  */
-export interface NutritionPlanContract {
-  id: string;
-  userId: string;
-  startDate: string;
-  endDate?: string | null;
-  targetCalories: number;
-  targetProtein: number;
-  targetCarbs: number;
-  targetFats: number;
-  notes?: string | null;
-  /** Day-specific target overrides */
-  dailyTargets?: DailyNutritionTarget[];
-  /** Structured daily plan data (JSON from database) */
-  days?: NutritionPlanDay[] | null;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
 export const NutritionPlanSchema = z.object({
   id: z.string(),
   userId: z.string(),
@@ -126,6 +108,7 @@ export const NutritionPlanSchema = z.object({
   updatedAt: z.string().optional(),
 });
 export type NutritionPlan = z.infer<typeof NutritionPlanSchema>;
+export type NutritionPlanContract = z.infer<typeof NutritionPlanSchema>;
 
 // ============================================================================
 // NUTRITION TARGETS (Daily Targets)
@@ -135,6 +118,7 @@ export type NutritionPlan = z.infer<typeof NutritionPlanSchema>;
  * Daily nutrition targets for a user.
  * Used for progress tracking and goal display.
  */
+// schema-first-todo: Extended by DetailedNutritionContract; defer migration
 export interface NutritionTargetsContract {
   calories: number;
   protein: number;
@@ -162,6 +146,7 @@ export type NutritionTargets = z.infer<typeof NutritionTargetsSchema>;
  * Detailed nutrition with vitamins and minerals.
  * Extends base targets with micronutrients.
  */
+// schema-first-todo: Uses 'extends NutritionTargetsContract'; defer migration
 export interface DetailedNutritionContract extends NutritionTargetsContract {
   // Vitamins
   vitaminA?: number; // IU
@@ -238,13 +223,6 @@ export type DetailedNutrition = z.infer<typeof DetailedNutritionSchema>;
 /**
  * Progress toward a nutrition target.
  */
-export interface NutritionProgressContract {
-  current: number;
-  target: number;
-  percentage: number;
-  remaining: number;
-}
-
 export const NutritionProgressSchema = z.object({
   current: z.number(),
   target: z.number(),
@@ -252,6 +230,7 @@ export const NutritionProgressSchema = z.object({
   remaining: z.number().min(0),
 });
 export type NutritionProgress = z.infer<typeof NutritionProgressSchema>;
+export type NutritionProgressContract = z.infer<typeof NutritionProgressSchema>;
 
 // ============================================================================
 // UTILITY FUNCTIONS

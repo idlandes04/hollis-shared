@@ -415,6 +415,7 @@ export type DailyNutritionLogContract = z.infer<typeof DailyNutritionLogSchema>;
 // FOOD ITEM CONTRACT
 // ============================================================================
 
+// schema-first-todo: vitamins/minerals field type mismatch (interface: Record<string, number|undefined> vs schema: Record<string, number>); defer migration
 export interface FoodItemContract {
   name: string;
   brand?: string;

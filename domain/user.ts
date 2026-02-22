@@ -283,6 +283,26 @@ export function isPremiumTier(tier: string | undefined | null): boolean {
 }
 
 // ============================================================================
+// MEMBERSHIP CONTRACT
+// ============================================================================
+
+/**
+ * Canonical membership contract for user-tier membership records.
+ * Used by server aggregation (UserFullData) and admin views.
+ */
+export const MembershipContractSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  tier: UserTierSchema,
+  startedAt: z.string(),
+  endedAt: z.string().nullable(),
+  notes: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+export type MembershipContract = z.infer<typeof MembershipContractSchema>;
+
+// ============================================================================
 // BIOLOGICAL SEX
 // ============================================================================
 

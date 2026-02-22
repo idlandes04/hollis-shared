@@ -13,10 +13,9 @@
  */
 
 import { z } from "zod";
-import { VolumeLevelSchema, type VolumeLevel } from "../primitives";
+import { VolumeLevelSchema } from "../primitives";
 import {
     MetricDefinitionSummarySchema,
-    type MetricDefinitionSummary,
 } from "./metric-definition";
 
 // ============================================================================
@@ -280,25 +279,7 @@ export function isWorkoutType(value: string): value is WorkoutType {
 /**
  * Training phase contract - represents a phase within a training strategy.
  */
-export interface TrainingPhaseContract {
-  id: string;
-  strategyId: string;
-  name: string;
-  order: number;
-  weekCount: number;
-  intensityRange?: string;
-  volumeLevel?: VolumeLevel;
-  focusAreas: string[];
-  notes?: string;
-  startDate?: string; // IsoDateString
-  endDate?: string; // IsoDateString
-  isActive: boolean;
-  isCompleted: boolean;
-  createdAt: string; // IsoTimestampString
-  updatedAt: string; // IsoTimestampString
-}
-
-export const TrainingPhaseSchema: z.ZodType<TrainingPhaseContract> = z.object({
+export const TrainingPhaseSchema = z.object({
   id: z.string().uuid(),
   strategyId: z.string().uuid(),
   name: z.string().min(1),
@@ -315,42 +296,7 @@ export const TrainingPhaseSchema: z.ZodType<TrainingPhaseContract> = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
 });
-
-// ============================================================================
-// TRAINING STRATEGY CONTRACT
-// ============================================================================
-
-/**
- * Training strategy contract - represents a complete training program.
- */
-export interface TrainingStrategyContract {
-  id: string;
-  /**
-   * User identifier in HH-XXXXXX barcode format.
-   * References the patient this strategy is for.
-   *
-   * @format HH-XXXXXX
-   */
-  userId: string;
-  name: string;
-  description?: string;
-  strategyType: StrategyType;
-  status: StrategyStatus;
-  goalCategory: GoalCategory;
-  startDate: string; // IsoDateString
-  endDate?: string; // IsoDateString
-  targetWeeks: number;
-  currentWeek?: number;
-  phases: TrainingPhaseContract[];
-  goals?: StrategyGoalContract[];
-  overallProgress?: number;
-  isAIGenerated?: boolean;
-  aiPrompt?: string;
-  notes?: string;
-  tags?: string[];
-  createdAt: string; // IsoTimestampString
-  updatedAt: string; // IsoTimestampString
-}
+export type TrainingPhaseContract = z.infer<typeof TrainingPhaseSchema>;
 
 // ============================================================================
 // STRATEGY GOALS
@@ -359,31 +305,7 @@ export interface TrainingStrategyContract {
 /**
  * Strategy goal contract - represents a measurable goal within a training strategy.
  */
-export interface StrategyGoalContract {
-  id: string;
-  strategyId: string;
-  goalMetric: string;
-  goalTarget: number;
-  baselineValue?: number;
-  currentValue?: number;
-  progressPercent?: number;
-  weight?: number;
-  linkedExerciseId?: string;
-  dynamicMetricDefinition?: {
-    dataSource: "lab" | "biometric";
-    dataKey: string;
-    label: string;
-    unit: string;
-    direction: string;
-    category: string;
-  };
-  /** Server-enriched metric metadata (Phase 3 migration). Optional for backward compat. */
-  metricDefinition?: MetricDefinitionSummary | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export const StrategyGoalSchema: z.ZodType<StrategyGoalContract> = z.object({
+export const StrategyGoalSchema = z.object({
   id: z.string().uuid(),
   strategyId: z.string().uuid(),
   goalMetric: z.string(),
@@ -408,8 +330,16 @@ export const StrategyGoalSchema: z.ZodType<StrategyGoalContract> = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
 });
+export type StrategyGoalContract = z.infer<typeof StrategyGoalSchema>;
 
-export const TrainingStrategySchema: z.ZodType<TrainingStrategyContract> =
+// ============================================================================
+// TRAINING STRATEGY CONTRACT
+// ============================================================================
+
+/**
+ * Training strategy contract - represents a complete training program.
+ */
+export const TrainingStrategySchema =
   z.object({
     id: z.string().uuid(),
     userId: z.string(),
@@ -432,6 +362,7 @@ export const TrainingStrategySchema: z.ZodType<TrainingStrategyContract> =
     createdAt: z.string(),
     updatedAt: z.string(),
   });
+export type TrainingStrategyContract = z.infer<typeof TrainingStrategySchema>;
 
 // ============================================================================
 // STRATEGY GENERATION PHASES (AI Generation Progress)

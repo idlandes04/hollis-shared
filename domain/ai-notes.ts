@@ -5,9 +5,7 @@ import { z } from "zod";
 import {
     baseDocumentSchema,
     isoDateSchema,
-    IsoDateString,
     isoTimestampSchema,
-    IsoTimestampString,
 } from "./common";
 
 // ============================================================================
@@ -127,17 +125,7 @@ export function getAINoteCategoryLabel(category: string): string {
  * Workout session notes - temporary context for specific workout sessions.
  * Used to capture user feedback, modifications, and observations during workouts.
  */
-export interface WorkoutSessionNoteContract {
-  id: string;
-  userId: string;
-  workoutPlanId?: string;
-  workoutDate: IsoDateString;
-  content: string;
-  createdAt: IsoTimestampString;
-  updatedAt: IsoTimestampString;
-}
-
-export const workoutSessionNoteSchema: z.ZodType<WorkoutSessionNoteContract> =
+export const workoutSessionNoteSchema =
   baseDocumentSchema.extend({
     id: z.string(),
     userId: z.string(),
@@ -145,6 +133,7 @@ export const workoutSessionNoteSchema: z.ZodType<WorkoutSessionNoteContract> =
     workoutDate: isoDateSchema,
     content: z.string().min(1),
   });
+export type WorkoutSessionNoteContract = z.infer<typeof workoutSessionNoteSchema>;
 
 // ============================================================================
 // SMART ASSIST PERMANENT NOTE
@@ -154,18 +143,7 @@ export const workoutSessionNoteSchema: z.ZodType<WorkoutSessionNoteContract> =
  * Smart Assist permanent notes - long-term context about user preferences, limitations, and conditions.
  * Used by Smart Assist systems to personalize workout and diet recommendations.
  */
-export interface AIPermanentNoteContract {
-  id: string;
-  userId: string;
-  content: string;
-  category: AINoteCategory;
-  source?: string; // Which workout/date/event triggered this note
-  sourceType?: AINoteSourceType; // Origin classification for trust level
-  createdAt: IsoTimestampString;
-  updatedAt: IsoTimestampString;
-}
-
-export const aiPermanentNoteSchema: z.ZodType<AIPermanentNoteContract> =
+export const aiPermanentNoteSchema =
   baseDocumentSchema.extend({
     id: z.string(),
     userId: z.string(),
@@ -174,6 +152,7 @@ export const aiPermanentNoteSchema: z.ZodType<AIPermanentNoteContract> =
     source: z.string().optional(),
     sourceType: AINoteSourceTypeSchema.optional(),
   });
+export type AIPermanentNoteContract = z.infer<typeof aiPermanentNoteSchema>;
 
 // ============================================================================
 // SMART ASSIST CONTEXT (AGGREGATED)
@@ -183,27 +162,7 @@ export const aiPermanentNoteSchema: z.ZodType<AIPermanentNoteContract> =
  * Aggregated Smart Assist context for inference - combines relevant user data for processing.
  * This is the payload sent to Smart Assist services for personalized recommendations.
  */
-export interface AIContextContract {
-  userId: string;
-  /** Recent workout session notes (last N days) */
-  recentSessionNotes: WorkoutSessionNoteContract[];
-  /** All permanent notes for the user */
-  permanentNotes: AIPermanentNoteContract[];
-  /** User's clinical limitations from profile */
-  clinicalLimitations?: string[];
-  /** User's medical notes from profile */
-  medicalNotes?: string;
-  /** User's current goals */
-  goals?: string[];
-  /** User's preferences */
-  preferences?: string[];
-  /** Context window in days for recent data */
-  contextWindowDays: number;
-  /** Timestamp when this context was generated */
-  generatedAt: IsoTimestampString;
-}
-
-export const aiContextSchema: z.ZodType<AIContextContract> = z.object({
+export const aiContextSchema = z.object({
   userId: z.string(),
   recentSessionNotes: z.array(workoutSessionNoteSchema),
   permanentNotes: z.array(aiPermanentNoteSchema),
@@ -214,6 +173,7 @@ export const aiContextSchema: z.ZodType<AIContextContract> = z.object({
   contextWindowDays: z.number().int().min(1),
   generatedAt: isoTimestampSchema,
 });
+export type AIContextContract = z.infer<typeof aiContextSchema>;
 
 // ============================================================================
 // MOCK FACTORIES
