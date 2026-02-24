@@ -9,37 +9,51 @@
  */
 
 // Imports for aggregated API_ROUTES object
-import { ADMIN_ROUTE_METADATA, ADMIN_ROUTES, CRM_ROUTES, DOCUMENTS_ROUTES, UPLOAD_ROUTES } from './admin';
-import { APPOINTMENTS_ROUTES, PROVIDERS_ROUTES } from './appointments';
-import { AUTH_ROUTES } from './auth';
-import { BIOMETRICS_ROUTES } from './biometrics';
-import { LABS_ROUTES } from './labs';
-import { MESSAGES_ROUTES, PUSH_ROUTES, SSE_ROUTES } from './messaging';
-import { ASSIGNMENT_ROUTES, MFA_ROUTES } from './mfa';
-import { NUTRITION_ROUTES } from './nutrition';
-import { DAILY_METRICS_ROUTES, DAILY_SUMMARY_ROUTES, JOURNAL_ROUTES, SESSIONS_ROUTES, USER_ROUTES } from './users';
-import { PLANS_ROUTES, STRATEGIES_ROUTES } from './workouts';
+import {
+    ADMIN_ROUTE_METADATA,
+    ADMIN_ROUTES,
+    CRM_ROUTES,
+    DOCUMENTS_ROUTES,
+    UPLOAD_ROUTES,
+} from "./admin";
+import { APPOINTMENTS_ROUTES, PROVIDERS_ROUTES } from "./appointments";
+import { AUTH_ROUTES } from "./auth";
+import { BIOMETRICS_ROUTES } from "./biometrics";
+import { HEALTH_METRICS_ROUTES } from "./health-metrics";
+import { LABS_ROUTES } from "./labs";
+import { MESSAGES_ROUTES, PUSH_ROUTES, SSE_ROUTES } from "./messaging";
+import { ASSIGNMENT_ROUTES, MFA_ROUTES } from "./mfa";
+import { NUTRITION_ROUTES } from "./nutrition";
+import {
+    DAILY_METRICS_ROUTES,
+    DAILY_SUMMARY_ROUTES,
+    JOURNAL_ROUTES,
+    SESSIONS_ROUTES,
+    USER_ROUTES,
+} from "./users";
+import { PLANS_ROUTES, STRATEGIES_ROUTES } from "./workouts";
 
-import type { RouteMetadata } from './types';
+import type { RouteMetadata } from "./types";
 
 // Type definitions
-export * from './types';
+export * from "./types";
 
 // Domain-specific routes
-export * from './admin';
-export * from './ai';
-export * from './appointments';
-export * from './auth';
-export * from './biometrics';
-export * from './labs';
-export * from './messaging';
-export * from './mfa';
-export * from './nutrition';
-export * from './users';
-export * from './workouts';
+export * from "./admin";
+export * from "./ai";
+export * from "./appointments";
+export * from "./auth";
+export * from "./biometrics";
+export * from "./health-metrics";
+export * from "./labs";
+export * from "./messaging";
+export * from "./mfa";
+export * from "./nutrition";
+export * from "./users";
+export * from "./workouts";
 
 // Utility functions
-export * from './utils';
+export * from "./utils";
 
 // ============================================================================
 // AGGREGATED API ROUTES
@@ -66,6 +80,7 @@ export const API_ROUTES = {
   DAILY_METRICS: DAILY_METRICS_ROUTES,
   DAILY_SUMMARY: DAILY_SUMMARY_ROUTES,
   BIOMETRICS: BIOMETRICS_ROUTES,
+  HEALTH_METRICS: HEALTH_METRICS_ROUTES,
   JOURNAL: JOURNAL_ROUTES,
   NUTRITION: NUTRITION_ROUTES,
   PLANS: PLANS_ROUTES,
@@ -99,43 +114,43 @@ export const API_ROUTES = {
 export const ROUTE_METADATA: Record<string, RouteMetadata> = {
   // Auth routes
   [AUTH_ROUTES.LOGIN]: {
-    method: 'POST',
-    description: 'Authenticate user with email/password',
+    method: "POST",
+    description: "Authenticate user with email/password",
     requiresAuth: false,
   },
   [AUTH_ROUTES.SIGNUP]: {
-    method: 'POST',
-    description: 'Create new user account with password',
+    method: "POST",
+    description: "Create new user account with password",
     requiresAuth: false,
   },
   [AUTH_ROUTES.REFRESH]: {
-    method: 'POST',
-    description: 'Refresh access token using refresh token',
+    method: "POST",
+    description: "Refresh access token using refresh token",
     requiresAuth: false,
   },
   [AUTH_ROUTES.LINK]: {
-    method: 'POST',
-    description: 'Link OAuth credentials to existing account',
+    method: "POST",
+    description: "Link OAuth credentials to existing account",
     requiresAuth: true,
   },
   [AUTH_ROUTES.LOGOUT]: {
-    method: 'POST',
-    description: 'Sign out current session',
+    method: "POST",
+    description: "Sign out current session",
     requiresAuth: true,
   },
   [AUTH_ROUTES.FORGOT_PASSWORD]: {
-    method: 'POST',
-    description: 'Request password reset email (rate limited)',
+    method: "POST",
+    description: "Request password reset email (rate limited)",
     requiresAuth: false,
   },
   [AUTH_ROUTES.RESET_PASSWORD]: {
-    method: 'POST',
-    description: 'Reset password using token from email',
+    method: "POST",
+    description: "Reset password using token from email",
     requiresAuth: false,
   },
   [AUTH_ROUTES.CHANGE_PASSWORD]: {
-    method: 'POST',
-    description: 'Change password for authenticated user',
+    method: "POST",
+    description: "Change password for authenticated user",
     requiresAuth: true,
   },
   // Include admin route metadata

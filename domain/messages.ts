@@ -16,6 +16,13 @@ import { z } from "zod";
 import type { MessagingRecipientRole } from "./user";
 
 // ============================================================================
+// CONSTANTS
+// ============================================================================
+
+/** Canonical max length for message content — all surfaces MUST use this. */
+export const MESSAGE_MAX_LENGTH = 5000 as const;
+
+// ============================================================================
 // MESSAGE SCHEMA
 // ============================================================================
 
@@ -23,7 +30,7 @@ export const MessageSchema = z.object({
   id: z.string(),
   senderId: z.string(),
   receiverId: z.string(),
-  content: z.string().max(10000),
+  content: z.string().max(MESSAGE_MAX_LENGTH),
   attachmentUrl: z.string().nullable().optional(),
   isRead: z.boolean().default(false),
   createdAt: z.string(), // ISO timestamp
@@ -81,7 +88,7 @@ export type ConversationContract = z.infer<typeof ConversationSchema>;
 export const SendMessageRequestSchema = z.object({
   senderId: z.string(),
   receiverId: z.string(),
-  content: z.string().max(10000),
+  content: z.string().max(MESSAGE_MAX_LENGTH),
   attachmentUrl: z.string().optional(),
 });
 

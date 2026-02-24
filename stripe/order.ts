@@ -49,16 +49,6 @@ export type FulfillmentStatus = z.infer<typeof FulfillmentStatusSchema>;
 // ORDER ITEM
 // ============================================================================
 
-export interface OrderItemContract {
-  id: string;
-  productId: string;
-  productName: string;
-  productImageUrl: string | null;
-  quantity: number;
-  unitPriceInCents: number;
-  totalInCents: number;
-}
-
 export const OrderItemSchema = z.object({
   id: z.string().uuid(),
   productId: z.string().uuid(),
@@ -68,20 +58,13 @@ export const OrderItemSchema = z.object({
   unitPriceInCents: z.number().int(),
   totalInCents: z.number().int(),
 });
-export type OrderItem = z.infer<typeof OrderItemSchema>;
+export type OrderItemContract = z.infer<typeof OrderItemSchema>;
+/** @deprecated Use OrderItemContract */
+export type OrderItem = OrderItemContract;
 
 // ============================================================================
 // SHIPPING ADDRESS
 // ============================================================================
-
-export interface ShippingAddressContract {
-  line1: string;
-  line2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-}
 
 export const ShippingAddressSchema = z.object({
   line1: z.string(),
@@ -91,7 +74,9 @@ export const ShippingAddressSchema = z.object({
   postalCode: z.string(),
   country: z.string(),
 });
-export type ShippingAddress = z.infer<typeof ShippingAddressSchema>;
+export type ShippingAddressContract = z.infer<typeof ShippingAddressSchema>;
+/** @deprecated Use ShippingAddressContract */
+export type ShippingAddress = ShippingAddressContract;
 
 // ============================================================================
 // ORDER

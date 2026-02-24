@@ -20,6 +20,7 @@ import {
     LegacyGoalDataSourceSchema,
     PregnancyStatusSchema,
     PrimaryGoalSchema,
+    RegistrationStatusSchema,
     StrategyStatusSchema,
     StrategyTypeSchema,
     UserRoleSchema,
@@ -69,6 +70,7 @@ export const injuryRecoveryStatusSchema = z.enum([
   "healed",
   "chronic",
 ]);
+// Type exported from domain/clinical.ts — do not re-export here to avoid TS2308
 
 /**
  * Medical condition status schema.
@@ -98,6 +100,33 @@ export const patientSummarySchema = z.object({
   lastLog: z.string(),
 });
 export type PatientSummary = z.infer<typeof patientSummarySchema>;
+
+/**
+ * Admin patient document summary schema used by patient detail responses.
+ */
+export const patientDocumentSummarySchema = z.object({
+  id: z.string(),
+  name: z.string().min(1).max(255),
+  type: z.string().min(1).max(100),
+  url: z.string().url(),
+  uploadedAt: z.string(),
+});
+export type PatientDocumentSummary = z.infer<
+  typeof patientDocumentSummarySchema
+>;
+
+/**
+ * Admin patient membership summary schema used by patient detail responses.
+ */
+export const patientMembershipSummarySchema = z.object({
+  id: z.string(),
+  tier: UserTierSchema,
+  startDate: z.string(),
+  endDate: z.string().optional(),
+});
+export type PatientMembershipSummary = z.infer<
+  typeof patientMembershipSummarySchema
+>;
 
 /**
  * Admin medication schema.
@@ -267,6 +296,10 @@ export type ProviderScheduleData = z.infer<typeof providerScheduleDataSchema>;
 
 /**
  * Prefilled profile schema.
+ *
+ * Key names MUST match the keys read by the signup route (auth.ts):
+ * - `biologicalSex` (was `sex` — renamed for consistency with ClinicalProfile)
+ * - `primaryGoal`   (was `goals` — renamed for consistency with ClinicalProfile)
  */
 export const prefilledProfileSchema = z.object({
   firstName: z.string().max(100).optional(),
@@ -275,8 +308,8 @@ export const prefilledProfileSchema = z.object({
   heightCm: z.number().positive().max(300).optional(),
   weightKg: z.number().positive().max(700).optional(),
   dateOfBirth: isoDateSchema.optional(),
-  sex: BiologicalSexSchema.optional(),
-  goals: z.string().max(1000).optional(),
+  biologicalSex: BiologicalSexSchema.optional(),
+  primaryGoal: z.string().max(1000).optional(),
   /** Set by admin when rejecting a registration */
   rejectionReason: z.string().optional(),
   /** ISO timestamp when admin rejected the registration */
@@ -296,6 +329,7 @@ export const registeredUserSchema = z.object({
   isRegistered: z.boolean(),
   registrationExpiresAt: z.string(),
   createdAt: z.string(),
+  status: RegistrationStatusSchema,
   registeredBy: z
     .object({
       id: z.string(),
@@ -337,6 +371,7 @@ export const createPhaseInputSchema = z.object({
   isActive: z.boolean(),
   isCompleted: z.boolean(),
 });
+// Type exported from admin-types.ts — do not re-export here to avoid TS2308
 
 /**
  * Create goal input schema.
@@ -363,6 +398,7 @@ export const createGoalInputSchema = z.object({
     })
     .optional(),
 });
+// Type exported from admin-types.ts — do not re-export here to avoid TS2308
 
 /**
  * Update goal input schema.
@@ -372,7 +408,10 @@ export const updateGoalInputSchema = z.object({
   baselineValue: z.number().optional(),
   currentValue: z.number().optional(),
   weight: z.number().min(0).max(1).optional(),
+  /** Optional clinician notes about this metric update. */
+  notes: z.string().max(2000).optional(),
 });
+// Type exported from admin-types.ts — do not re-export here to avoid TS2308
 
 /**
  * Create strategy input schema.
@@ -388,6 +427,7 @@ export const createStrategyInputSchema = z.object({
   goals: z.array(createGoalInputSchema),
   phases: z.array(createPhaseInputSchema).optional(),
 });
+// Type exported from admin-types.ts — do not re-export here to avoid TS2308
 
 /**
  * Fetch value request schema.
@@ -475,6 +515,8 @@ export const workoutPlanGenerationParamsSchema = z.object({
   customPrompt: z.string().max(5000).optional(),
   overwriteMode: z.enum(["overwrite", "fillEmpty"]).optional(),
 });
+
+// Type exported from admin-types.ts — do not re-export here to avoid TS2308
 
 // ============================================================================
 // NUTRITION GENERATION SCHEMAS
@@ -622,6 +664,7 @@ export const labObservationInputSchema = z.object({
   notes: z.string().max(2000).nullable().optional(),
   tags: z.array(z.string().max(100)).nullable().optional(),
 });
+// Type exported from admin-types.ts — do not re-export here to avoid TS2308
 
 export const createLabReportPayloadSchema = z.object({
   reportDate: isoDateSchema,

@@ -8,22 +8,22 @@
  * deps: zod, ./subscription, ./payment, ./order | consumers: server/routes/account, mobile, web-public
  */
 
-import { z } from 'zod';
-import { USER_TIERS } from '../domain/user';
+import { z } from "zod";
+import { USER_TIERS } from "../domain/user";
 import {
-  BillingSourceSchema,
-  ContractDurationSchema,
-  SubscriptionStatusSchema,
-  type SubscriptionContract,
-} from './subscription';
+    FulfillmentStatusSchema,
+    OrderItemSchema,
+    OrderPaymentStatusSchema,
+    ShippingAddressSchema,
+    type OrderContract,
+} from "./order";
+import type { PaymentMethodContract } from "./payment";
 import {
-  FulfillmentStatusSchema,
-  OrderItemSchema,
-  OrderPaymentStatusSchema,
-  ShippingAddressSchema,
-  type OrderContract,
-} from './order';
-import type { PaymentMethodContract } from './payment';
+    BillingSourceSchema,
+    ContractDurationSchema,
+    SubscriptionStatusSchema,
+    type SubscriptionContract,
+} from "./subscription";
 
 // ============================================================================
 // CUSTOMER SUBSCRIPTION (strips Stripe IDs, signed contract key)
@@ -54,19 +54,13 @@ export const CustomerSubscriptionSchema = z.object({
   tierChangeEffectiveDate: z.string().nullable(),
   createdAt: z.string(),
 });
-export type CustomerSubscriptionContract = z.infer<typeof CustomerSubscriptionSchema>;
+export type CustomerSubscriptionContract = z.infer<
+  typeof CustomerSubscriptionSchema
+>;
 
 // ============================================================================
 // CUSTOMER PAYMENT METHOD (strips Stripe PM id)
 // ============================================================================
-
-export interface CustomerPaymentMethodContract {
-  brand: string;
-  last4: string;
-  expMonth: number;
-  expYear: number;
-  isDefault: boolean;
-}
 
 export const CustomerPaymentMethodSchema = z.object({
   brand: z.string(),
@@ -75,7 +69,11 @@ export const CustomerPaymentMethodSchema = z.object({
   expYear: z.number().int(),
   isDefault: z.boolean(),
 });
-export type CustomerPaymentMethod = z.infer<typeof CustomerPaymentMethodSchema>;
+export type CustomerPaymentMethodContract = z.infer<
+  typeof CustomerPaymentMethodSchema
+>;
+/** @deprecated Use CustomerPaymentMethodContract */
+export type CustomerPaymentMethod = CustomerPaymentMethodContract;
 
 // ============================================================================
 // CUSTOMER ORDER (strips userId)
@@ -110,7 +108,9 @@ export type CustomerOrderContract = z.infer<typeof CustomerOrderSchema>;
 // ============================================================================
 
 /** Strip internal fields from a SubscriptionContract for customer display */
-export function toCustomerSubscription(sub: SubscriptionContract): CustomerSubscriptionContract {
+export function toCustomerSubscription(
+  sub: SubscriptionContract,
+): CustomerSubscriptionContract {
   return {
     id: sub.id,
     tier: sub.tier,
@@ -139,7 +139,9 @@ export function toCustomerSubscription(sub: SubscriptionContract): CustomerSubsc
 }
 
 /** Strip Stripe PM id from a PaymentMethodContract for customer display */
-export function toCustomerPaymentMethod(pm: PaymentMethodContract): CustomerPaymentMethodContract {
+export function toCustomerPaymentMethod(
+  pm: PaymentMethodContract,
+): CustomerPaymentMethodContract {
   return {
     brand: pm.brand,
     last4: pm.last4,

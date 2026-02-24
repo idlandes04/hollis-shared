@@ -254,16 +254,18 @@ export const WATER_UNIT = {
 // ADVANCED UNIT PREFERENCES TYPE
 // ============================================================================
 
-export interface AdvancedUnitPreferencesContract {
-  weight: "kg" | "lbs";
-  height: "cm" | "ft_in";
-  foodWeight: "g" | "oz" | "lbs";
-  foodVolume: "ml" | "fl_oz" | "cups" | "tbsp" | "tsp";
-  calories: "kcal" | "kj";
-  exerciseWeight: "kg" | "lbs";
-  distance: "km" | "mi" | "m" | "ft";
-  speed: "km_h" | "mph" | "m_s";
-  altitude: "m" | "ft";
-  temperature: "celsius" | "fahrenheit";
-  water: "ml" | "fl_oz" | "cups" | "l";
-}
+export const AdvancedUnitPreferencesSchema = z.object({
+  weight: WeightUnitSchema,
+  height: HeightUnitSchema,
+  foodWeight: FoodWeightUnitSchema,
+  foodVolume: FoodVolumeUnitSchema,
+  calories: CalorieUnitSchema,
+  exerciseWeight: WeightUnitSchema,
+  distance: DistanceUnitSchema,
+  speed: SpeedUnitSchema,
+  altitude: AltitudeUnitSchema,
+  temperature: TemperatureUnitSchema,
+  water: WaterUnitSchema,
+});
+
+export type AdvancedUnitPreferencesContract = z.infer<typeof AdvancedUnitPreferencesSchema>;

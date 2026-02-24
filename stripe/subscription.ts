@@ -110,6 +110,8 @@ export const SubscriptionSchema = z.object({
   userId: z.string().min(1),
   stripeSubscriptionId: z.string(),
   stripeCustomerId: z.string(),
+  /** @enrichment from Stripe */
+  stripePriceId: z.string().nullable().optional(),
   tier: z.enum(USER_TIERS),
   status: SubscriptionStatusSchema,
   contractDuration: ContractDurationSchema,
@@ -122,13 +124,17 @@ export const SubscriptionSchema = z.object({
   currentPeriodStart: z.string(),
   currentPeriodEnd: z.string(),
   billingAnchorDay: z.number().int().min(1).max(28),
+  /** @computed */
   isInGracePeriod: z.boolean(),
   gracePeriodEndsAt: z.string().nullable(),
+  /** @computed */
   isPaused: z.boolean(),
   pausedAt: z.string().nullable(),
   pauseResumeDate: z.string().nullable(),
   pauseMonthsUsed: z.number().int(),
+  /** @computed */
   pauseMonthsRemaining: z.number().int(),
+  /** @computed */
   isCanceled: z.boolean(),
   canceledAt: z.string().nullable(),
   cancelEffectiveDate: z.string().nullable(),
@@ -161,15 +167,6 @@ export type CreateSubscriptionRequest = z.infer<
 // EARLY TERMINATION QUOTE
 // ============================================================================
 
-export interface EarlyTerminationQuoteContract {
-  subscriptionId: string;
-  remainingMonths: number;
-  monthlyPriceInCents: number;
-  remainingDueInCents: number;
-  terminationFeeInCents: number; // 50% of remaining
-  effectiveImmediately: boolean;
-}
-
 export const EarlyTerminationQuoteSchema = z.object({
   subscriptionId: z.string().uuid(),
   remainingMonths: z.number(),
@@ -178,7 +175,11 @@ export const EarlyTerminationQuoteSchema = z.object({
   terminationFeeInCents: z.number().int(),
   effectiveImmediately: z.boolean(),
 });
-export type EarlyTerminationQuote = z.infer<typeof EarlyTerminationQuoteSchema>;
+export type EarlyTerminationQuoteContract = z.infer<
+  typeof EarlyTerminationQuoteSchema
+>;
+/** @deprecated Use EarlyTerminationQuoteContract */
+export type EarlyTerminationQuote = EarlyTerminationQuoteContract;
 
 // ============================================================================
 // PAUSE REQUEST
@@ -201,3 +202,39 @@ export const TierChangeRequestSchema = z.object({
   effectiveDate: z.string().optional(),
 });
 export type TierChangeRequest = z.infer<typeof TierChangeRequestSchema>;
+
+// ============================================================================
+// SUBSCRIPTION LIST
+// ============================================================================
+
+export const SubscriptionListParamsSchema = z.object({
+  status: z.string().optional(),
+  tier: z.string().optional(),
+  page: z.number().int().positive().optional(),
+  limit: z.number().int().positive().max(200).optional(),
+});
+export type SubscriptionListParams = z.infer<typeof SubscriptionListParamsSchema>;
+
+/**
+ * A subscription entry enriched with basic user info for the admin list view.
+ */
+export const SubscriptionListItemSchema = SubscriptionSchema.extend({
+  user: z.object({
+    id: z.string(),
+    email: z.string().email(),
+    firstName: z.string().nullable(),
+    lastName: z.string().nullable(),
+  }),
+});
+export type SubscriptionListItem = z.infer<typeof SubscriptionListItemSchema>;
+
+export const SubscriptionListResponseSchema = z.object({
+  subscriptions: z.array(SubscriptionListItemSchema),
+  pagination: z.object({
+    page: z.number().int(),
+    limit: z.number().int(),
+    total: z.number().int(),
+    pages: z.number().int(),
+  }),
+});
+export type SubscriptionListResponse = z.infer<typeof SubscriptionListResponseSchema>;

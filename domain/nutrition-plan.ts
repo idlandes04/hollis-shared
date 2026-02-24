@@ -102,12 +102,14 @@ export const NutritionPlanSchema = z.object({
   targetCarbs: z.number().int().min(0),
   targetFats: z.number().int().min(0),
   notes: z.string().nullish(),
+  /** @enrichment Computed from NutritionPlan macro targets. Not a Prisma column — populated server-side by aiPlanGenerationService / plansService. */
   dailyTargets: z.array(DailyNutritionTargetSchema).optional(),
   days: z.array(nutritionPlanDaySchema).nullish(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
 });
 export type NutritionPlan = z.infer<typeof NutritionPlanSchema>;
+/** @deprecated Use NutritionPlan instead. Will be removed after 2026-06-01. */
 export type NutritionPlanContract = z.infer<typeof NutritionPlanSchema>;
 
 // ============================================================================
@@ -117,18 +119,10 @@ export type NutritionPlanContract = z.infer<typeof NutritionPlanSchema>;
 /**
  * Daily nutrition targets for a user.
  * Used for progress tracking and goal display.
+ * Derived from NutritionTargetsSchema for schema↔type consistency.
+ * @deprecated Use NutritionTargets instead. Will be removed after 2026-06-01.
  */
-// schema-first-todo: Extended by DetailedNutritionContract; defer migration
-export interface NutritionTargetsContract {
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  fiber?: number;
-  sugar?: number;
-  sodium?: number;
-  water?: number; // in ml
-}
+export type NutritionTargetsContract = z.infer<typeof NutritionTargetsSchema>;
 
 export const NutritionTargetsSchema = z.object({
   calories: z.number().int().min(0),
@@ -145,42 +139,13 @@ export type NutritionTargets = z.infer<typeof NutritionTargetsSchema>;
 /**
  * Detailed nutrition with vitamins and minerals.
  * Extends base targets with micronutrients.
+ * Derived from DetailedNutritionSchema for schema↔type consistency.
+ *
+ * Note: Schema uses `.optional().nullable()` for micronutrients,
+ * so fields are `number | null | undefined` (vs just `number | undefined` previously).
+ * @deprecated Use DetailedNutrition instead. Will be removed after 2026-06-01.
  */
-// schema-first-todo: Uses 'extends NutritionTargetsContract'; defer migration
-export interface DetailedNutritionContract extends NutritionTargetsContract {
-  // Vitamins
-  vitaminA?: number; // IU
-  vitaminC?: number; // mg
-  vitaminD?: number; // IU
-  vitaminE?: number; // mg
-  vitaminK?: number; // mcg
-  thiamine?: number; // mg
-  riboflavin?: number; // mg
-  niacin?: number; // mg
-  vitaminB6?: number; // mg
-  folate?: number; // mcg
-  vitaminB12?: number; // mcg
-  biotin?: number; // mcg
-  pantothenicAcid?: number; // mg
-
-  // Minerals
-  calcium?: number; // mg
-  iron?: number; // mg
-  magnesium?: number; // mg
-  phosphorus?: number; // mg
-  potassium?: number; // mg
-  zinc?: number; // mg
-  copper?: number; // mg
-  manganese?: number; // mg
-  selenium?: number; // mcg
-  chromium?: number; // mcg
-  molybdenum?: number; // mcg
-
-  // Other
-  cholesterol?: number; // mg
-  alcohol?: number; // g
-  caffeine?: number; // mg
-}
+export type DetailedNutritionContract = z.infer<typeof DetailedNutritionSchema>;
 
 export const DetailedNutritionSchema = NutritionTargetsSchema.extend({
   // Vitamins
@@ -230,6 +195,7 @@ export const NutritionProgressSchema = z.object({
   remaining: z.number().min(0),
 });
 export type NutritionProgress = z.infer<typeof NutritionProgressSchema>;
+/** @deprecated Use NutritionProgress instead. Will be removed after 2026-06-01. */
 export type NutritionProgressContract = z.infer<typeof NutritionProgressSchema>;
 
 // ============================================================================

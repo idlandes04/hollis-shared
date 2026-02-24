@@ -142,7 +142,12 @@ export function canManageRegistrations(
   return role === USER_ROLE.ADMIN;
 }
 
-/** Human-readable labels for user roles */
+/**
+ * Human-readable labels for user roles.
+ * Note: CLIENT is intentionally "Client" here (formal role reference in matrices/tables).
+ * ROLE_BADGE_CONFIG.CLIENT uses "Patient" for patient-facing UI display contexts.
+ * Do not unify these — the divergence is intentional.
+ */
 export const USER_ROLE_LABELS: Record<UserRole, string> = {
   ADMIN: "Admin",
   CLINICIAN: "Clinician",
@@ -177,6 +182,7 @@ const ROLE_BADGE_COLORS = {
 
 /**
  * Role badge configuration mapped by user role.
+ * @deprecated - use ROLE_BADGE_CONFIG from @contracts (src/contracts/commonEnums.ts); this has hardcoded hex values
  */
 export const ROLE_BADGE_CONFIG: Record<UserRole, RoleBadge> = {
   ADMIN: {
@@ -227,8 +233,8 @@ export function getRoleBadge(
 /**
  * Membership tiers for Hollis Health.
  * - ESSENTIALS ($799/mo): 4 fitness sessions, basic clinical access
- * - CORE ($1199/mo): 8 fitness sessions, enhanced clinical access
- * - CONCIERGE ($1699/mo): 16 fitness sessions, full clinical access
+ * - CORE ($1349/mo): 8 fitness sessions, enhanced clinical access
+ * - CONCIERGE ($1999/mo): 16 fitness sessions, full clinical access
  */
 export const USER_TIERS = ["ESSENTIALS", "CORE", "CONCIERGE"] as const;
 
@@ -671,9 +677,11 @@ export const MESSAGE_RECIPIENT_ROLE_LABELS: Record<
  * User profile contract - core user profile information.
  */
 export const UserProfileSchema = z.object({
+  /** @deprecated Use `userId` instead. Alias for backward compatibility. */
   id: z.string().optional(),
   userId: z.string().max(20),
   email: z.string().email().max(255),
+  /** @computed Assembled from User.firstName + " " + User.lastName, falls back to email if both are null */
   fullName: z.string().min(1).max(200),
   preferredName: z.string().optional(),
   role: UserRoleSchema.optional(),
@@ -691,6 +699,7 @@ export const UserProfileSchema = z.object({
   calculatedPregnancyStatus: PregnancyStatusSchema.nullable().optional(),
   heightCm: z.number().min(0).max(300).optional(),
   /**
+   * @computed Latest BiometricEntry for weight metric, falls back to ClinicalProfile.startWeight
    * Current weight in kilograms. Updated as new measurements are taken.
    * Distinct from Prisma's `startWeight` which captures the initial onboarding weight.
    * Requires null-safe access — may be absent for users who haven't set a weight.
@@ -702,7 +711,7 @@ export const UserProfileSchema = z.object({
   timezone: z.string().optional(),
   /** Assigned clinician ID. Null when no clinician is assigned. */
   assignedClinicianId: z.string().nullable().optional(),
-  /** Assigned trainer ID. Null when no trainer is assigned. */
+  /** @computed Primary active TrainerAssignment.trainerId for this user. Null when no trainer is assigned. */
   assignedTrainerId: z.string().nullable().optional(),
   medications: z.array(medicationSchema).optional(),
   limitations: z.array(limitationSchema).optional(),
@@ -767,6 +776,7 @@ export const UserMetricsSchema = z.object({
   workoutStreak: z.number().optional(),
   loggingStreak: z.number().optional(),
   adherenceScore: z.number().optional(),
+  /** @computed Set at serialization time from the most recent metric update. */
   lastUpdated: z.string(),
 });
 
@@ -993,9 +1003,16 @@ export const createMockUserAccount = (
 // PREFERENCES SCHEMAS
 // ============================================================================
 
-export const timeOfDaySchema = z
+/**
+ * HH:MM 24-hour time string (e.g., "09:30", "23:59").
+ * Used for notification times, schedule times, etc.
+ */
+export const timeStringSchema = z
   .string()
-  .regex(/^([01]\d|2[0-3]):[0-5]\d$/u, "Must be HH:mm (24h) time string");
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/u, "Time must be in HH:MM 24-hour format");
+export type TimeString = z.infer<typeof timeStringSchema>;
+
+export const timeOfDaySchema = timeStringSchema;
 export type TimeOfDay = z.infer<typeof timeOfDaySchema>;
 
 export const advancedUnitPreferencesSchema = z.object({
@@ -1138,10 +1155,7 @@ export const UserPreferencesSchema = z.object({
   dashboardSections: dashboardSectionsSchema.optional(),
   hiddenDashboardCards: z.array(z.string()).optional(),
   eveningReminderEnabled: z.boolean().optional(),
-  eveningReminderTime: z
-    .string()
-    .regex(/^([01]\d|2[0-3]):[0-5]\d$/u, "Must be HH:mm format (00:00-23:59)")
-    .optional(),
+  eveningReminderTime: timeStringSchema.optional(),
   customReminderMessage: z.string().max(120).optional(),
   createdAt: z.string(),
   updatedAt: z.string(),

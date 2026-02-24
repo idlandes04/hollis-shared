@@ -208,6 +208,22 @@ export const DIFFICULTY_LEVEL_LABELS: Record<DifficultyLevel, string> = {
   EXPERT: "Expert",
 };
 
+// Prisma-aligned aliases for ExerciseDifficulty enum
+export const EXERCISE_DIFFICULTIES = [
+  "BEGINNER",
+  "INTERMEDIATE",
+  "ADVANCED",
+  "EXPERT",
+] as const;
+export type ExerciseDifficulty = (typeof EXERCISE_DIFFICULTIES)[number];
+export const exerciseDifficultySchema = z.enum(EXERCISE_DIFFICULTIES);
+export const EXERCISE_DIFFICULTY = {
+  BEGINNER: "BEGINNER",
+  INTERMEDIATE: "INTERMEDIATE",
+  ADVANCED: "ADVANCED",
+  EXPERT: "EXPERT",
+} as const satisfies Record<string, ExerciseDifficulty>;
+
 // ============================================================================
 // TRACKING TYPES
 // ============================================================================
@@ -228,6 +244,16 @@ export const TRACKING_TYPE_LABELS: Record<TrackingType, string> = {
   DISTANCE: "Distance",
 };
 
+// Prisma-aligned aliases for ExerciseTrackingType enum
+export const EXERCISE_TRACKING_TYPES = ["REPS", "TIME", "DISTANCE"] as const;
+export type ExerciseTrackingType = (typeof EXERCISE_TRACKING_TYPES)[number];
+export const exerciseTrackingTypeSchema = z.enum(EXERCISE_TRACKING_TYPES);
+export const EXERCISE_TRACKING_TYPE = {
+  REPS: "REPS",
+  TIME: "TIME",
+  DISTANCE: "DISTANCE",
+} as const satisfies Record<string, ExerciseTrackingType>;
+
 // ============================================================================
 // EXERCISE CONTRACT
 // ============================================================================
@@ -242,18 +268,19 @@ export const exerciseSchema = baseDocumentSchema.extend({
   trackingType: TrackingTypeSchema.optional(),
   muscleGroups: z.array(z.string()).optional(),
   primaryMuscle: z.string().optional(),
-  /** @deprecated Use muscleGroups instead. Kept for backward compatibility. */
+  /** @deprecated Remove after 2026-09-01 — use `muscleGroups` instead. Kept for backward compatibility. */
   primaryMuscleGroups: z.array(MuscleGroupSchema).optional(),
-  /** @deprecated Not persisted in DB. Computed from muscleGroups. */
+  /** @deprecated Remove after 2026-09-01 — use `muscleGroups` instead. Not persisted in DB. Computed from muscleGroups. */
   secondaryMuscleGroups: z.array(MuscleGroupSchema).optional(),
   equipment: z.array(EquipmentTypeSchema),
   difficulty: DifficultyLevelSchema.optional(),
+  /** @deprecated No Prisma Exercise.description column. Always undefined. Will be removed or migrated after 2026-09-01. */
   description: z.string().max(2000).optional(),
   instructions: z.string().nullable().optional(),
   cues: z.array(z.string()).optional(),
   videoUrl: z.string().url().optional(),
   imageUrl: z.string().url().optional(),
-  /** @deprecated Use imageUrl instead */
+  /** @deprecated Remove after 2026-09-01 — use `imageUrl` instead. */
   thumbnailUrl: z.string().url().optional(),
   /** @enrichment Computed from category; not persisted */
   isCompound: z.boolean().optional(),
@@ -284,7 +311,8 @@ export const exerciseLogSchema = baseDocumentSchema.extend({
   /** @deprecated Use workoutPlanId. Kept for backward compatibility. */
   workoutSessionId: z.string().uuid().optional(),
   workoutPlanId: z.string().uuid().optional(),
-  performedAt: isoTimestampSchema,
+  /** @deprecated No Prisma ExerciseLog.performedAt column exists. Always undefined in API responses. Use `date` instead. Will be removed after 2026-09-01. */
+  performedAt: isoTimestampSchema.optional(),
   date: isoDateSchema,
   setNumber: z.number().int().min(1).optional(),
   /** @enrichment Aggregate set count; not per-row */
@@ -296,6 +324,7 @@ export const exerciseLogSchema = baseDocumentSchema.extend({
   distance: z.number().min(0).optional(),
   rpe: z.number().int().min(1).max(10).optional(),
   notes: z.string().max(1000).optional(),
+  /** @deprecated No Prisma ExerciseLog.tags column. Always undefined. Remove or add DB column before 2026-09-01. */
   tags: z.array(z.string()).optional(),
   metricDefinitionId: z.string().optional(),
   /** @computed Calculated from weight × reps × sets */
@@ -331,27 +360,33 @@ export type CreateExerciseLog = z.infer<typeof createExerciseLogSchema>;
 // SCHEMA ALIASES (backwards compatibility with camelCase names)
 // ============================================================================
 
-/** @deprecated Use ExerciseCategorySchema instead. Remove after 2026-05-01 */
+/** @deprecated Use ExerciseCategorySchema instead. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias — type exported from PascalCase schema
 export const exerciseCategorySchema = ExerciseCategorySchema;
 
-/** @deprecated Use MovementPatternSchema instead. Remove after 2026-05-01 */
+/** @deprecated Use MovementPatternSchema instead. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias — type exported from PascalCase schema
 export const movementPatternSchema = MovementPatternSchema;
 
-/** @deprecated Use MuscleGroupSchema instead. Remove after 2026-05-01 */
+/** @deprecated Use MuscleGroupSchema instead. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias — type exported from PascalCase schema
 export const muscleGroupSchema = MuscleGroupSchema;
 
-/** @deprecated Use EquipmentTypeSchema instead. Remove after 2026-05-01 */
+/** @deprecated Use EquipmentTypeSchema instead. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias — type exported from PascalCase schema
 export const equipmentTypeSchema = EquipmentTypeSchema;
 
-/** @deprecated Use DifficultyLevelSchema instead. Remove after 2026-05-01 */
+/** @deprecated Use DifficultyLevelSchema instead. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias — type exported from PascalCase schema
 export const difficultyLevelSchema = DifficultyLevelSchema;
 
-/** @deprecated Use TrackingTypeSchema instead. Remove after 2026-05-01 */
+/** @deprecated Use TrackingTypeSchema instead. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias — type exported from PascalCase schema
 export const trackingTypeSchema = TrackingTypeSchema;
 

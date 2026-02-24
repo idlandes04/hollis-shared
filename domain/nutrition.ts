@@ -43,14 +43,14 @@ export const MealTypeSchema = z.enum(MEAL_TYPES);
 
 /** Centralized meal type constants for equality checks */
 export const MEAL_TYPE = {
-  BREAKFAST: "breakfast" as MealType,
-  LUNCH: "lunch" as MealType,
-  DINNER: "dinner" as MealType,
-  SNACK: "snack" as MealType,
-  PRE_WORKOUT: "pre_workout" as MealType,
-  POST_WORKOUT: "post_workout" as MealType,
-  OTHER: "other" as MealType,
-} as const;
+  BREAKFAST: "breakfast",
+  LUNCH: "lunch",
+  DINNER: "dinner",
+  SNACK: "snack",
+  PRE_WORKOUT: "pre_workout",
+  POST_WORKOUT: "post_workout",
+  OTHER: "other",
+} as const satisfies Record<string, MealType>;
 
 /** Human-readable labels for meal types */
 export const MEAL_TYPE_LABELS: Record<MealType, string> = {
@@ -119,6 +119,39 @@ export const LOCATION_TYPE_LABELS: Record<LocationType, string> = {
   work: "Work",
   travel: "Travel",
   social_event: "Social Event",
+};
+
+// ============================================================================
+// FOOD SOURCES
+// ============================================================================
+
+/**
+ * How a food entry was logged.
+ * - search: Found via food database search
+ * - barcode: Scanned from product barcode
+ * - custom: User-created custom food
+ * - manual: Manual entry without database lookup
+ */
+export const FOOD_SOURCES = ["search", "barcode", "custom", "manual"] as const;
+
+export type FoodSource = z.infer<typeof FoodSourceSchema>;
+
+export const FoodSourceSchema = z.enum(FOOD_SOURCES);
+
+/** Centralized food source constants for equality checks */
+export const FOOD_SOURCE = {
+  SEARCH: "search",
+  BARCODE: "barcode",
+  CUSTOM: "custom",
+  MANUAL: "manual",
+} as const satisfies Record<string, FoodSource>;
+
+/** Human-readable labels for food sources */
+export const FOOD_SOURCE_LABELS: Record<FoodSource, string> = {
+  search: "Search",
+  barcode: "Barcode Scan",
+  custom: "Custom Food",
+  manual: "Manual Entry",
 };
 
 // ============================================================================
@@ -415,39 +448,6 @@ export type DailyNutritionLogContract = z.infer<typeof DailyNutritionLogSchema>;
 // FOOD ITEM CONTRACT
 // ============================================================================
 
-// schema-first-todo: vitamins/minerals field type mismatch (interface: Record<string, number|undefined> vs schema: Record<string, number>); defer migration
-export interface FoodItemContract {
-  name: string;
-  brand?: string;
-  barcode?: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  fiber?: number;
-  sugar?: number;
-  addedSugar?: number;
-  sugarAlcohols?: number;
-  starch?: number;
-  saturatedFat?: number;
-  transFat?: number;
-  monounsaturatedFat?: number;
-  polyunsaturatedFat?: number;
-  omega3?: number;
-  omega6?: number;
-  cholesterol?: number;
-  vitamins?: Record<string, number | undefined>;
-  minerals?: Record<string, number | undefined>;
-  alcohol?: number;
-  caffeine?: number;
-  water?: number;
-  portionWeightG?: number;
-  glycemicIndex?: number;
-  glycemicLoad?: number;
-  foodGroup?: string;
-  tags?: string[];
-}
-
 export const FoodItemSchema = z.object({
   name: z.string().min(1),
   brand: z.string().optional(),
@@ -480,6 +480,8 @@ export const FoodItemSchema = z.object({
   tags: z.array(z.string()).optional(),
 });
 export type FoodItem = z.infer<typeof FoodItemSchema>;
+/** Backward-compat alias — prefer `FoodItem` for new code. */
+export type FoodItemContract = FoodItem;
 
 // ============================================================================
 // MICRONUTRIENTS

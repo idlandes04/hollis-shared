@@ -115,6 +115,9 @@ export type GenerateWorkoutPlanArgs = z.infer<
 export const generatedWorkoutPlanSchema = z.object({
   days: z.array(generatedDaySchema),
 });
+export type GeneratedWorkoutPlanInput = z.infer<
+  typeof generatedWorkoutPlanSchema
+>;
 
 /**
  * Schema for unresolved exercise requiring human review
@@ -128,6 +131,7 @@ export const unresolvedExerciseSchema = z.object({
   exerciseName: z.string().min(1),
   reason: z.enum(["missing_id", "invalid_id", "name_mismatch"]),
 });
+export type UnresolvedExerciseInput = z.infer<typeof unresolvedExerciseSchema>;
 
 /**
  * Schema for workout plan generation result
@@ -139,6 +143,9 @@ export const workoutPlanGenerationResultSchema = z.object({
   needsReview: z.boolean().optional(),
   reviewReasons: z.array(unresolvedExerciseSchema).optional(),
 });
+export type WorkoutPlanGenerationResultInput = z.infer<
+  typeof workoutPlanGenerationResultSchema
+>;
 
 /**
  * Schema for nutrition plan generation result
@@ -148,10 +155,28 @@ export const nutritionPlanGenerationResultSchema = z.object({
   protein: z.number().min(0),
   carbs: z.number().min(0),
   fat: z.number().min(0),
+  dailyTargets: z
+    .array(
+      z.object({
+        dayOfWeek: z.number().int().min(0).max(6),
+        calories: z.number().int().positive(),
+        protein: z.number().min(0),
+        carbs: z.number().min(0),
+        fat: z.number().min(0),
+      }),
+    )
+    .min(7, "Must generate targets for all 7 days")
+    .max(7),
   reasoning: z.string(),
-  weeklyNotes: z.string().optional(),
+  weeklyNotes: z.string(),
   newNotes: z.array(aiPermanentNoteSchema),
 });
+/**
+ * @deprecated Use NutritionPlanGenerationResult (from ai-types.ts) instead.
+ */
+export type NutritionPlanGenerationResultInput = z.infer<
+  typeof nutritionPlanGenerationResultSchema
+>;
 
 // ============================================================================
 // Permanent Note Schemas

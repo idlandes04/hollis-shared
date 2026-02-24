@@ -25,24 +25,30 @@
  * remain in their respective platform codebases.
  */
 export const STORAGE_KEYS = {
-  // Auth
-  ACCESS_TOKEN: 'hollis:accessToken',
-  REFRESH_TOKEN: 'hollis:refreshToken',
-  USER_ID: 'hollis:userId',
-  USER_SESSION: 'hollis:userSession',
+  // Auth — DEPRECATED: Auth is now cookie-based (httpOnly cookies set by server).
+  // These keys are vestigial and should NOT be used in new code.
+  // Retained only for backward compatibility with existing references.
+  /** @deprecated Auth uses httpOnly cookies now. Do not use. */
+  ACCESS_TOKEN: "hollis:accessToken",
+  /** @deprecated Auth uses httpOnly cookies now. Do not use. */
+  REFRESH_TOKEN: "hollis:refreshToken",
+  /** @deprecated Auth uses httpOnly cookies now. Do not use. */
+  USER_ID: "hollis:userId",
+  /** @deprecated Auth uses httpOnly cookies now. Do not use. */
+  USER_SESSION: "hollis:userSession",
 
   // User preferences
-  THEME_MODE: 'hollis:themeMode',
-  NOTIFICATIONS_ENABLED: 'hollis:notificationsEnabled',
-  UNIT_SYSTEM: 'hollis:unitSystem',
+  THEME_MODE: "hollis:themeMode",
+  NOTIFICATIONS_ENABLED: "hollis:notificationsEnabled",
+  UNIT_SYSTEM: "hollis:unitSystem",
 
   // Cache keys
-  USER_PROFILE_CACHE: 'hollis:userProfileCache',
-  LAST_SYNC_TIMESTAMP: 'hollis:lastSyncTimestamp',
+  USER_PROFILE_CACHE: "hollis:userProfileCache",
+  LAST_SYNC_TIMESTAMP: "hollis:lastSyncTimestamp",
 
   // Feature-specific
-  ONBOARDING_COMPLETED: 'hollis:onboardingCompleted',
-  DAILY_CHECKIN_LAST_DATE: 'hollis:dailyCheckinLastDate',
+  ONBOARDING_COMPLETED: "hollis:onboardingCompleted",
+  DAILY_CHECKIN_LAST_DATE: "hollis:dailyCheckinLastDate",
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

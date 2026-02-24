@@ -364,3 +364,70 @@ export const ChartItemSchema = z.object({
   category: ChartCategorySchema.optional(),
 });
 export type ChartItem = z.infer<typeof ChartItemSchema>;
+
+// ============================================================================
+// BILLING ANALYTICS RESPONSE TYPES
+// ============================================================================
+
+/** Revenue trend data point for period-over-period comparisons */
+export interface RevenueTrendPoint {
+  period: string;
+  revenue: number;
+}
+
+/** Churn metrics response */
+export interface ChurnMetrics {
+  churnRate: number;
+  canceledCount: number;
+  newCount: number;
+  netGrowth: number;
+}
+
+/** LTV metrics response */
+export interface LTVMetrics {
+  averageLTV: number;
+  averageLifetimeMonths: number;
+  byTier: {
+    tier: string;
+    averageLTV: number;
+    count: number;
+  }[];
+}
+
+/** Delinquent user item */
+export interface DelinquentUserItem {
+  id: string;
+  email: string;
+  name: string;
+  billingStatus: "DELINQUENT" | "COLLECTIONS";
+  outstandingAmount: number;
+  daysPastDue: number;
+  sentToCollections: boolean;
+  sentToCollectionsAt: string | null;
+  collectionAgency: string | null;
+  notes: string | null;
+  lastTier: string | null;
+  lastPaymentFailedAt: string | null;
+  delinquencyRecordId: string | null;
+}
+
+/** Dispute item */
+export interface DisputeItem {
+  id: string;
+  stripeDisputeId: string;
+  stripeChargeId: string;
+  status: "NEEDS_RESPONSE" | "UNDER_REVIEW" | "WON" | "LOST";
+  reason: string;
+  amount: number;
+  userId: string;
+  userName: string | null;
+  userEmail: string | null;
+  subscriptionId: string | null;
+  subscriptionTier: string | null;
+  subscriptionStatus: string | null;
+  accountSuspendedAt: string | null;
+  accountRestoredAt: string | null;
+  resolution: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

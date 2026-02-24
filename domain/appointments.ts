@@ -128,11 +128,11 @@ export const BookingStepSchema = z.enum(BOOKING_STEPS);
 
 /** Centralized booking step constants for equality checks */
 export const BOOKING_STEP = {
-  PROVIDER: "provider" as BookingStep,
-  TYPE: "type" as BookingStep,
-  DATETIME: "datetime" as BookingStep,
-  CONFIRM: "confirm" as BookingStep,
-} as const;
+  PROVIDER: "provider",
+  TYPE: "type",
+  DATETIME: "datetime",
+  CONFIRM: "confirm",
+} as const satisfies Record<string, BookingStep>;
 
 /** Human-readable labels for booking steps */
 export const BOOKING_STEP_LABELS: Record<BookingStep, string> = {
@@ -171,12 +171,12 @@ export const AdminBookingStepSchema = z.enum(ADMIN_BOOKING_STEPS);
 
 /** Centralized admin booking step constants for equality checks */
 export const ADMIN_BOOKING_STEP = {
-  PATIENT: "patient" as AdminBookingStep,
-  PROVIDER: "provider" as AdminBookingStep,
-  TYPE: "type" as AdminBookingStep,
-  DATETIME: "datetime" as AdminBookingStep,
-  CONFIRM: "confirm" as AdminBookingStep,
-} as const;
+  PATIENT: "patient",
+  PROVIDER: "provider",
+  TYPE: "type",
+  DATETIME: "datetime",
+  CONFIRM: "confirm",
+} as const satisfies Record<string, AdminBookingStep>;
 
 /** Human-readable labels for admin booking steps */
 export const ADMIN_BOOKING_STEP_LABELS: Record<AdminBookingStep, string> = {
@@ -212,8 +212,12 @@ export const AppointmentSchema = baseDocumentSchema.extend({
   patientId: z.string(),
   providerId: z.string().nullable(), // Admin/Clinician ID
   title: z.string().max(200),
+  /** @deprecated Use 'notes' instead. Will be removed when Prisma column is renamed. @see TODO(appointment-field-rename) */
   description: z.string().optional(),
   startTime: isoTimestampSchema,
+  /** Duration of the appointment in minutes (stored in database as integer). */
+  duration: z.number().int().positive(),
+  /** @computed: date + duration * 60000ms */
   endTime: isoTimestampSchema,
   status: AppointmentStatusSchema,
   type: AppointmentTypeSchema,

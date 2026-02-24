@@ -14,9 +14,7 @@
 
 import { z } from "zod";
 import { VolumeLevelSchema } from "../primitives";
-import {
-    MetricDefinitionSummarySchema,
-} from "./metric-definition";
+import { MetricDefinitionSummarySchema } from "./metric-definition";
 
 // ============================================================================
 // STRATEGY TYPES
@@ -158,15 +156,11 @@ export const GoalDataSourceSchema = z.enum(GOAL_DATA_SOURCES);
 export type GoalDataSource = z.infer<typeof GoalDataSourceSchema>;
 
 /**
- * Legacy goal data-source values accepted for backward-compatible reads.
- * New writes should always use GOAL_DATA_SOURCES.
+ * @deprecated Compatibility alias; canonical goal data-source values only.
  */
-export const LEGACY_GOAL_DATA_SOURCES = [
-  ...GOAL_DATA_SOURCES,
-  "measurement",
-] as const;
-export const LegacyGoalDataSourceSchema = z.enum(LEGACY_GOAL_DATA_SOURCES);
-export type LegacyGoalDataSource = z.infer<typeof LegacyGoalDataSourceSchema>;
+export const LEGACY_GOAL_DATA_SOURCES = GOAL_DATA_SOURCES;
+export const LegacyGoalDataSourceSchema = GoalDataSourceSchema;
+export type LegacyGoalDataSource = GoalDataSource;
 
 /** Centralized goal data source constants for equality checks */
 export const GOAL_DATA_SOURCE = {
@@ -192,14 +186,12 @@ export function isGoalDataSource(value: string): value is GoalDataSource {
 }
 
 /**
- * Normalize legacy/unknown data-source values to the canonical enum.
+ * Validate canonical goal data-source values.
  */
 export function normalizeGoalDataSource(
   value: string | null | undefined,
 ): GoalDataSource {
-  if (value === "measurement") return "biometric";
-  const parsed = GoalDataSourceSchema.safeParse(value);
-  return parsed.success ? parsed.data : "manual";
+  return GoalDataSourceSchema.parse(value);
 }
 
 // ============================================================================
@@ -278,6 +270,9 @@ export function isWorkoutType(value: string): value is WorkoutType {
 
 /**
  * Training phase contract - represents a phase within a training strategy.
+ *
+ * @deprecated Use DetailedTrainingPhaseSchema from training-strategy.ts for new code.
+ * This schema will be removed after 2026-09-01.
  */
 export const TrainingPhaseSchema = z.object({
   id: z.string().uuid(),
@@ -304,6 +299,9 @@ export type TrainingPhaseContract = z.infer<typeof TrainingPhaseSchema>;
 
 /**
  * Strategy goal contract - represents a measurable goal within a training strategy.
+ *
+ * @deprecated Use DetailedStrategyGoalSchema from training-strategy.ts for new code.
+ * This schema will be removed after 2026-09-01.
  */
 export const StrategyGoalSchema = z.object({
   id: z.string().uuid(),
@@ -339,29 +337,28 @@ export type StrategyGoalContract = z.infer<typeof StrategyGoalSchema>;
 /**
  * Training strategy contract - represents a complete training program.
  */
-export const TrainingStrategySchema =
-  z.object({
-    id: z.string().uuid(),
-    userId: z.string(),
-    name: z.string().min(1),
-    description: z.string().optional(),
-    strategyType: StrategyTypeSchema,
-    status: StrategyStatusSchema,
-    goalCategory: GoalCategorySchema,
-    startDate: z.string(),
-    endDate: z.string().optional(),
-    targetWeeks: z.number().int().positive(),
-    currentWeek: z.number().int().min(0).optional(),
-    phases: z.array(TrainingPhaseSchema),
-    goals: z.array(StrategyGoalSchema).optional(),
-    overallProgress: z.number().optional(),
-    isAIGenerated: z.boolean().optional(),
-    aiPrompt: z.string().optional(),
-    notes: z.string().optional(),
-    tags: z.array(z.string()).optional(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-  });
+export const TrainingStrategySchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string(),
+  name: z.string().min(1),
+  description: z.string().optional(),
+  strategyType: StrategyTypeSchema,
+  status: StrategyStatusSchema,
+  goalCategory: GoalCategorySchema,
+  startDate: z.string(),
+  endDate: z.string().optional(),
+  targetWeeks: z.number().int().positive(),
+  currentWeek: z.number().int().min(0).optional(),
+  phases: z.array(TrainingPhaseSchema),
+  goals: z.array(StrategyGoalSchema).optional(),
+  overallProgress: z.number().optional(),
+  isAIGenerated: z.boolean().optional(),
+  aiPrompt: z.string().optional(),
+  notes: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
 export type TrainingStrategyContract = z.infer<typeof TrainingStrategySchema>;
 
 // ============================================================================

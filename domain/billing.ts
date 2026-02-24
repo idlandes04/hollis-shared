@@ -34,11 +34,11 @@ export const BillingStatusSchema = z.enum(BILLING_STATUSES);
 
 /** Centralized billing status constants for equality checks */
 export const BILLING_STATUS = {
-  GOOD_STANDING: "GOOD_STANDING" as BillingStatus,
-  PAST_DUE: "PAST_DUE" as BillingStatus,
-  DELINQUENT: "DELINQUENT" as BillingStatus,
-  COLLECTIONS: "COLLECTIONS" as BillingStatus,
-} as const;
+  GOOD_STANDING: "GOOD_STANDING",
+  PAST_DUE: "PAST_DUE",
+  DELINQUENT: "DELINQUENT",
+  COLLECTIONS: "COLLECTIONS",
+} as const satisfies Record<BillingStatus, BillingStatus>;
 
 /** Human-readable labels for billing statuses */
 export const BILLING_STATUS_LABELS: Record<BillingStatus, string> = {
@@ -79,11 +79,11 @@ export const DisputeStatusSchema = z.enum(DISPUTE_STATUSES);
 
 /** Centralized dispute status constants for equality checks */
 export const DISPUTE_STATUS = {
-  NEEDS_RESPONSE: "NEEDS_RESPONSE" as DisputeStatus,
-  UNDER_REVIEW: "UNDER_REVIEW" as DisputeStatus,
-  WON: "WON" as DisputeStatus,
-  LOST: "LOST" as DisputeStatus,
-} as const;
+  NEEDS_RESPONSE: "NEEDS_RESPONSE",
+  UNDER_REVIEW: "UNDER_REVIEW",
+  WON: "WON",
+  LOST: "LOST",
+} as const satisfies Record<DisputeStatus, DisputeStatus>;
 
 /** Human-readable labels for dispute statuses */
 export const DISPUTE_STATUS_LABELS: Record<DisputeStatus, string> = {
@@ -98,4 +98,96 @@ export const DISPUTE_STATUS_LABELS: Record<DisputeStatus, string> = {
  */
 export function isDisputeStatus(value: string): value is DisputeStatus {
   return (DISPUTE_STATUSES as readonly string[]).includes(value);
+}
+
+// ============================================================================
+// DELINQUENT USER
+// ============================================================================
+
+/**
+ * A user in delinquent or collections billing status.
+ * Returned by the admin billing analytics endpoint.
+ */
+export const DelinquentUserSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  name: z.string(),
+  billingStatus: z.enum(["DELINQUENT", "COLLECTIONS"]),
+  outstandingAmount: z.number(),
+  daysPastDue: z.number().int(),
+  sentToCollections: z.boolean(),
+  sentToCollectionsAt: z.string().nullable(),
+  collectionAgency: z.string().nullable(),
+  notes: z.string().nullable(),
+  lastTier: z.string().nullable(),
+  lastPaymentFailedAt: z.string().nullable(),
+  delinquencyRecordId: z.string().nullable(),
+});
+export type DelinquentUser = z.infer<typeof DelinquentUserSchema>;
+
+export const DelinquentUsersResponseSchema = z.object({
+  users: z.array(DelinquentUserSchema),
+  count: z.number().int(),
+});
+export type DelinquentUsersResponse = z.infer<typeof DelinquentUsersResponseSchema>;
+
+export const SendToCollectionsRequestSchema = z.object({
+  userId: z.string(),
+  collectionAgency: z.string().optional(),
+  notes: z.string().optional(),
+});
+export type SendToCollectionsRequest = z.infer<typeof SendToCollectionsRequestSchema>;
+
+export const UpdateDelinquencyNotesRequestSchema = z.object({
+  userId: z.string(),
+  notes: z.string(),
+});
+export type UpdateDelinquencyNotesRequest = z.infer<typeof UpdateDelinquencyNotesRequestSchema>;
+
+// ============================================================================
+// CONTRACT UPLOAD
+// ============================================================================
+
+export const ContractUploadRequestSchema = z.object({
+  subscriptionId: z.string(),
+  fileBase64: z.string(),
+  fileName: z.string(),
+});
+export type ContractUploadRequest = z.infer<typeof ContractUploadRequestSchema>;
+
+// ============================================================================
+// TIER CHANGE TRIGGER
+// ============================================================================
+
+/**
+ * Source that initiated a subscription/tier change event.
+ * - admin: Admin-initiated action (CRM, dashboard)
+ * - system_cron: Automated cron job (grace period, delinquency)
+ * - stripe_webhook: Incoming Stripe webhook event
+ * - stripe_checkout: Stripe Checkout session completion
+ */
+export const TIER_CHANGE_TRIGGER = [
+  "admin",
+  "system_cron",
+  "stripe_webhook",
+  "stripe_checkout",
+] as const;
+
+export const TierChangeTriggerSchema = z.enum(TIER_CHANGE_TRIGGER);
+
+export type TierChangeTrigger = z.infer<typeof TierChangeTriggerSchema>;
+
+/** Centralized trigger constants for equality checks */
+export const TIER_CHANGE_TRIGGER_MAP = {
+  ADMIN: "admin",
+  SYSTEM_CRON: "system_cron",
+  STRIPE_WEBHOOK: "stripe_webhook",
+  STRIPE_CHECKOUT: "stripe_checkout",
+} as const satisfies Record<string, TierChangeTrigger>;
+
+/**
+ * Check if a string is a valid tier change trigger
+ */
+export function isTierChangeTrigger(value: string): value is TierChangeTrigger {
+  return (TIER_CHANGE_TRIGGER as readonly string[]).includes(value);
 }
