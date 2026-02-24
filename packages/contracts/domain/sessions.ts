@@ -41,15 +41,15 @@ export type SessionType = z.infer<typeof SessionTypeSchema>;
 
 /** Centralized session type constants for equality checks */
 export const SESSION_TYPE = {
-  FITNESS_SESSION: "FITNESS_SESSION" as SessionType,
-  RECOVERY_SESSION: "RECOVERY_SESSION" as SessionType,
-  LABWORK: "LABWORK" as SessionType,
-  CLINICIAN_INITIAL: "CLINICIAN_INITIAL" as SessionType,
-  CLINICIAN_FOLLOWUP: "CLINICIAN_FOLLOWUP" as SessionType,
-  DXA_SCAN: "DXA_SCAN" as SessionType,
-  SLEEP_SCREENING: "SLEEP_SCREENING" as SessionType,
-  MOBILE_SESSION: "MOBILE_SESSION" as SessionType,
-} as const;
+  FITNESS_SESSION: "FITNESS_SESSION",
+  RECOVERY_SESSION: "RECOVERY_SESSION",
+  LABWORK: "LABWORK",
+  CLINICIAN_INITIAL: "CLINICIAN_INITIAL",
+  CLINICIAN_FOLLOWUP: "CLINICIAN_FOLLOWUP",
+  DXA_SCAN: "DXA_SCAN",
+  SLEEP_SCREENING: "SLEEP_SCREENING",
+  MOBILE_SESSION: "MOBILE_SESSION",
+} as const satisfies Record<SessionType, SessionType>;
 
 /** Human-readable labels for session types */
 export const SESSION_TYPE_LABELS: Record<SessionType, string> = {
@@ -93,11 +93,11 @@ export type ResetFrequency = z.infer<typeof ResetFrequencySchema>;
 
 /** Centralized reset frequency constants for equality checks */
 export const RESET_FREQUENCY = {
-  MONTHLY: "MONTHLY" as ResetFrequency,
-  QUARTERLY: "QUARTERLY" as ResetFrequency,
-  BIANNUAL: "BIANNUAL" as ResetFrequency,
-  ANNUAL: "ANNUAL" as ResetFrequency,
-} as const;
+  MONTHLY: "MONTHLY",
+  QUARTERLY: "QUARTERLY",
+  BIANNUAL: "BIANNUAL",
+  ANNUAL: "ANNUAL",
+} as const satisfies Record<ResetFrequency, ResetFrequency>;
 
 /** Human-readable labels for reset frequencies */
 export const RESET_FREQUENCY_LABELS: Record<ResetFrequency, string> = {
@@ -139,6 +139,7 @@ export const UserSessionBalanceSchema = z.object({
   tier: z.enum(USER_TIERS),
   billingAnchorDate: z.string(),
   balances: z.array(SessionBalanceItemSchema),
+  /** @computed Set to SessionBalance.updatedAt at serialization time. */
   lastUpdated: z.string(),
 });
 
@@ -169,6 +170,18 @@ export type TierSessionAllocationsContract = z.infer<
 >;
 
 /**
+ * Mobile session free allocation for CONCIERGE tier.
+ * CONCIERGE members receive this many free mobile sessions per billing cycle.
+ */
+export const FREE_MONTHLY_ALLOCATION = 2;
+
+/**
+ * Maximum rollover cap for free mobile sessions (CONCIERGE tier).
+ * Free sessions cannot exceed this amount, even with rollover.
+ */
+export const FREE_MAX_ROLLOVER = 4;
+
+/**
  * Default tier allocations based on Hollis Health membership structure
  *
  * ESSENTIALS ($799/mo):
@@ -180,7 +193,7 @@ export type TierSessionAllocationsContract = z.infer<
  * - 2x DXA Scans/year (initial + 6mo)
  * - 2x Sleep Screenings/year (biannual)
  *
- * CORE ($1199/mo):
+ * CORE ($1349/mo):
  * - 8x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
  * - 4x Labwork/year (quarterly)
@@ -189,7 +202,7 @@ export type TierSessionAllocationsContract = z.infer<
  * - 4x DXA Scans/year (quarterly)
  * - 2x Sleep Screenings/month
  *
- * CONCIERGE ($1699/mo):
+ * CONCIERGE ($1999/mo):
  * - 16x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
  * - 12x Labwork/year (monthly)

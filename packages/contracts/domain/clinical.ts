@@ -291,8 +291,10 @@ export const PatientDocumentContractSchema = z.object({
   fileType: z.string().min(1),
   category: DocumentCategorySchema.default("OTHER"),
   tags: z.array(z.string()),
+  notes: z.string().nullable().optional(),
   extractedData: extractedDataSchema.optional(),
   createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export type PatientDocumentContract = z.infer<

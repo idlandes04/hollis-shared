@@ -258,7 +258,7 @@ export const foodLogEntrySchema = z.object({
   loggedAt: z.string(),
   /** When the food was consumed (ISO timestamp, optional) */
   consumedAt: z.string().optional(),
-  /** How the food was logged */
+  /** How the food was logged (canonical: FOOD_SOURCES in domain/nutrition.ts) */
   source: z.enum(["search", "barcode", "custom", "manual"]).optional(),
   /** Sugar in grams (optional) */
   sugar: z.number().min(0).optional(),

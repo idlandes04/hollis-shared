@@ -15,15 +15,15 @@
 import { z } from "zod";
 import { BiometricSourceSchema } from "./clinical";
 import { dailyMetricsSchema } from "./daily-metrics";
-import { DataQualityLevelSchema, HealthTrendSchema } from "./health-progress";
+import {
+    DataQualityLevelSchema,
+    HealthMetricKeySchema,
+    HealthTrendSchema,
+} from "./health-progress";
 import { journalEntrySchema } from "./journal";
-import {
-    MetricDefinitionSummarySchema
-} from "./metric-definition";
+import { MetricDefinitionSummarySchema } from "./metric-definition";
 import { DailyNutritionLogSchema } from "./nutrition";
-import {
-    HealthMetricDirectionSchema
-} from "./training";
+import { HealthMetricDirectionSchema } from "./training";
 import { BiologicalSexSchema } from "./user";
 
 // ============================================================================
@@ -300,7 +300,7 @@ export const RangeDerivationSchema = z.object({
 });
 
 export const HealthMetricGoalSchema = z.object({
-  metric: z.string().min(1),
+  metric: HealthMetricKeySchema,
   targetValue: z.number().nullable(),
   targetDirection: HealthMetricDirectionSchema,
   referenceRangeLow: z.number().nullable(),

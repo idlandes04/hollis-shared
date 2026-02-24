@@ -183,29 +183,37 @@ export type TotpVerifyRequestContract = z.infer<typeof totpVerifyRequestSchema>;
 /**
  * MFA verification for login
  *
- * Supports two identification flows:
- * - `sessionToken`: short-lived JWT issued after password verification (preferred, mobile/web login)
- * - `userId`: direct user ID (legacy/admin flows only)
- *
- * Exactly one of `sessionToken` or `userId` must be provided.
+ * Requires a short-lived `sessionToken` (mfa_pending) issued after password verification.
+ * Legacy userId-only flow is intentionally removed for security hardening.
  */
-export const mfaLoginVerifyRequestSchema = z
-  .object({
-    userId: z.string().optional(),
-    sessionToken: z.string().optional(),
-    code: z.string(),
-    credentialId: z.string().uuid().optional(), // Optional: specific credential to use
-    isBackupCode: z.boolean().optional().default(false),
-  })
-  .refine(
-    (data) => data.userId !== undefined || data.sessionToken !== undefined,
-    {
-      message: "Either userId or sessionToken must be provided",
-      path: ["userId"],
-    },
-  );
+export const mfaLoginVerifyRequestSchema = z.object({
+  sessionToken: z.string().min(1),
+  code: z.string(),
+  credentialId: z.string().uuid().optional(), // Optional: specific credential to use
+  isBackupCode: z.boolean().optional().default(false),
+});
 export type MfaLoginVerifyRequestContract = z.infer<
   typeof mfaLoginVerifyRequestSchema
+>;
+
+/**
+ * Response returned by the login endpoint when MFA verification is required.
+ * The client must present `sessionToken` when calling the MFA verify endpoint.
+ */
+export const mfaLoginPendingResponseSchema = z.object({
+  mfaRequired: z.literal(true),
+  sessionToken: z.string(),
+  availableMethods: z.array(MfaCredentialTypeSchema),
+  expiresIn: z.number(),
+  user: z.object({
+    uid: z.string(),
+    email: z.string(),
+    displayName: z.string().optional(),
+    role: z.string(),
+  }),
+});
+export type MfaLoginPendingResponse = z.infer<
+  typeof mfaLoginPendingResponseSchema
 >;
 
 /**
@@ -229,6 +237,77 @@ export const stepUpAuthResponseSchema = z.object({
 export type StepUpAuthResponseContract = z.infer<
   typeof stepUpAuthResponseSchema
 >;
+
+/**
+ * Auth session profile returned by the login and token-refresh endpoints.
+ *
+ * Uses `userId` as the canonical identifier (mapped from the server's `uid` field
+ * in the response mapper). Distinct from the full `UserProfileContract` — this is
+ * the lightweight session profile embedded in every `WebAuthSession`.
+ */
+export const authSessionProfileSchema = z.object({
+  userId: z.string(),
+  email: z.string().email(),
+  fullName: z.string().optional(),
+  role: z.string(),
+  tier: z.string().optional(),
+  onboardingCompleted: z.boolean().optional(),
+  organizationId: z.string().optional(),
+  isActive: z.boolean().optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
+});
+export type AuthSessionProfile = z.infer<typeof authSessionProfileSchema>;
+
+// ============================================================================
+// BACKUP CODES RESPONSE
+// ============================================================================
+
+/**
+ * Response when backup codes are generated or regenerated for a TOTP credential.
+ */
+export const backupCodesResponseSchema = z.object({
+  backupCodes: z.array(z.string()),
+  credentialId: z.string().uuid(),
+});
+export type BackupCodesResponse = z.infer<typeof backupCodesResponseSchema>;
+
+// ============================================================================
+// ADMIN MFA MANAGEMENT
+// ============================================================================
+
+/**
+ * Admin request to reset MFA for a locked-out user.
+ */
+export const adminMfaResetRequestSchema = z.object({
+  reason: z.string().min(1).max(500),
+});
+export type AdminMfaResetRequest = z.infer<typeof adminMfaResetRequestSchema>;
+
+/**
+ * Response from admin MFA reset — issues fresh backup codes for the user.
+ */
+export const adminMfaResetResponseSchema = z.object({
+  success: z.boolean(),
+  backupCodes: z.array(z.string()),
+  message: z.string(),
+});
+export type AdminMfaResetResponse = z.infer<typeof adminMfaResetResponseSchema>;
+
+/**
+ * MFA status as seen by an admin viewing another user's account.
+ * Slimmer than `MfaStatusResponseContract` (no credential list).
+ */
+export const userMfaStatusResponseSchema = z.object({
+  hasMfaEnabled: z.boolean(),
+  credentialCount: z.number().int().min(0),
+  lastVerifiedAt: z.string().datetime().nullable().optional(),
+});
+export type UserMfaStatusResponse = z.infer<typeof userMfaStatusResponseSchema>;
+
+// ============================================================================
+// BACKUP CODES REQUEST
+// ============================================================================
 
 /**
  * Backup codes generation request

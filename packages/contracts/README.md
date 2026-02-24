@@ -115,7 +115,7 @@ shared/contracts/
 - **User**: `USER_ROLES`, `USER_TIERS`, `UserRoleSchema`, `UserTierSchema`
 - **Appointments**: `APPOINTMENT_STATUSES`, `APPOINTMENT_TYPES`, `BOOKING_STEPS`
 - **Nutrition**: `MEAL_TYPES`, `FOOD_UNITS`, `LOCATION_TYPES`, `PREPARATION_METHODS`
-- **Training**: `STRATEGY_TYPES`, `GOAL_CATEGORIES`, `PROGRESS_TYPES`
+- **Training**: `STRATEGY_TYPES`, `GOAL_CATEGORIES`
 - **Clinical**: `LIMITATION_SEVERITIES`, `BIOMETRIC_SOURCES`
 - **Sessions**: `SESSION_TYPES`, `RESET_FREQUENCIES`
 
@@ -130,7 +130,7 @@ shared/contracts/
 
 ### Constants (`shared/contracts/constants`)
 - `STORAGE_KEYS` - AsyncStorage/localStorage keys
-- `UNIT_SYSTEMS` - Metric/Imperial
+- `UNIT_SYSTEMS` - Metric/Imperial/Advanced (lives in `domain/units.ts`)
 - `PAGINATION` - Default page sizes
 - `TIME_MS` - Time constants in milliseconds
 

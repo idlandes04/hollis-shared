@@ -27,7 +27,7 @@ export const USER_ROUTES = {
   get: (userId: string) => `/users/${userId}` as const,
 
   /**
-   * PATCH /users/:userId/profile - Update user profile
+   * PUT /users/:userId/profile - Update user profile
    * @param userId - User's unique identifier
    */
   updateProfile: (userId: string) => `/users/${userId}/profile` as const,
@@ -44,6 +44,25 @@ export const USER_ROUTES = {
    * @param userId - User's unique identifier
    */
   updateGoals: (userId: string) => `/users/${userId}/goals` as const,
+
+  /**
+   * GET /users/:userId/health-progress - Get health progress analytics
+   * @param userId - User's unique identifier
+   */
+  healthProgress: (userId: string) => `/users/${userId}/health-progress` as const,
+
+  /**
+   * GET /users/:userId/health-progress/history - Get historical health progress
+   * @param userId - User's unique identifier
+   */
+  healthProgressHistory: (userId: string) =>
+    `/users/${userId}/health-progress/history` as const,
+
+  /**
+   * GET /users/:userId/health-goals - Get health metric goals
+   * @param userId - User's unique identifier
+   */
+  healthGoals: (userId: string) => `/users/${userId}/health-goals` as const,
 
   /**
    * GET /users/:userId/compliance - Get compliance metrics
@@ -203,6 +222,19 @@ export const SESSIONS_ROUTES = {
    */
   billingAnchor: (userId: string) =>
     `/users/${userId}/sessions/billing-anchor` as const,
+
+  /**
+   * GET /users/:userId/sessions - Get session data
+   * @param userId - User's unique identifier
+   */
+  get: (userId: string) => `/users/${userId}/sessions` as const,
+
+  /**
+   * GET /users/:userId/sessions/billing-date - Get next billing date
+   * @param userId - User's unique identifier
+   */
+  billingDate: (userId: string) =>
+    `/users/${userId}/sessions/billing-date` as const,
 
   /**
    * POST /users/:userId/sessions/tier-change - Handle tier change

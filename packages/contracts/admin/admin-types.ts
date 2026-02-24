@@ -111,6 +111,8 @@ export interface UpdateGoalInput {
   baselineValue?: number;
   currentValue?: number;
   weight?: number;
+  /** Optional clinician notes about this metric update. */
+  notes?: string;
 }
 
 /**

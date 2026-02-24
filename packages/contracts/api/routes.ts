@@ -17,28 +17,29 @@
  */
 
 // ============================================================================
-// TYPE HELPERS
+// TYPE HELPERS (canonical source: ./routes/types.ts)
 // ============================================================================
+
+// Local import for use within this file
+import type {
+    HttpMethod as _HttpMethod,
+    RouteMetadata as _RouteMetadata,
+} from "./routes/types";
+import { HTTP_METHODS as _HTTP_METHODS } from "./routes/types";
 
 /**
  * HTTP methods supported by the API.
+ * @deprecated Import from './routes/types' instead
  */
-export const HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const;
-export type HttpMethod = (typeof HTTP_METHODS)[number];
+export const HTTP_METHODS = _HTTP_METHODS;
+/** @deprecated Import from './routes/types' instead */
+export type HttpMethod = _HttpMethod;
 
 /**
  * Route metadata for documentation and validation purposes.
+ * @deprecated Import from './routes/types' instead
  */
-export interface RouteMetadata {
-  /** HTTP method for this route */
-  method: HttpMethod;
-  /** Brief description of what the route does */
-  description: string;
-  /** Whether the route requires authentication */
-  requiresAuth: boolean;
-  /** Whether the route requires admin/clinician role */
-  requiresAdmin?: boolean;
-}
+export type RouteMetadata = _RouteMetadata;
 
 // ============================================================================
 // AUTH ROUTES
@@ -52,19 +53,23 @@ export interface RouteMetadata {
  */
 export const AUTH_ROUTES = {
   /** POST - Email/password login */
-  LOGIN: '/auth/login',
+  LOGIN: "/auth/login",
   /** POST - Create new account with password */
-  SIGNUP: '/auth/signup',
+  SIGNUP: "/auth/signup",
   /** POST - Refresh access token using refresh token */
-  REFRESH: '/auth/refresh',
+  REFRESH: "/auth/refresh",
   /** POST - Link OAuth credentials to existing account */
-  LINK: '/auth/link',
+  LINK: "/auth/link",
   /** POST - Sign out current session */
-  LOGOUT: '/auth/logout',
+  LOGOUT: "/auth/logout",
   /** POST - Request password reset email */
-  FORGOT_PASSWORD: '/auth/forgot-password',
+  FORGOT_PASSWORD: "/auth/forgot-password",
   /** POST - Reset password using token */
-  RESET_PASSWORD: '/auth/reset-password',
+  RESET_PASSWORD: "/auth/reset-password",
+  /** POST - Issue a refresh token to store for biometric login */
+  BIOMETRIC_TOKEN: "/auth/biometric-token",
+  /** POST - Validate a registration barcode */
+  VALIDATE_BARCODE: "/auth/validate-barcode",
 } as const;
 
 /** Type for auth route values */
@@ -84,7 +89,7 @@ export const USER_ROUTES = {
   /**
    * GET /users/me - Get current authenticated user's profile
    */
-  ME: '/users/me',
+  ME: "/users/me",
 
   /**
    * GET /users/:userId - Get user account data
@@ -102,7 +107,14 @@ export const USER_ROUTES = {
    * PATCH /users/:userId/preferences - Update user preferences
    * @param userId - User's unique identifier
    */
-  updatePreferences: (userId: string) => `/users/${userId}/preferences` as const,
+  updatePreferences: (userId: string) =>
+    `/users/${userId}/preferences` as const,
+
+  /**
+   * GET /users/:userId/goals - Get user goals
+   * @param userId - User's unique identifier
+   */
+  goals: (userId: string) => `/users/${userId}/goals` as const,
 
   /**
    * PUT /users/:userId/goals - Update user goals
@@ -114,13 +126,15 @@ export const USER_ROUTES = {
    * GET /users/:userId/health-progress - Get health progress analytics
    * @param userId - User's unique identifier
    */
-  healthProgress: (userId: string) => `/users/${userId}/health-progress` as const,
+  healthProgress: (userId: string) =>
+    `/users/${userId}/health-progress` as const,
 
   /**
    * GET /users/:userId/health-progress/history - Get historical health progress
    * @param userId - User's unique identifier
    */
-  healthProgressHistory: (userId: string) => `/users/${userId}/health-progress/history` as const,
+  healthProgressHistory: (userId: string) =>
+    `/users/${userId}/health-progress/history` as const,
 
   /**
    * GET /users/:userId/health-goals - Get health metric goals
@@ -138,8 +152,7 @@ export const USER_ROUTES = {
 /** Type for user route values */
 export type UserRoute =
   | typeof USER_ROUTES.ME
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic type extraction requires any for function signatures
-  | ReturnType<Extract<(typeof USER_ROUTES)[keyof typeof USER_ROUTES], (...args: any) => any>>;
+  | ReturnType<Exclude<(typeof USER_ROUTES)[keyof typeof USER_ROUTES], string>>;
 
 // ============================================================================
 // DAILY METRICS ROUTES
@@ -157,7 +170,8 @@ export const DAILY_METRICS_ROUTES = {
    * @param userId - User's unique identifier
    * @param date - ISO date string (YYYY-MM-DD)
    */
-  get: (userId: string, date: string) => `/users/${userId}/daily-metrics/${date}` as const,
+  get: (userId: string, date: string) =>
+    `/users/${userId}/daily-metrics/${date}` as const,
 
   /**
    * GET /users/:userId/daily-metrics - List metrics for date range
@@ -171,7 +185,8 @@ export const DAILY_METRICS_ROUTES = {
    * @param userId - User's unique identifier
    * @param date - ISO date string (YYYY-MM-DD)
    */
-  update: (userId: string, date: string) => `/users/${userId}/daily-metrics/${date}` as const,
+  update: (userId: string, date: string) =>
+    `/users/${userId}/daily-metrics/${date}` as const,
 } as const;
 
 // ============================================================================
@@ -190,7 +205,8 @@ export const DAILY_SUMMARY_ROUTES = {
    * @param userId - User's unique identifier
    * @param date - ISO date string (YYYY-MM-DD)
    */
-  get: (userId: string, date: string) => `/users/${userId}/daily-summary/${date}` as const,
+  get: (userId: string, date: string) =>
+    `/users/${userId}/daily-summary/${date}` as const,
 } as const;
 
 // ============================================================================
@@ -221,7 +237,8 @@ export const BIOMETRICS_ROUTES = {
    * @param userId - User's unique identifier
    * @param entryId - Entry's unique identifier
    */
-  delete: (userId: string, entryId: string) => `/users/${userId}/biometrics/${entryId}` as const,
+  delete: (userId: string, entryId: string) =>
+    `/users/${userId}/biometrics/${entryId}` as const,
 } as const;
 
 // ============================================================================
@@ -252,14 +269,16 @@ export const JOURNAL_ROUTES = {
    * @param userId - User's unique identifier
    * @param entryId - Entry's unique identifier
    */
-  update: (userId: string, entryId: string) => `/users/${userId}/journal/${entryId}` as const,
+  update: (userId: string, entryId: string) =>
+    `/users/${userId}/journal/${entryId}` as const,
 
   /**
    * DELETE /users/:userId/journal/:entryId - Delete journal entry
    * @param userId - User's unique identifier
    * @param entryId - Entry's unique identifier
    */
-  delete: (userId: string, entryId: string) => `/users/${userId}/journal/${entryId}` as const,
+  delete: (userId: string, entryId: string) =>
+    `/users/${userId}/journal/${entryId}` as const,
 } as const;
 
 // ============================================================================
@@ -278,7 +297,8 @@ export const NUTRITION_ROUTES = {
    * @param userId - User's unique identifier
    * @param date - ISO date string (YYYY-MM-DD)
    */
-  get: (userId: string, date: string) => `/users/${userId}/nutrition/${date}` as const,
+  get: (userId: string, date: string) =>
+    `/users/${userId}/nutrition/${date}` as const,
 
   /**
    * GET /users/:userId/nutrition - List nutrition logs for date range
@@ -292,7 +312,8 @@ export const NUTRITION_ROUTES = {
    * @param userId - User's unique identifier
    * @param date - ISO date string (YYYY-MM-DD)
    */
-  upsert: (userId: string, date: string) => `/users/${userId}/nutrition/${date}` as const,
+  upsert: (userId: string, date: string) =>
+    `/users/${userId}/nutrition/${date}` as const,
 
   /**
    * POST /users/:userId/nutrition/analyze - Analyze nutrition data
@@ -316,34 +337,35 @@ export const PLANS_ROUTES = {
    * GET /api/plans/workout - Get workout plan
    * Query params: userId, date (or userId, startDate, endDate for range)
    */
-  WORKOUT: '/api/plans/workout',
+  WORKOUT: "/api/plans/workout",
 
   /**
    * POST /api/plans/workout - Create/update workout plan
    */
-  WORKOUT_UPSERT: '/api/plans/workout',
+  WORKOUT_UPSERT: "/api/plans/workout",
 
   /**
    * PUT /api/plans/workout/:workoutId/toggle-complete - Toggle workout completion
    * @param workoutId - Workout's unique identifier
    */
-  toggleWorkoutComplete: (workoutId: string) => `/api/plans/workout/${workoutId}/toggle-complete` as const,
+  toggleWorkoutComplete: (workoutId: string) =>
+    `/api/plans/workout/${workoutId}/toggle-complete` as const,
 
   /**
    * GET /api/plans/nutrition - Get nutrition plan
    * Query params: userId, date
    */
-  NUTRITION: '/api/plans/nutrition',
+  NUTRITION: "/api/plans/nutrition",
 
   /**
    * POST /api/plans/nutrition - Create/update nutrition plan
    */
-  NUTRITION_UPSERT: '/api/plans/nutrition',
+  NUTRITION_UPSERT: "/api/plans/nutrition",
 
   /**
    * POST /api/plans/nutrition/simple - Create/update simple nutrition plan
    */
-  NUTRITION_SIMPLE: '/api/plans/nutrition/simple',
+  NUTRITION_SIMPLE: "/api/plans/nutrition/simple",
 } as const;
 
 // ============================================================================
@@ -375,7 +397,8 @@ export const STRATEGIES_ROUTES = {
    * @param userId - User's unique identifier
    * @param strategyId - Strategy's unique identifier
    */
-  get: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}` as const,
+  get: (userId: string, strategyId: string) =>
+    `/users/${userId}/strategies/${strategyId}` as const,
 
   /**
    * POST /users/:userId/strategies - Create new strategy
@@ -388,35 +411,40 @@ export const STRATEGIES_ROUTES = {
    * @param userId - User's unique identifier
    * @param strategyId - Strategy's unique identifier
    */
-  update: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}` as const,
+  update: (userId: string, strategyId: string) =>
+    `/users/${userId}/strategies/${strategyId}` as const,
 
   /**
    * DELETE /users/:userId/strategies/:strategyId - Delete strategy
    * @param userId - User's unique identifier
    * @param strategyId - Strategy's unique identifier
    */
-  delete: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}` as const,
+  delete: (userId: string, strategyId: string) =>
+    `/users/${userId}/strategies/${strategyId}` as const,
 
   /**
    * POST /users/:userId/strategies/:strategyId/sync - Sync progress from data source
    * @param userId - User's unique identifier
    * @param strategyId - Strategy's unique identifier
    */
-  sync: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}/sync` as const,
+  sync: (userId: string, strategyId: string) =>
+    `/users/${userId}/strategies/${strategyId}/sync` as const,
 
   /**
    * PUT /users/:userId/strategies/:strategyId/progress - Update goal progress
    * @param userId - User's unique identifier
    * @param strategyId - Strategy's unique identifier
    */
-  updateProgress: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}/progress` as const,
+  updateProgress: (userId: string, strategyId: string) =>
+    `/users/${userId}/strategies/${strategyId}/progress` as const,
 
   /**
    * POST /users/:userId/strategies/:strategyId/goals - Add goal to strategy
    * @param userId - User's unique identifier
    * @param strategyId - Strategy's unique identifier
    */
-  addGoal: (userId: string, strategyId: string) => `/users/${userId}/strategies/${strategyId}/goals` as const,
+  addGoal: (userId: string, strategyId: string) =>
+    `/users/${userId}/strategies/${strategyId}/goals` as const,
 
   /**
    * PUT /users/:userId/strategies/:strategyId/goals/:goalId - Update goal
@@ -452,7 +480,8 @@ export const APPOINTMENTS_ROUTES = {
    * GET /users/:userId/appointments/upcoming - Get upcoming appointments
    * @param userId - User's unique identifier
    */
-  upcoming: (userId: string) => `/users/${userId}/appointments/upcoming` as const,
+  upcoming: (userId: string) =>
+    `/users/${userId}/appointments/upcoming` as const,
 
   /**
    * GET /users/:userId/appointments - List appointments for date range
@@ -499,13 +528,14 @@ export const LABS_ROUTES = {
    * GET /api/labs - Get lab panels for user
    * Query params: userId, includePanels
    */
-  LIST: '/api/labs',
+  LIST: "/api/labs",
 
   /**
    * GET /api/labs?userId={userId}&includeReports=true - Get lab reports for user
    * @param userId - User's unique identifier
    */
-  getReports: (userId: string) => `/api/labs?userId=${userId}&includeReports=true` as const,
+  getReports: (userId: string) =>
+    `/api/labs?userId=${userId}&includeReports=true` as const,
 
   /**
    * GET /api/labs/reports/:reportId - Get specific lab report
@@ -522,19 +552,19 @@ export const LABS_ROUTES = {
   /**
    * POST /api/labs/panels - Create new lab panel
    */
-  CREATE_PANEL: '/api/labs/panels',
+  CREATE_PANEL: "/api/labs/panels",
 
   /**
    * POST /api/labs/auto-ingest - Auto-ingest lab data
    */
-  AUTO_INGEST: '/api/labs/auto-ingest',
+  AUTO_INGEST: "/api/labs/auto-ingest",
 
   /**
    * GET /api/labs/metric-definitions - List canonical lab metric definitions
    * Query params: search, category, page, limit
    * Used for biomarker picker dropdown
    */
-  METRIC_DEFINITIONS: '/api/labs/metric-definitions',
+  METRIC_DEFINITIONS: "/api/labs/metric-definitions",
 } as const;
 
 // ============================================================================
@@ -552,28 +582,28 @@ export const MESSAGES_ROUTES = {
    * GET /api/messages - Get messages
    * Query params: userId, role
    */
-  LIST: '/api/messages',
+  LIST: "/api/messages",
 
   /**
    * POST /api/messages - Send a message
    */
-  SEND: '/api/messages',
+  SEND: "/api/messages",
 
   /**
    * DELETE /api/messages/:messageId - Delete a message (sender-only)
    */
-  DELETE: '/api/messages',
+  DELETE: "/api/messages",
 
   /**
    * PUT /api/messages/read - Mark messages as read
    */
-  MARK_READ: '/api/messages/read',
+  MARK_READ: "/api/messages/read",
 
   /**
    * GET /api/messages/unread - Get unread message counts
    * Query params: userId
    */
-  UNREAD: '/api/messages/unread',
+  UNREAD: "/api/messages/unread",
 } as const;
 
 // ============================================================================
@@ -590,7 +620,7 @@ export const UPLOAD_ROUTES = {
   /**
    * POST /api/upload - Upload a file
    */
-  UPLOAD: '/api/upload',
+  UPLOAD: "/api/upload",
 } as const;
 
 // ============================================================================
@@ -606,11 +636,11 @@ export const UPLOAD_ROUTES = {
  */
 export const ADMIN_ROUTES = {
   /** GET /admin/analytics - Get CRM analytics data */
-  ANALYTICS: '/admin/analytics',
+  ANALYTICS: "/admin/analytics",
   /** GET /admin/cache-metrics - Get cache performance metrics */
-  CACHE_METRICS: '/admin/cache-metrics',
+  CACHE_METRICS: "/admin/cache-metrics",
   /** POST /admin/lab-extraction - Extract lab data from document */
-  LAB_EXTRACTION: '/admin/lab-extraction',
+  LAB_EXTRACTION: "/admin/lab-extraction",
 } as const;
 
 /** Type for admin route values */
@@ -628,7 +658,7 @@ export type AdminRoute = (typeof ADMIN_ROUTES)[keyof typeof ADMIN_ROUTES];
  */
 export const CRM_ROUTES = {
   /** POST /api/crm/events - Create user event for compliance tracking */
-  EVENTS: '/api/crm/events',
+  EVENTS: "/api/crm/events",
 } as const;
 
 /** Type for CRM route values */
@@ -679,7 +709,8 @@ export const SESSIONS_ROUTES = {
    * PATCH /users/:userId/sessions/billing-anchor - Update billing anchor date
    * @param userId - User's unique identifier
    */
-  billingAnchor: (userId: string) => `/users/${userId}/sessions/billing-anchor` as const,
+  billingAnchor: (userId: string) =>
+    `/users/${userId}/sessions/billing-anchor` as const,
 
   /**
    * GET /users/:userId/sessions - Get session data
@@ -691,17 +722,21 @@ export const SESSIONS_ROUTES = {
    * GET /users/:userId/sessions/billing-date - Get next billing date
    * @param userId - User's unique identifier
    */
-  billingDate: (userId: string) => `/users/${userId}/sessions/billing-date` as const,
+  billingDate: (userId: string) =>
+    `/users/${userId}/sessions/billing-date` as const,
 
   /**
    * POST /users/:userId/sessions/tier-change - Handle tier change
    * @param userId - User's unique identifier
    */
-  tierChange: (userId: string) => `/users/${userId}/sessions/tier-change` as const,
+  tierChange: (userId: string) =>
+    `/users/${userId}/sessions/tier-change` as const,
 } as const;
 
 /** Type for sessions route values */
-export type SessionsRoute = ReturnType<(typeof SESSIONS_ROUTES)[keyof typeof SESSIONS_ROUTES]>;
+export type SessionsRoute = ReturnType<
+  (typeof SESSIONS_ROUTES)[keyof typeof SESSIONS_ROUTES]
+>;
 
 // ============================================================================
 // PROVIDERS ROUTES
@@ -715,7 +750,7 @@ export type SessionsRoute = ReturnType<(typeof SESSIONS_ROUTES)[keyof typeof SES
  */
 export const PROVIDERS_ROUTES = {
   /** GET /api/providers - List all providers */
-  LIST: '/api/providers',
+  LIST: "/api/providers",
 
   /**
    * GET /api/providers/:providerId - Get single provider
@@ -728,23 +763,29 @@ export const PROVIDERS_ROUTES = {
    * Query params: startDate, endDate
    * @param providerId - Provider's unique identifier
    */
-  availableSlots: (providerId: string) => `/api/providers/${providerId}/available-slots` as const,
+  availableSlots: (providerId: string) =>
+    `/api/providers/${providerId}/available-slots` as const,
 
   /**
    * GET/PUT /api/providers/:providerId/schedule - Get or update provider schedule
    * @param providerId - Provider's unique identifier
    */
-  schedule: (providerId: string) => `/api/providers/${providerId}/schedule` as const,
+  schedule: (providerId: string) =>
+    `/api/providers/${providerId}/schedule` as const,
   /**
    * GET /api/providers/:providerId/availability - Get provider availability
    * @param providerId - Provider's unique identifier
    */
-  availability: (providerId: string) => `/api/providers/${providerId}/availability` as const,} as const;
+  availability: (providerId: string) =>
+    `/api/providers/${providerId}/availability` as const,
+} as const;
 
 /** Type for providers route values */
 export type ProvidersRoute =
-  | (typeof PROVIDERS_ROUTES)['LIST']
-  | ReturnType<Exclude<(typeof PROVIDERS_ROUTES)[keyof typeof PROVIDERS_ROUTES], string>>;
+  | (typeof PROVIDERS_ROUTES)["LIST"]
+  | ReturnType<
+      Exclude<(typeof PROVIDERS_ROUTES)[keyof typeof PROVIDERS_ROUTES], string>
+    >;
 
 // ============================================================================
 // DOCUMENTS ROUTES
@@ -758,10 +799,10 @@ export type ProvidersRoute =
  */
 export const DOCUMENTS_ROUTES = {
   /** GET /api/documents - List all documents for user */
-  LIST: '/api/documents',
+  LIST: "/api/documents",
 
   /** POST /api/documents - Create/upload document */
-  CREATE: '/api/documents',
+  CREATE: "/api/documents",
 
   /**
    * GET /api/documents/:documentId - Get single document
@@ -778,9 +819,11 @@ export const DOCUMENTS_ROUTES = {
 
 /** Type for documents route values */
 export type DocumentsRoute =
-  | (typeof DOCUMENTS_ROUTES)['LIST']
-  | (typeof DOCUMENTS_ROUTES)['CREATE']
-  | ReturnType<Exclude<(typeof DOCUMENTS_ROUTES)[keyof typeof DOCUMENTS_ROUTES], string>>;
+  | (typeof DOCUMENTS_ROUTES)["LIST"]
+  | (typeof DOCUMENTS_ROUTES)["CREATE"]
+  | ReturnType<
+      Exclude<(typeof DOCUMENTS_ROUTES)[keyof typeof DOCUMENTS_ROUTES], string>
+    >;
 
 // ============================================================================
 // PUSH NOTIFICATION ROUTES
@@ -794,13 +837,13 @@ export type DocumentsRoute =
  */
 export const PUSH_ROUTES = {
   /** POST /api/push/register - Register push notification token */
-  REGISTER: '/api/push/register',
+  REGISTER: "/api/push/register",
 
   /** DELETE /api/push/unregister - Unregister push notification token */
-  UNREGISTER: '/api/push/unregister',
+  UNREGISTER: "/api/push/unregister",
 
   /** POST /api/push/test - Send test notification */
-  TEST: '/api/push/test',
+  TEST: "/api/push/test",
 } as const;
 
 /** Type for push route values */
@@ -818,13 +861,13 @@ export type PushRoute = (typeof PUSH_ROUTES)[keyof typeof PUSH_ROUTES];
  */
 export const SSE_ROUTES = {
   /** POST /api/sse/token - Exchange JWT for SSE token */
-  TOKEN: '/api/sse/token',
+  TOKEN: "/api/sse/token",
 
   /** GET /api/sse/connect - SSE stream connection */
-  CONNECT: '/api/sse/connect',
+  CONNECT: "/api/sse/connect",
 
   /** GET /api/sse/stats - Get connection stats (admin only) */
-  STATS: '/api/sse/stats',
+  STATS: "/api/sse/stats",
 } as const;
 
 /** Type for SSE route values */
@@ -843,26 +886,27 @@ export type SseRoute = (typeof SSE_ROUTES)[keyof typeof SSE_ROUTES];
  */
 export const ADMIN_PAYMENTS_ROUTES = {
   /** GET /api/admin/payments/config - Get Stripe publishable key config */
-  CONFIG: '/api/admin/payments/config',
+  CONFIG: "/api/admin/payments/config",
 
   /** POST /api/admin/payments/setup-intent - Create SetupIntent for card save */
-  SETUP_INTENT: '/api/admin/payments/setup-intent',
+  SETUP_INTENT: "/api/admin/payments/setup-intent",
 
   /** POST /api/admin/payments/collect - Create PaymentIntent for one-time charge */
-  COLLECT: '/api/admin/payments/collect',
+  COLLECT: "/api/admin/payments/collect",
 
   /**
    * POST /api/admin/payments/payment-methods/:userId - Attach payment method to user
    * @param userId - User's unique identifier
    */
-  attachPaymentMethod: (userId: string) => `/api/admin/payments/payment-methods/${userId}` as const,
+  attachPaymentMethod: (userId: string) =>
+    `/api/admin/payments/payment-methods/${userId}` as const,
 } as const;
 
 /** Type for admin payments route values */
 export type AdminPaymentsRoute =
-  | (typeof ADMIN_PAYMENTS_ROUTES)['CONFIG']
-  | (typeof ADMIN_PAYMENTS_ROUTES)['SETUP_INTENT']
-  | (typeof ADMIN_PAYMENTS_ROUTES)['COLLECT']
+  | (typeof ADMIN_PAYMENTS_ROUTES)["CONFIG"]
+  | (typeof ADMIN_PAYMENTS_ROUTES)["SETUP_INTENT"]
+  | (typeof ADMIN_PAYMENTS_ROUTES)["COLLECT"]
   | ReturnType<typeof ADMIN_PAYMENTS_ROUTES.attachPaymentMethod>;
 
 // ============================================================================
@@ -878,21 +922,21 @@ export type AdminPaymentsRoute =
  */
 export const ACCOUNT_ROUTES = {
   /** GET /api/account/subscription - Get current user's active subscription */
-  SUBSCRIPTION: '/api/account/subscription',
+  SUBSCRIPTION: "/api/account/subscription",
 
   /** PATCH /api/account/subscription/pause - Pause current user's subscription */
-  PAUSE_SUBSCRIPTION: '/api/account/subscription/pause',
+  PAUSE_SUBSCRIPTION: "/api/account/subscription/pause",
 
   /** PATCH /api/account/subscription/resume - Resume current user's subscription */
-  RESUME_SUBSCRIPTION: '/api/account/subscription/resume',
+  RESUME_SUBSCRIPTION: "/api/account/subscription/resume",
 
   /** PATCH /api/account/subscription/change-tier - Change current user's subscription tier */
-  CHANGE_TIER: '/api/account/subscription/change-tier',
+  CHANGE_TIER: "/api/account/subscription/change-tier",
 
   /** GET /api/account/orders - Get current user's order history */
-  ORDERS: '/api/account/orders',
+  ORDERS: "/api/account/orders",
   /** GET /api/account/payment-methods - Get current user's saved payment methods */
-  PAYMENT_METHODS: '/api/account/payment-methods',
+  PAYMENT_METHODS: "/api/account/payment-methods",
 } as const;
 
 /** Type for account route values */
@@ -956,69 +1000,69 @@ export const API_ROUTES = {
 export const ROUTE_METADATA: Record<string, RouteMetadata> = {
   // Auth routes
   [AUTH_ROUTES.LOGIN]: {
-    method: 'POST',
-    description: 'Authenticate user with email/password',
+    method: "POST",
+    description: "Authenticate user with email/password",
     requiresAuth: false,
   },
   [AUTH_ROUTES.SIGNUP]: {
-    method: 'POST',
-    description: 'Create new user account with password',
+    method: "POST",
+    description: "Create new user account with password",
     requiresAuth: false,
   },
   [AUTH_ROUTES.REFRESH]: {
-    method: 'POST',
-    description: 'Refresh access token using refresh token',
+    method: "POST",
+    description: "Refresh access token using refresh token",
     requiresAuth: false,
   },
   [AUTH_ROUTES.LINK]: {
-    method: 'POST',
-    description: 'Link OAuth credentials to existing account',
+    method: "POST",
+    description: "Link OAuth credentials to existing account",
     requiresAuth: true,
   },
   [AUTH_ROUTES.LOGOUT]: {
-    method: 'POST',
-    description: 'Sign out current session',
+    method: "POST",
+    description: "Sign out current session",
     requiresAuth: true,
   },
   // Admin routes
   [ADMIN_ROUTES.ANALYTICS]: {
-    method: 'GET',
-    description: 'Get CRM analytics dashboard data',
+    method: "GET",
+    description: "Get CRM analytics dashboard data",
     requiresAuth: true,
     requiresAdmin: true,
   },
   [ADMIN_ROUTES.CACHE_METRICS]: {
-    method: 'GET',
-    description: 'Get cache performance metrics',
+    method: "GET",
+    description: "Get cache performance metrics",
     requiresAuth: true,
     requiresAdmin: true,
   },
   [ADMIN_ROUTES.LAB_EXTRACTION]: {
-    method: 'POST',
-    description: 'Extract lab data from uploaded document using AI',
+    method: "POST",
+    description: "Extract lab data from uploaded document using AI",
     requiresAuth: true,
     requiresAdmin: true,
   },
   // CRM routes
   [CRM_ROUTES.EVENTS]: {
-    method: 'POST',
-    description: 'Create user event for compliance tracking',
+    method: "POST",
+    description: "Create user event for compliance tracking",
     requiresAuth: true,
   },
   // Account routes (customer self-service)
   [ACCOUNT_ROUTES.SUBSCRIPTION]: {
-    method: 'GET',
-    description: 'Get current user\'s active subscription',
+    method: "GET",
+    description: "Get current user's active subscription",
     requiresAuth: true,
   },
   [ACCOUNT_ROUTES.ORDERS]: {
-    method: 'GET',
-    description: 'Get current user\'s order history',
+    method: "GET",
+    description: "Get current user's order history",
     requiresAuth: true,
   },
   [ACCOUNT_ROUTES.PAYMENT_METHODS]: {
-    method: 'GET',
-    description: 'Get current user\'s saved payment methods',
+    method: "GET",
+    description: "Get current user's saved payment methods",
     requiresAuth: true,
   },
 } as const;
@@ -1043,12 +1087,12 @@ export function getRoutePattern(path: string): string {
   // Replace UUID-like segments with :param placeholders
   // This is a heuristic - actual UUIDs, numeric IDs, or date strings
   return path
-    .replace(/\/[a-f0-9-]{36}\//gi, '/:id/')
-    .replace(/\/[a-f0-9-]{36}$/gi, '/:id')
-    .replace(/\/\d{4}-\d{2}-\d{2}\//gi, '/:date/')
-    .replace(/\/\d{4}-\d{2}-\d{2}$/gi, '/:date')
-    .replace(/\/[A-Za-z0-9_-]{20,}\//gi, '/:id/')
-    .replace(/\/[A-Za-z0-9_-]{20,}$/gi, '/:id');
+    .replace(/\/[a-f0-9-]{36}\//gi, "/:id/")
+    .replace(/\/[a-f0-9-]{36}$/gi, "/:id")
+    .replace(/\/\d{4}-\d{2}-\d{2}\//gi, "/:date/")
+    .replace(/\/\d{4}-\d{2}-\d{2}$/gi, "/:date")
+    .replace(/\/[A-Za-z0-9_-]{20,}\//gi, "/:id/")
+    .replace(/\/[A-Za-z0-9_-]{20,}$/gi, "/:id");
 }
 
 /**

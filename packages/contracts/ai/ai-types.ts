@@ -13,10 +13,17 @@
  * deps: admin/admin-types | consumers: server/src/services/ai*, web-admin/services
  */
 
-import { type AINoteCategory } from '../domain/ai-notes';
-import { type StrategyGenerationPhase } from '../domain/training';
-import { type WorkoutSectionType } from '../domain/workouts';
-import { type VolumeLevel } from '../primitives';
+import { z } from "zod";
+import { AINoteCategorySchema } from "../domain/ai-notes";
+import { type StrategyGenerationPhase } from "../domain/training";
+import {
+    type StrategyGenerationActivity as _StrategyGenerationActivity,
+    type TrainingPhaseDraft as _TrainingPhaseDraft,
+    type StrategyDraftContract,
+    type StrategyGoalDraftContract,
+} from "../domain/training-strategy";
+import { WorkoutSectionTypeSchema } from "../domain/workouts";
+import { nutritionPlanGenerationResultSchema } from "./ai-validation";
 
 // ============================================================================
 // Generated Workout Plan Types
@@ -25,54 +32,60 @@ import { type VolumeLevel } from '../primitives';
 /**
  * Generated exercise within a workout
  */
-export interface GeneratedExercise {
+export const GeneratedExerciseSchema = z.object({
   /** Exercise name (must match library exactly when exerciseId is provided) */
-  name: string;
+  name: z.string().min(1),
   /** ID from exercise library if using existing exercise */
-  exerciseId?: string;
+  exerciseId: z.string().optional(),
   /** Number of sets */
-  sets?: number;
+  sets: z.number().int().positive().optional(),
   /** Rep target (e.g., "8-10", "5", "12-15", "AMRAP") */
-  reps?: string;
+  reps: z.string().optional(),
   /** Weight/intensity target (e.g., "185lbs", "70% 1RM", "RPE 7-8") */
-  weight?: string;
+  weight: z.string().optional(),
   /** Duration for timed exercises (e.g., "30 seconds", "2 minutes") */
-  duration?: string;
+  duration: z.string().optional(),
   /** Coaching cues, tempo prescriptions, or special instructions */
-  notes?: string;
+  notes: z.string().optional(),
   /** Optional video demonstration URL */
-  link?: string;
-}
+  link: z.string().url().optional(),
+});
+export type GeneratedExercise = z.infer<typeof GeneratedExerciseSchema>;
 
 /**
  * Generated workout section (warmup/working/cooldown)
  */
-export interface GeneratedWorkoutSection {
-  type: WorkoutSectionType;
-  title: string;
-  exercises: GeneratedExercise[];
-}
+export const GeneratedWorkoutSectionSchema = z.object({
+  type: WorkoutSectionTypeSchema,
+  title: z.string().min(1),
+  exercises: z.array(GeneratedExerciseSchema),
+});
+export type GeneratedWorkoutSection = z.infer<
+  typeof GeneratedWorkoutSectionSchema
+>;
 
 /**
  * Generated workout day
  */
-export interface GeneratedWorkoutDay {
+export const GeneratedWorkoutDaySchema = z.object({
   /** Day of week: 0=Sunday, 1=Monday, etc. */
-  dayOfWeek: number;
+  dayOfWeek: z.number().int().min(0).max(6),
   /** Workout name (e.g., "Push Day", "Lower Body", "Rest") */
-  name: string;
+  name: z.string().min(1),
   /** Whether this is a rest/recovery day */
-  isRestDay: boolean;
+  isRestDay: z.boolean(),
   /** Workout sections in execution order */
-  sections: GeneratedWorkoutSection[];
-}
+  sections: z.array(GeneratedWorkoutSectionSchema),
+});
+export type GeneratedWorkoutDay = z.infer<typeof GeneratedWorkoutDaySchema>;
 
 /**
  * Generated workout plan structure (before persisting)
  */
-export interface GeneratedWorkoutPlan {
-  days: GeneratedWorkoutDay[];
-}
+export const GeneratedWorkoutPlanSchema = z.object({
+  days: z.array(GeneratedWorkoutDaySchema),
+});
+export type GeneratedWorkoutPlan = z.infer<typeof GeneratedWorkoutPlanSchema>;
 
 // ============================================================================
 // Workout Plan Generation Types
@@ -82,64 +95,79 @@ export interface GeneratedWorkoutPlan {
 /**
  * Reason codes for unresolved exercises requiring human review
  */
-export const UNRESOLVED_EXERCISE_REASONS = ['missing_id', 'invalid_id', 'name_mismatch'] as const;
-export type UnresolvedExerciseReason = (typeof UNRESOLVED_EXERCISE_REASONS)[number];
+export const UNRESOLVED_EXERCISE_REASONS = [
+  "missing_id",
+  "invalid_id",
+  "name_mismatch",
+] as const;
+export type UnresolvedExerciseReason =
+  (typeof UNRESOLVED_EXERCISE_REASONS)[number];
 
 /**
  * Exercise that requires human review before workout can be saved
  * @see WorkoutPlanGenerationResult.reviewReasons
  */
-export interface UnresolvedExercise {
+export const UnresolvedExerciseSchema = z.object({
   /** Day of week (0=Sunday, 6=Saturday) */
-  dayOfWeek: number;
+  dayOfWeek: z.number().int().min(0).max(6),
   /** Display name for the day (e.g., "Monday - Push Day") */
-  dayName: string;
+  dayName: z.string(),
   /** Index of section within the day */
-  sectionIndex: number;
+  sectionIndex: z.number().int().min(0),
   /** Section title (e.g., "Working Sets") */
-  sectionTitle: string;
+  sectionTitle: z.string(),
   /** Index of exercise within the section */
-  exerciseIndex: number;
+  exerciseIndex: z.number().int().min(0),
   /** Name of the unresolved exercise */
-  exerciseName: string;
+  exerciseName: z.string(),
   /** Why this exercise requires review */
-  reason: UnresolvedExerciseReason;
-}
+  reason: z.enum(UNRESOLVED_EXERCISE_REASONS),
+});
+export type UnresolvedExercise = z.infer<typeof UnresolvedExerciseSchema>;
 
 /**
  * SSE event types for workout plan generation
  */
-export const WORKOUT_GENERATION_EVENTS = ['progress', 'complete', 'needs_review', 'error'] as const;
-export type WorkoutGenerationEventType = (typeof WORKOUT_GENERATION_EVENTS)[number];
+export const WORKOUT_GENERATION_EVENTS = [
+  "progress",
+  "complete",
+  "needs_review",
+  "error",
+] as const;
+export type WorkoutGenerationEventType =
+  (typeof WORKOUT_GENERATION_EVENTS)[number];
 
 /**
  * Workout generation event type constants
  */
 export const WORKOUT_GENERATION_EVENT = {
-  PROGRESS: 'progress' as WorkoutGenerationEventType,
-  COMPLETE: 'complete' as WorkoutGenerationEventType,
-  NEEDS_REVIEW: 'needs_review' as WorkoutGenerationEventType,
-  ERROR: 'error' as WorkoutGenerationEventType,
+  PROGRESS: "progress" as WorkoutGenerationEventType,
+  COMPLETE: "complete" as WorkoutGenerationEventType,
+  NEEDS_REVIEW: "needs_review" as WorkoutGenerationEventType,
+  ERROR: "error" as WorkoutGenerationEventType,
 } as const;
 
 /**
  * Result from workout plan generation
  */
-export interface WorkoutPlanGenerationResult {
-  plan: GeneratedWorkoutPlan;
-  newNotes: AIGeneratedNote[];
-  reasoning?: string;
+export const WorkoutPlanGenerationResultSchema = z.object({
+  plan: GeneratedWorkoutPlanSchema,
+  newNotes: z.array(z.lazy(() => AIGeneratedNoteSchema)),
+  reasoning: z.string().optional(),
   /**
    * True if exercises require human review before saving.
    * When true, the plan MUST NOT be persisted until all reviewReasons are resolved.
    */
-  needsReview?: boolean;
+  needsReview: z.boolean().optional(),
   /**
    * List of exercises requiring human intervention.
    * Only populated when needsReview is true.
    */
-  reviewReasons?: UnresolvedExercise[];
-}
+  reviewReasons: z.array(UnresolvedExerciseSchema).optional(),
+});
+export type WorkoutPlanGenerationResult = z.infer<
+  typeof WorkoutPlanGenerationResultSchema
+>;
 
 /**
  * Callback type for workout generation progress updates
@@ -157,24 +185,13 @@ export type WorkoutGenerationProgressCallback = (progress: {
 // ============================================================================
 
 /**
- * Result from nutrition plan generation
+ * Result from nutrition plan generation.
+ * Single source of truth derived from the Zod schema — no manual interface.
+ * @see nutritionPlanGenerationResultSchema in ai-validation.ts
  */
-export interface NutritionPlanGenerationResult {
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  dailyTargets: {
-    dayOfWeek: number;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-  }[];
-  reasoning: string;
-  weeklyNotes: string;
-  newNotes: AIGeneratedNote[];
-}
+export type NutritionPlanGenerationResult = z.infer<
+  typeof nutritionPlanGenerationResultSchema
+>;
 
 /**
  * Internal type for nutrition targets from AI
@@ -207,17 +224,9 @@ export interface NutritionTargetsArgs {
 
 /**
  * Activity entry for real-time strategy generation progress display.
+ * @deprecated Import StrategyGenerationActivity from domain/training-strategy instead
  */
-export interface StrategyGenerationActivity {
-  /** Timestamp of the activity */
-  timestamp: string;
-  /** Type of activity */
-  type: 'search' | 'create' | 'select' | 'plan' | 'note' | 'thinking' | 'complete' | 'analyze';
-  /** Short description of the activity */
-  message: string;
-  /** Optional additional data */
-  data?: Record<string, unknown>;
-}
+export type StrategyGenerationActivity = _StrategyGenerationActivity;
 
 /**
  * Progress update for strategy generation
@@ -245,53 +254,27 @@ export interface StrategyGenerationProgress {
 /**
  * Callback type for strategy generation progress updates
  */
-export type StrategyGenerationProgressCallback = (progress: StrategyGenerationProgress) => void;
+export type StrategyGenerationProgressCallback = (
+  progress: StrategyGenerationProgress,
+) => void;
 
 /**
  * Goal draft for strategy generation
+ * @deprecated Import StrategyGoalDraftContract from domain/training-strategy instead
  */
-export interface StrategyGoalDraft {
-  /** MetricDefinition code string (previously GoalMetricKey) */
-  goalMetric: string;
-  goalTarget: number;
-  linkedExerciseId?: string;
-  weight?: number;
-  baselineValue?: number;
-}
+export type StrategyGoalDraft = StrategyGoalDraftContract;
 
 /**
  * Training phase draft for strategy generation
+ * @deprecated Import TrainingPhaseDraft from domain/training-strategy instead
  */
-export interface TrainingPhaseDraft {
-  name: string;
-  order: number;
-  weekCount: number;
-  intensityRange?: string;
-  volumeLevel?: VolumeLevel;
-  focusAreas: string[];
-  notes?: string;
-  startDate?: string;
-  endDate?: string;
-  isActive: boolean;
-  isCompleted: boolean;
-}
+export type TrainingPhaseDraft = _TrainingPhaseDraft;
 
 /**
  * Strategy draft from AI generation
+ * @deprecated Import StrategyDraftContract from domain/training-strategy instead
  */
-export interface StrategyDraft {
-  name: string;
-  type: string;
-  goal: string;
-  description?: string;
-  startDate: string;
-  endDate?: string;
-  status: string;
-  goals: StrategyGoalDraft[];
-  phases?: TrainingPhaseDraft[];
-  /** AI reasoning for why this strategy was designed this way */
-  reasoning?: string;
-}
+export type StrategyDraft = StrategyDraftContract;
 
 /**
  * Clarification request when AI needs more information
@@ -318,7 +301,9 @@ export interface StrategyGenerationResult {
  * Combined response type for strategy generation
  * Discriminated union on needsClarification boolean
  */
-export type StrategyGenerationResponse = StrategyClarificationNeeded | StrategyGenerationResult;
+export type StrategyGenerationResponse =
+  | StrategyClarificationNeeded
+  | StrategyGenerationResult;
 
 // ============================================================================
 // AI Notes Types
@@ -327,15 +312,16 @@ export type StrategyGenerationResponse = StrategyClarificationNeeded | StrategyG
 /**
  * Note generated by AI during plan/strategy generation
  */
-export interface AIGeneratedNote {
-  id: string;
-  userId: string;
-  content: string;
-  category: AINoteCategory;
-  source?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export const AIGeneratedNoteSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  content: z.string().min(1),
+  category: AINoteCategorySchema,
+  source: z.string().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+export type AIGeneratedNote = z.infer<typeof AIGeneratedNoteSchema>;
 
 // ============================================================================
 // Exercise Search Types (for AI tool results)

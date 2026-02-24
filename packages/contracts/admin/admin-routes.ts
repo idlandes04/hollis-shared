@@ -804,6 +804,28 @@ export const ADMIN_AI_CHAT_ROUTES = {
 } as const;
 
 // ============================================================================
+// ADMIN TASK ROUTES
+// ============================================================================
+
+/**
+ * Admin task management routes.
+ * Base path: /api/admin/tasks
+ */
+export const ADMIN_TASK_ROUTES = {
+  /** GET - List pending/in-progress admin tasks */
+  LIST: '/api/admin/tasks',
+
+  /** POST - Resolve an admin task */
+  resolve: (taskId: string) => `/api/admin/tasks/${taskId}/resolve` as const,
+
+  /** POST - Dismiss an admin task */
+  dismiss: (taskId: string) => `/api/admin/tasks/${taskId}/dismiss` as const,
+
+  /** POST - Assign an admin task */
+  assign: (taskId: string) => `/api/admin/tasks/${taskId}/assign` as const,
+} as const;
+
+// ============================================================================
 // AGGREGATED ADMIN ROUTES
 // ============================================================================
 
@@ -848,4 +870,5 @@ export const ADMIN_API_ROUTES = {
   INVENTORY: ADMIN_INVENTORY_ROUTES,
   MOBILE_SESSIONS: ADMIN_MOBILE_SESSION_ROUTES,
   AI_CHAT: ADMIN_AI_CHAT_ROUTES,
+  TASKS: ADMIN_TASK_ROUTES,
 } as const;

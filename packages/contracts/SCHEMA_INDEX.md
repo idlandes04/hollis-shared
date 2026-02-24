@@ -91,7 +91,6 @@ Domain-specific enum schemas live alongside their tuples/constants. Import from 
 | `StrategyStatusSchema` | ACTIVE, COMPLETED, PAUSED, CANCELLED                             |
 | `GoalCategorySchema`   | fitness, body_composition, cardiovascular, etc.                  |
 | `GoalDataSourceSchema` | biometric, lab, exercise_log, manual                             |
-| `ProgressTypeSchema`   | on_track, ahead, behind, stalled                                 |
 
 ### sessions.ts
 

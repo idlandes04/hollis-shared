@@ -13,23 +13,6 @@ import { z } from "zod";
 // MOBILE SESSION BALANCE
 // ============================================================================
 
-export interface MobileSessionBalanceContract {
-  userId: string;
-
-  // Free sessions (CONCIERGE only)
-  freeAllocationPerMonth: number; // 2 for CONCIERGE, 0 for others
-  freeAvailable: number; // Current available (max 4)
-  freeMaxRollover: number; // 4
-
-  // Paid sessions (never expire)
-  paidBalance: number;
-
-  // Total available (free + paid)
-  totalAvailable: number;
-
-  lastFreeResetDate: string | null;
-}
-
 export const MobileSessionBalanceSchema = z.object({
   /** userId uses HH-XXXXXX barcode format, not UUID */
   userId: z.string().min(1),
@@ -40,7 +23,11 @@ export const MobileSessionBalanceSchema = z.object({
   totalAvailable: z.number().int(),
   lastFreeResetDate: z.string().nullable(),
 });
-export type MobileSessionBalance = z.infer<typeof MobileSessionBalanceSchema>;
+export type MobileSessionBalanceContract = z.infer<
+  typeof MobileSessionBalanceSchema
+>;
+/** @deprecated Use MobileSessionBalanceContract */
+export type MobileSessionBalance = MobileSessionBalanceContract;
 
 // ============================================================================
 // MOBILE SESSION USAGE
@@ -53,15 +40,6 @@ export const MOBILE_SESSION_SOURCES = [
 
 export type MobileSessionSource = (typeof MOBILE_SESSION_SOURCES)[number];
 
-export interface MobileSessionUsageContract {
-  id: string;
-  userId: string;
-  source: MobileSessionSource;
-  usedAt: string;
-  appointmentId: string | null;
-  notes: string | null;
-}
-
 export const MobileSessionUsageSchema = z.object({
   id: z.string().uuid(),
   /** userId uses HH-XXXXXX barcode format, not UUID */
@@ -71,7 +49,11 @@ export const MobileSessionUsageSchema = z.object({
   appointmentId: z.string().nullable(),
   notes: z.string().nullable(),
 });
-export type MobileSessionUsage = z.infer<typeof MobileSessionUsageSchema>;
+export type MobileSessionUsageContract = z.infer<
+  typeof MobileSessionUsageSchema
+>;
+/** @deprecated Use MobileSessionUsageContract */
+export type MobileSessionUsage = MobileSessionUsageContract;
 
 // ============================================================================
 // PURCHASE REQUEST
@@ -88,15 +70,6 @@ export type PurchaseMobileSessionsRequest = z.infer<
 // PURCHASE RESPONSE
 // ============================================================================
 
-export interface MobileSessionPurchaseContract {
-  id: string;
-  userId: string;
-  quantity: number;
-  unitPriceInCents: number; // $80 = 8000
-  totalInCents: number;
-  purchasedAt: string;
-}
-
 export const MobileSessionPurchaseSchema = z.object({
   id: z.string().uuid(),
   /** userId uses HH-XXXXXX barcode format, not UUID */
@@ -106,7 +79,11 @@ export const MobileSessionPurchaseSchema = z.object({
   totalInCents: z.number().int(),
   purchasedAt: z.string(),
 });
-export type MobileSessionPurchase = z.infer<typeof MobileSessionPurchaseSchema>;
+export type MobileSessionPurchaseContract = z.infer<
+  typeof MobileSessionPurchaseSchema
+>;
+/** @deprecated Use MobileSessionPurchaseContract */
+export type MobileSessionPurchase = MobileSessionPurchaseContract;
 
 // ============================================================================
 // CONSTANTS

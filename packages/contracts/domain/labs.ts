@@ -390,46 +390,64 @@ export type GoalTargetDirection = z.infer<typeof GoalTargetDirectionSchema>;
 export const GoalTargetDirectionSchema = z.enum(GOAL_TARGET_DIRECTIONS);
 
 // ============================================================================
+// GOAL SOURCE (Audit/Display)
+// ============================================================================
+
+/** Tuple of valid goal source values (source of truth) */
+export const GOAL_SOURCES = ["clinician", "none"] as const;
+export type GoalSource = z.infer<typeof GoalSourceSchema>;
+
+/** Zod schema for goal source */
+export const GoalSourceSchema = z.enum(GOAL_SOURCES);
+
+/** Constant object for goal source comparisons */
+export const GOAL_SOURCE = {
+  CLINICIAN: "clinician" as GoalSource,
+  NONE: "none" as GoalSource,
+} as const;
+
+/** Human-readable labels for goal sources */
+export const GOAL_SOURCE_LABELS: Record<GoalSource, string> = {
+  clinician: "Clinician",
+  none: "None",
+};
+
+// ============================================================================
 // LAB OBSERVATION CONTRACT
 // ============================================================================
 
 /**
  * Lab observation contract - represents a single lab result observation.
  */
-export const LabObservationSchema = z.object(
-  {
-    id: z.string(),
-    userId: z.string(),
-    reportId: z.string(),
-    metricDefinitionId: z.string().min(1),
-    observedAt: z.string(),
-    rawAnalyteName: z.string(),
-    rawValueText: z.string().nullable().optional(),
-    rawValueNumber: z.number().nullable().optional(),
-    rawUnit: z.string().nullable().optional(),
-    rawReferenceIntervalText: z.string().nullable().optional(),
-    rawReferenceIntervalLow: z.number().nullable().optional(),
-    rawReferenceIntervalHigh: z.number().nullable().optional(),
-    rawFlag: z.string().nullable().optional(),
-    canonicalValue: z.number().nullable().optional(),
-    canonicalUnit: z.string().nullable().optional(),
-    labReferenceIntervalLow: z.number().nullable().optional(),
-    labReferenceIntervalHigh: z.number().nullable().optional(),
-    labReferenceIntervalText: z.string().nullable().optional(),
-    labFlag: z.string().nullable().optional(),
-    mappingStatus: LabMappingStatusSchema,
-    mappingConfidence: z.number().min(0).max(1).nullable().optional(),
-    notes: z.string().nullable().optional(),
-    tags: z.array(z.string()).nullable().optional(),
-    extractionConfidences: z
-      .record(z.string(), z.number())
-      .nullable()
-      .optional(),
-    extractionFragments: z.record(z.string(), z.string()).nullable().optional(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-  },
-);
+export const LabObservationSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  reportId: z.string(),
+  metricDefinitionId: z.string().min(1),
+  observedAt: z.string(),
+  rawAnalyteName: z.string(),
+  rawValueText: z.string().nullable().optional(),
+  rawValueNumber: z.number().nullable().optional(),
+  rawUnit: z.string().nullable().optional(),
+  rawReferenceIntervalText: z.string().nullable().optional(),
+  rawReferenceIntervalLow: z.number().nullable().optional(),
+  rawReferenceIntervalHigh: z.number().nullable().optional(),
+  rawFlag: z.string().nullable().optional(),
+  canonicalValue: z.number().nullable().optional(),
+  canonicalUnit: z.string().nullable().optional(),
+  labReferenceIntervalLow: z.number().nullable().optional(),
+  labReferenceIntervalHigh: z.number().nullable().optional(),
+  labReferenceIntervalText: z.string().nullable().optional(),
+  labFlag: z.string().nullable().optional(),
+  mappingStatus: LabMappingStatusSchema,
+  mappingConfidence: z.number().min(0).max(1).nullable().optional(),
+  notes: z.string().nullable().optional(),
+  tags: z.array(z.string()).nullable().optional(),
+  extractionConfidences: z.record(z.string(), z.number()).nullable().optional(),
+  extractionFragments: z.record(z.string(), z.string()).nullable().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
 export type LabObservationContract = z.infer<typeof LabObservationSchema>;
 
 // ============================================================================
@@ -458,6 +476,65 @@ export const LabReportSchema = z.object({
   updatedAt: z.string(),
 });
 export type LabReportContract = z.infer<typeof LabReportSchema>;
+
+// ============================================================================
+// LAB TREND DATA POINT (Computed Trend Types)
+// ============================================================================
+
+/** Mapping status values used in lab trend data points (lowercase for API responses) */
+export const LAB_TREND_MAPPING_STATUSES = [
+  "mapped",
+  "unmapped",
+  "ambiguous",
+] as const;
+export type LabTrendMappingStatus = z.infer<typeof LabTrendMappingStatusSchema>;
+
+/** Zod schema for lab trend mapping status */
+export const LabTrendMappingStatusSchema = z.enum(LAB_TREND_MAPPING_STATUSES);
+
+/** Zod schema for a single lab trend data point */
+export const LabTrendDataPointSchema = z.object({
+  observationId: z.string(),
+  observedAt: z.string(),
+  canonicalValue: z.number().nullable(),
+  canonicalUnit: z.string().nullable(),
+  labReferenceIntervalLow: z.number().nullable(),
+  labReferenceIntervalHigh: z.number().nullable(),
+  labReferenceIntervalText: z.string().nullable(),
+  mappingStatus: LabTrendMappingStatusSchema,
+});
+export type LabTrendDataPoint = z.infer<typeof LabTrendDataPointSchema>;
+
+// ============================================================================
+// LAB METRIC TREND CONTRACT (Computed Trend Response)
+// ============================================================================
+
+/** Zod schema for the lab metric trend contract (per-metric trend with clinical interpretation) */
+export const LabMetricTrendContractSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  metricDefinitionId: z.string(),
+  metricCode: z.string(),
+  metricName: z.string(),
+  canonicalUnit: z.string(),
+  directionality: LabMetricDirectionalitySchema,
+  variabilityThreshold: z.number().nullable(),
+  optimalRangeLow: z.number().nullable(),
+  optimalRangeHigh: z.number().nullable(),
+  dataPoints: z.array(LabTrendDataPointSchema),
+  latestValue: z.number().nullable(),
+  latestObservedAt: z.string().nullable(),
+  startValue: z.number().nullable(),
+  startObservedAt: z.string().nullable(),
+  percentChange: z.number().nullable(),
+  absoluteChange: z.number().nullable(),
+  labRangeStatus: LabRangeStatusSchema,
+  changeSignificance: LabChangeSignificanceSchema,
+  clinicalDirection: LabClinicalDirectionSchema,
+});
+export type LabMetricTrendContract = z.infer<
+  typeof LabMetricTrendContractSchema
+>;
 
 // ============================================================================
 // MOCK FACTORIES

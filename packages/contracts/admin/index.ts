@@ -31,13 +31,16 @@
  */
 
 // Types
-export * from './admin-types';
+export * from "./admin-types";
 
 // Routes
-export * from './admin-routes';
+export * from "./admin-routes";
 
 // Schemas
-export * from './admin-schemas';
+export * from "./admin-schemas";
 
 // Notifications - admin realtime notification kinds
-export * from './notifications';
+export * from "./notifications";
+
+// Labs admin contracts - metric search, creation, extraction, order management
+export * from "./labs";

@@ -43,7 +43,8 @@ export {
     type VolumeLevel
 } from "../primitives";
 
-/** @deprecated Use VolumeLevelSchema (PascalCase) from primitives. Remove after 2026-05-01 */
+/** @deprecated Use VolumeLevelSchema (PascalCase) from primitives. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias
 export const volumeLevelSchema = VolumeLevelSchema;
 
@@ -51,19 +52,24 @@ export const volumeLevelSchema = VolumeLevelSchema;
 // CAMELCASE SCHEMA ALIASES (Backward Compatibility)
 // ============================================================================
 
-/** @deprecated Use StrategyTypeSchema (PascalCase) from training. Remove after 2026-05-01 */
+/** @deprecated Use StrategyTypeSchema (PascalCase) from training. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias
 export const strategyTypeSchema = StrategyTypeSchema;
-/** @deprecated Use StrategyStatusSchema (PascalCase) from training. Remove after 2026-05-01 */
+/** @deprecated Use StrategyStatusSchema (PascalCase) from training. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias
 export const strategyStatusSchema = StrategyStatusSchema;
-/** @deprecated Use GoalCategorySchema (PascalCase) from training. Remove after 2026-05-01 */
+/** @deprecated Use GoalCategorySchema (PascalCase) from training. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias
 export const goalCategorySchema = GoalCategorySchema;
-/** @deprecated Use GoalDataSourceSchema (PascalCase) from training. Remove after 2026-05-01 */
+/** @deprecated Use GoalDataSourceSchema (PascalCase) from training. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias
 export const goalDataSourceSchema = GoalDataSourceSchema;
-/** @deprecated Use GoalDirectionSchema (PascalCase) from training. Remove after 2026-05-01 */
+/** @deprecated Use GoalDirectionSchema (PascalCase) from training. Remove after 2026-05-01
+ *  @removal-deadline 2026-05-01 */
 // zod-manual: deprecated alias
 export const goalDirectionSchema = GoalDirectionSchema;
 
@@ -87,6 +93,7 @@ export const DetailedStrategyGoalSchema = z.object({
   dataSource: GoalDataSourceSchema,
   dataKey: z.string().optional(),
   progressPercent: z.number().min(0).max(100),
+  notes: z.string().nullable().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   metricDefinition: MetricDefinitionSummarySchema.nullable().optional(),
@@ -323,8 +330,19 @@ export type StrategyDraftContract = z.infer<typeof StrategyDraftSchema>;
 /**
  * Activity entry for real-time strategy generation progress display.
  */
-// schema-first-todo: data field type mismatch (interface: Record<string, unknown> vs schema: restricted union); defer migration
-export interface StrategyGenerationActivityContract {
+/**
+ * Activity entry for real-time strategy generation progress display.
+ * Derived from StrategyGenerationActivitySchema for schema↔type consistency.
+ *
+ * Note: The schema restricts `data` values to string | number | boolean | null | string[].
+ * The previous manually-defined interface used Record<string, unknown> which was looser.
+ */
+export type StrategyGenerationActivityContract = z.infer<
+  typeof StrategyGenerationActivitySchema
+>;
+
+/** @deprecated Use StrategyGenerationActivityContract (derived from schema). */
+export interface _StrategyGenerationActivityContractLegacy {
   /** Timestamp of the activity */
   timestamp: string;
   /** Type of activity */

@@ -66,6 +66,9 @@ export {
     type PasswordValidationResult
 } from "./password";
 
+// Shared error classes
+export * from "./errors";
+
 // Error sanitization (PHI protection)
 export {
     REDACTION_PLACEHOLDERS,

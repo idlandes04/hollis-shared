@@ -10,10 +10,8 @@ import { z } from "zod";
 // SETUP INTENT
 // ============================================================================
 
-export interface SetupIntentContract {
-  clientSecret: string;
-  customerId: string;
-}
+/** @deprecated Use SetupIntent (derived from SetupIntentSchema) instead */
+export type SetupIntentContract = SetupIntent;
 
 export const SetupIntentSchema = z.object({
   clientSecret: z.string(),
@@ -25,14 +23,8 @@ export type SetupIntent = z.infer<typeof SetupIntentSchema>;
 // PAYMENT METHOD
 // ============================================================================
 
-export interface PaymentMethodContract {
-  id: string;
-  brand: string; // visa, mastercard, amex, etc.
-  last4: string;
-  expMonth: number;
-  expYear: number;
-  isDefault: boolean;
-}
+/** @deprecated Use PaymentMethod (derived from PaymentMethodSchema) instead */
+export type PaymentMethodContract = PaymentMethod;
 
 export const PaymentMethodSchema = z.object({
   id: z.string(),
@@ -86,9 +78,8 @@ export type CollectPaymentRequest = z.infer<typeof CollectPaymentRequestSchema>;
 // STRIPE CONFIG (for frontend)
 // ============================================================================
 
-export interface StripeConfigContract {
-  publishableKey: string;
-}
+/** @deprecated Use StripeConfig (derived from StripeConfigSchema) instead */
+export type StripeConfigContract = StripeConfig;
 
 export const StripeConfigSchema = z.object({
   publishableKey: z.string(),
@@ -109,8 +100,50 @@ export const RefundRequestSchema = z.object({
 });
 export type RefundRequest = z.infer<typeof RefundRequestSchema>;
 
-export interface RefundResponse {
-  refundId: string;
-  status: string;
-  amount: number; // cents
-}
+export const refundResponseSchema = z.object({
+  refundId: z.string(),
+  status: z.string(),
+  amount: z.number().int(), // cents
+});
+
+export type RefundResponse = z.infer<typeof refundResponseSchema>;
+
+// ============================================================================
+// PAYMENT HISTORY
+// ============================================================================
+
+export const PAYMENT_HISTORY_STATUSES = [
+  "paid",
+  "pending",
+  "failed",
+  "refunded",
+] as const;
+export type PaymentHistoryStatus = (typeof PAYMENT_HISTORY_STATUSES)[number];
+
+export const PaymentHistoryItemSchema = z.object({
+  id: z.string(),
+  invoiceId: z.string(),
+  amount: z.number(),
+  status: z.enum(PAYMENT_HISTORY_STATUSES),
+  date: z.string(),
+  invoicePdfUrl: z.string().nullable(),
+  description: z.string(),
+});
+export type PaymentHistoryItem = z.infer<typeof PaymentHistoryItemSchema>;
+
+export const PaymentHistoryResponseSchema = z.object({
+  payments: z.array(PaymentHistoryItemSchema),
+  hasMore: z.boolean(),
+});
+export type PaymentHistoryResponse = z.infer<typeof PaymentHistoryResponseSchema>;
+
+// ============================================================================
+// TERMINAL READER
+// ============================================================================
+
+export const TerminalReaderSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  status: z.string(),
+});
+export type TerminalReader = z.infer<typeof TerminalReaderSchema>;
