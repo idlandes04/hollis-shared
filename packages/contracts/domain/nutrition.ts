@@ -132,8 +132,17 @@ export const LOCATION_TYPE_LABELS: Record<LocationType, string> = {
  * - barcode: Scanned from product barcode
  * - custom: User-created custom food
  * - manual: Manual entry without database lookup
+ * - ai: Logged directly from AI food analysis
+ * - ai_edited: AI-analysed then manually edited by user (no quality score / reasoning)
  */
-export const FOOD_SOURCES = ["search", "barcode", "custom", "manual"] as const;
+export const FOOD_SOURCES = [
+  "search",
+  "barcode",
+  "custom",
+  "manual",
+  "ai",
+  "ai_edited",
+] as const;
 
 export type FoodSource = z.infer<typeof FoodSourceSchema>;
 
@@ -145,6 +154,8 @@ export const FOOD_SOURCE = {
   BARCODE: "barcode",
   CUSTOM: "custom",
   MANUAL: "manual",
+  AI: "ai",
+  AI_EDITED: "ai_edited",
 } as const satisfies Record<string, FoodSource>;
 
 /** Human-readable labels for food sources */
@@ -153,6 +164,8 @@ export const FOOD_SOURCE_LABELS: Record<FoodSource, string> = {
   barcode: "Barcode Scan",
   custom: "Custom Food",
   manual: "Manual Entry",
+  ai: "AI Analysis",
+  ai_edited: "AI (Edited)",
 };
 
 // ============================================================================
@@ -527,11 +540,13 @@ export type Micronutrients = z.infer<typeof micronutrientsSchema>;
 // ============================================================================
 
 export const aiAnalysisResultSchema = z.object({
+  rejected: z.boolean().optional().default(false),
+  rejectionReason: z.string().optional(),
   foodName: z.string(),
   description: z.string(),
   macros: NutritionMacroBreakdownSchema,
   micros: micronutrientsSchema.optional(),
-  nutritionQualityIndex: z.number().min(1).max(100),
+  nutritionQualityIndex: z.number().min(0).max(100),
   confidence: z.number().min(0).max(1),
   reasoning: z.string().optional(),
 });

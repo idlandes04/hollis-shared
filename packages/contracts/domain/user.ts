@@ -1246,16 +1246,16 @@ export const UserPreferencesSchema = z.object({
   unitSystem: z.enum(["imperial", "metric", "advanced"]),
   timeFormat: z.enum(["standard", "military"]),
   locale: z.string(),
-  dashboard: dashboardPreferencesSchema.default({
+  dashboard: dashboardPreferencesSchema.nullable().default({
     sectionOrder: ["dailySummary", "nutrition", "workout", "recovery"],
     hiddenSections: [],
     pinnedSections: [],
   }),
-  advancedUnits: advancedUnitPreferencesSchema.default(defaultAdvancedUnits()),
-  notifications: notificationPreferencesSchema.default(defaultNotifications()),
+  advancedUnits: advancedUnitPreferencesSchema.nullable().default(defaultAdvancedUnits()),
+  notifications: notificationPreferencesSchema.nullable().default(defaultNotifications()),
   /** @deprecated Alias for `unitSystem`. No standalone DB column. Use `unitSystem` instead. Will be removed in a future contract cleanup. */
   units: z.enum(["imperial", "metric", "advanced"]).optional(),
-  dashboardCardOrder: z.array(z.string()).optional(),
+  dashboardCardOrder: z.array(z.string()).nullable().optional(),
   dashboardSections: dashboardSectionsSchema.optional(),
   /** @stored-in UserPreferences.dashboard JSON blob as dashboard.hiddenSections. Not a standalone DB column. Derive from dashboard.hiddenSections at serialisation time. */
   hiddenDashboardCards: z.array(z.string()).optional(),

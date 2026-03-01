@@ -32,7 +32,6 @@ import {
     AdminTaskPrioritySchema,
     AdminTaskTypeSchema,
 } from "../domain/admin-tasks";
-import { createPaginatedListSchema } from "../domain/pagination";
 import {
     InjuryRecoveryStatusSchema,
     LimitationSeveritySchema,
@@ -44,8 +43,9 @@ import {
     LabMetricDirectionalitySchema,
     MetricApprovalStatusSchema,
 } from "../domain/labs";
+import { createPaginatedListSchema } from "../domain/pagination";
 import { VolumeLevelSchema } from "../primitives/volume-level";
-import { heightCmSchema, weightKgSchema } from "../schemas";
+import { USER_ID_REGEX, heightCmSchema, weightKgSchema } from "../schemas";
 
 // ============================================================================
 // ADMIN-SPECIFIC ENUMS
@@ -326,7 +326,9 @@ export type PrefilledProfile = z.infer<typeof prefilledProfileSchema>;
  */
 export const registeredUserSchema = z.object({
   id: z.string(),
-  barcode: z.string().regex(/^HH-[A-HJ-KM-NP-Z2-9]{6}$/),
+  barcode: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid barcode format (expected HH-XXXXXX)"),
   prefilledEmail: z.string().email().nullable().optional(),
   prefilledTier: UserTierSchema.nullable().optional(),
   prefilledProfile: prefilledProfileSchema.nullable().optional(),

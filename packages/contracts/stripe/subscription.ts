@@ -218,7 +218,7 @@ export const SubscriptionSchema = z.object({
   contractDuration: ContractDurationSchema,
   contractStartDate: z.string(),
   contractEndDate: z.string(),
-  discountPercent: z.number(),
+  discountPercent: z.coerce.number(),
   billingSource: BillingSourceSchema,
   billingOrganizationId: z.string().nullable(),
   monthlyPriceInCents: z.number().int(),

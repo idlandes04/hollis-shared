@@ -133,7 +133,25 @@ export const LAB_MAPPING_STATUS_LABELS: Record<LabMappingStatus, string> = {
 // LAB METRIC DIRECTIONALITY
 // ============================================================================
 
-/** Tuple of valid lab metric directionality values (source of truth). UPPER_CASE to match Prisma enum. */
+/**
+ * Tuple of valid lab metric directionality values (source of truth).
+ *
+ * NOTE: This is a pure application-layer type — it does NOT correspond to any
+ * Prisma/DB enum. The `LabMetricDirectionality` Prisma enum was dropped in
+ * migration 20260228200000_sync_schema_drift and replaced by the DB-level
+ * `TrendDirection` enum (`HIGHER_BETTER`, `LOWER_BETTER`, `TARGET_BETTER`).
+ *
+ * When writing to the `MetricDefinition.trendDirection` DB column, use
+ * `mapDirectionalityToTrend()` in `labMetricDefinitionService.ts` or
+ * `labCanonicalizationService.ts` to convert:
+ *   HIGHER_IS_BETTER -> HIGHER_BETTER
+ *   LOWER_IS_BETTER  -> LOWER_BETTER
+ *   OPTIMAL_ZONE     -> TARGET_BETTER
+ *   DECISION_LIMIT   -> null (binary threshold, no single direction)
+ *
+ * When reading `trendDirection` from the DB for API responses, `labTrendService.ts`
+ * performs the reverse mapping back to `LabMetricDirectionality`.
+ */
 export const LAB_METRIC_DIRECTIONALITIES = [
   "LOWER_IS_BETTER",
   "HIGHER_IS_BETTER",
