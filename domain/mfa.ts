@@ -394,7 +394,10 @@ export type BackupCodesRequestContract = z.infer<
  */
 export const mfaStatusResponseSchema = z.object({
   isEnabled: z.boolean(),
-  isRequired: z.boolean(), // True for ADMIN/CLINICIAN roles
+  /** @deprecated MFA is no longer enforced. Always false. Use isRecommended instead. */
+  isRequired: z.boolean(),
+  /** True when MFA is recommended for this user's role (ADMIN/CLINICIAN) as best practice. */
+  isRecommended: z.boolean().optional().default(false),
   credentials: z.array(mfaCredentialResponseSchema),
   hasBackupCodes: z.boolean(),
   lastVerifiedAt: z.string().datetime().nullable(),

@@ -198,8 +198,8 @@ export const BusinessDailySnapshotSchema = z.object({
   date: z.string(), // ISO date string
 
   // Financials
-  totalRevenue: z.number().min(0).default(0),
-  mrr: z.number().min(0).default(0),
+  totalRevenue: z.coerce.number().min(0).default(0),
+  mrr: z.coerce.number().min(0).default(0),
 
   // Engagement
   activeUsers: z.number().int().default(0),

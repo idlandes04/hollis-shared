@@ -101,8 +101,17 @@ export const journalEntrySchema = baseDocumentSchema.extend({
   userId: z.string(),
   entryDate: isoDateSchema,
   content: z.string().min(1),
-  mood: JournalMoodSchema.nullable().optional(),
-  energy: JournalEnergySchema.nullable().optional(),
+  /**
+   * Mood is stored as a free-form String in Prisma. `.catch(null)` ensures
+   * unrecognised legacy values gracefully degrade to null at parse time
+   * instead of throwing, eliminating the need for defensive coercion in
+   * the service layer.
+   */
+  mood: JournalMoodSchema.nullable().optional().catch(null),
+  /**
+   * Energy follows the same graceful-degradation pattern as mood above.
+   */
+  energy: JournalEnergySchema.nullable().optional().catch(null),
   stressLevel: z.number().int().min(1).max(10).nullable().optional(),
   planAdherence: z.number().int().min(1).max(3).nullable().optional(),
   motivation: z.number().int().min(1).max(10).nullable().optional(),

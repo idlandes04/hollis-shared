@@ -45,15 +45,20 @@ export const dailyMetricsSchema = baseDocumentSchema.extend({
   id: z.string().optional(),
   userId: z.string(),
   date: isoDateSchema,
-  tdeeEstimate: z.number().int().min(0).nullable().optional(),
-  tdeeConfidence: z.number().min(0).max(1).optional().nullable(),
-  recoveryScore: z.number().int().min(0).max(100).nullable().optional(),
-  trainingLoad: z.number().int().min(0).nullable().optional(),
+  // NOTE: Range constraints (.min/.max) are intentionally absent on these output fields.
+  // Validation of acceptable ranges MUST happen at the write/input layer (e.g. route or
+  // service validation schemas), not here. Applying range constraints to the read/output
+  // schema causes 500 errors when wearable sync data that is already persisted to the DB
+  // falls outside the expected range (e.g. a wearable device returns a score of 101).
+  tdeeEstimate: z.number().int().nullable().optional(),
+  tdeeConfidence: z.number().nullable().optional(),
+  recoveryScore: z.number().int().nullable().optional(),
+  trainingLoad: z.number().int().nullable().optional(),
   strainDelta: z.number().int().nullable().optional(),
-  sleepScore: z.number().int().min(0).max(100).nullable().optional(),
-  readinessScore: z.number().int().min(0).max(100).nullable().optional(),
+  sleepScore: z.number().int().nullable().optional(),
+  readinessScore: z.number().int().nullable().optional(),
   caloricBalance: z.number().int().nullable().optional(),
-  acuteChronicRatio: z.number().min(0).nullable().optional(),
+  acuteChronicRatio: z.number().nullable().optional(),
   notes: z.array(z.string()).optional(),
   recommendations: z.array(z.string()).optional(),
 });

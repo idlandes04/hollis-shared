@@ -213,10 +213,18 @@ export const phiAuditLogEntrySchema = z.object({
   userAgent: z.string().nullable(),
   success: z.boolean(),
   errorMessage: z.string().nullable(),
-  accessReason: z.string().nullable(),
-  sequenceNumber: z.string().nullable(),
+  /**
+   * Required in Prisma with @default("unspecified"). Must not be nullable here
+   * because the DB guarantees a non-null value via the column default.
+   */
+  accessReason: z.string(),
+  sequenceNumber: z.union([z.string(), z.bigint().transform(String)]).nullable(),
   previousHash: z.string().nullable(),
-  integrityHash: z.string().nullable(),
+  /**
+   * Required in Prisma with @default(""). Must not be nullable here because
+   * the DB guarantees a non-null value via the column default.
+   */
+  integrityHash: z.string(),
   verifiedAt: z.string().nullable(),
   createdAt: z.string(),
 });
@@ -243,10 +251,10 @@ export const createMockPhiAuditLogEntry = (
   userAgent: "jest",
   success: true,
   errorMessage: null,
-  accessReason: "Treatment",
+  accessReason: "LEGACY_UNSPECIFIED",
   sequenceNumber: null,
   previousHash: null,
-  integrityHash: null,
+  integrityHash: "",
   verifiedAt: null,
   createdAt: new Date().toISOString(),
   ...overrides,
