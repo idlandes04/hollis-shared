@@ -29,8 +29,8 @@ import { z } from "zod";
  * Change these values to update policy across all codebases.
  */
 export const PASSWORD_POLICY = {
-  /** Minimum password length. 10 chars provides ~50 bits of entropy minimum. */
-  MIN_LENGTH: 10,
+  /** Minimum password length. */
+  MIN_LENGTH: 6,
 
   /** Maximum password length. Prevents DoS; bcrypt only uses first 72 bytes anyway. */
   MAX_LENGTH: 128,

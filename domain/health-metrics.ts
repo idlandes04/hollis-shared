@@ -154,6 +154,8 @@ export type HealthImprovementPoint = z.infer<
 export const HealthImprovementPointSchema = z.object({
   date: z.string(),
   percentChange: z.number(),
+  /** Raw overall health score (0-100) at this point in time */
+  score: z.number().min(0).max(100),
 });
 
 /**

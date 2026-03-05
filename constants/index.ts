@@ -108,7 +108,7 @@ export const VALIDATION_LIMITS = {
   /** Maximum length for email addresses */
   EMAIL_MAX: 255,
   /** Minimum password length */
-  PASSWORD_MIN: 8,
+  PASSWORD_MIN: 6,
   /** Maximum length for general text fields */
   TEXT_FIELD_MAX: 5000,
   /** Maximum length for notes fields */
@@ -179,3 +179,10 @@ export const UNIT_CONVERSION = {
   MI_PER_M: 0.000621371,
   FT_PER_M: 3.28084,
 } as const;
+
+// Monthly price in cents for each membership tier (used for pipeline MRR estimates)
+export const TIER_MONTHLY_PRICE: Record<string, number> = {
+  ESSENTIALS: 799,
+  CORE: 1349,
+  CONCIERGE: 1999,
+};
