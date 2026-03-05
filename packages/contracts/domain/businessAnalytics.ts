@@ -29,6 +29,7 @@ export const LAB_ORDER_STATUSES = [
   "SAMPLE_RECEIVED",
   "RESULTS_PENDING",
   "RESULTS_REVIEWED",
+  "RESULTS_PUBLISHED",
 ] as const;
 
 /** Zod schema for lab order status - derived from tuple */
@@ -42,6 +43,7 @@ export const LAB_ORDER_STATUS = {
   SAMPLE_RECEIVED: "SAMPLE_RECEIVED" as LabOrderStatus,
   RESULTS_PENDING: "RESULTS_PENDING" as LabOrderStatus,
   RESULTS_REVIEWED: "RESULTS_REVIEWED" as LabOrderStatus,
+  RESULTS_PUBLISHED: "RESULTS_PUBLISHED" as LabOrderStatus,
 } as const;
 
 /** Human-readable labels for lab order statuses */
@@ -50,7 +52,8 @@ export const LAB_ORDER_STATUS_LABELS: Record<LabOrderStatus, string> = {
   KIT_SENT: "Kit Sent",
   SAMPLE_RECEIVED: "Sample Received",
   RESULTS_PENDING: "Results Pending",
-  RESULTS_REVIEWED: "Results Reviewed",
+  RESULTS_REVIEWED: "Review Pending",
+  RESULTS_PUBLISHED: "Published",
 };
 
 /**
@@ -362,14 +365,43 @@ export const LeadPipelineItemSchema = z.object({
   stage: LeadStageSchema,
   stageChangedAt: z.string(), // ISO timestamp
   source: z.string().nullable(),
+  interestedTier: z.string().nullable(),
   referredByName: z.string().nullable(),
   consultationDate: z.string().nullable(), // ISO timestamp
   daysInPipeline: z.number().int(),
+  daysInCurrentStage: z.number().int(),
   notes: z.string().nullable(),
   createdAt: z.string(), // ISO timestamp
 });
 
 export type LeadPipelineItem = z.infer<typeof LeadPipelineItemSchema>;
+
+export const LeadListParamsSchema = z.object({
+  stage: LeadStageSchema.optional(),
+  interestedTier: z.string().optional(),
+  source: z.string().optional(),
+  search: z.string().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(25),
+});
+export type LeadListParams = z.infer<typeof LeadListParamsSchema>;
+
+export const LeadListResponseSchema = z.object({
+  leads: z.array(LeadPipelineItemSchema),
+  pagination: z.object({
+    page: z.number().int(),
+    pages: z.number().int(),
+    total: z.number().int(),
+    limit: z.number().int(),
+  }),
+  stats: z.object({
+    totalActive: z.number().int(),
+    pipelineMrr: z.number().int(),
+    byStage: z.record(z.string(), z.number().int()),
+    conversionRate: z.number(),
+  }),
+});
+export type LeadListResponse = z.infer<typeof LeadListResponseSchema>;
 
 /**
  * Schema for lead pipeline/sales funnel response

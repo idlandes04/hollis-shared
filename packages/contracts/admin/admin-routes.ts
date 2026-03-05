@@ -826,6 +826,22 @@ export const ADMIN_TASK_ROUTES = {
 } as const;
 
 // ============================================================================
+// ADMIN LEADS ROUTES
+// ============================================================================
+
+/**
+ * Admin lead pipeline routes.
+ * Base path: /api/admin/leads
+ */
+export const ADMIN_LEADS_ROUTES = {
+  /** GET - List leads with optional filters */
+  LIST: '/api/admin/leads',
+
+  /** PATCH - Update lead stage */
+  updateStage: (id: string) => `/api/admin/leads/${id}/stage` as const,
+} as const;
+
+// ============================================================================
 // AGGREGATED ADMIN ROUTES
 // ============================================================================
 
@@ -871,4 +887,5 @@ export const ADMIN_API_ROUTES = {
   MOBILE_SESSIONS: ADMIN_MOBILE_SESSION_ROUTES,
   AI_CHAT: ADMIN_AI_CHAT_ROUTES,
   TASKS: ADMIN_TASK_ROUTES,
+  LEADS: ADMIN_LEADS_ROUTES,
 } as const;
