@@ -164,6 +164,13 @@ export type MfaCredentialResponseContract = z.infer<
   typeof mfaCredentialResponseSchema
 >;
 
+export const mfaCredentialsResponseSchema = z.object({
+  credentials: z.array(mfaCredentialResponseSchema),
+});
+export type MfaCredentialsResponseContract = z.infer<
+  typeof mfaCredentialsResponseSchema
+>;
+
 /**
  * TOTP setup initiation request
  */
