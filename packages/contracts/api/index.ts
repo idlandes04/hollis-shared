@@ -14,6 +14,14 @@ export * from "./endpoints";
 export * from "./response";
 export * from "./routes";
 
+// Legacy ./routes.ts takes precedence over ./routes/index.ts during resolution,
+// so route modules added under ./routes/* need explicit re-exports here until
+// the legacy aggregator is retired.
+export {
+    HEALTH_METRICS_ROUTES,
+    type HealthMetricsRoute
+} from "./routes/health-metrics";
+
 // MFA and Assignment routes are defined in the modular routes/ directory (not in routes.ts).
 // Explicitly re-exported here so they are available via @hollis/contracts/api.
 export {
