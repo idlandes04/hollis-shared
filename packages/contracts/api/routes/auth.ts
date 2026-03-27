@@ -25,6 +25,12 @@ export const AUTH_ROUTES = {
   REFRESH: "/auth/refresh",
   /** POST - OAuth social sign-in (Apple or Google) with nonce + CSRF state verification */
   OAUTH_SIGN_IN: "/auth/oauth",
+  /**
+   * POST - OAuth social registration (Apple or Google) during barcode onboarding.
+   * Registers a new account using a social identity token + barcode code + displayName.
+   * Distinct from OAUTH_SIGN_IN: sign-in requires a pre-existing account; this creates one.
+   */
+  OAUTH_REGISTER: "/auth/oauth-register",
   /** POST - Sign out current session */
   LOGOUT: "/auth/logout",
   /** POST - Request password reset email (rate limited, no account enumeration) */

@@ -236,16 +236,17 @@ describe("Stripe Subscription Contracts", () => {
     });
 
     describe("CONTRACT_DURATION_DISCOUNTS", () => {
-      it("should have 5% discount for MONTH_4", () => {
-        expect(CONTRACT_DURATION_DISCOUNTS.MONTH_4).toBe(5);
+      // Canonical values per shared/contracts/domain/offer-sheet.json
+      it("should have 0% discount for MONTH_4", () => {
+        expect(CONTRACT_DURATION_DISCOUNTS.MONTH_4).toBe(0);
       });
 
-      it("should have 10% discount for MONTH_8", () => {
-        expect(CONTRACT_DURATION_DISCOUNTS.MONTH_8).toBe(10);
+      it("should have 5% discount for MONTH_8", () => {
+        expect(CONTRACT_DURATION_DISCOUNTS.MONTH_8).toBe(5);
       });
 
-      it("should have 15% discount for MONTH_12", () => {
-        expect(CONTRACT_DURATION_DISCOUNTS.MONTH_12).toBe(15);
+      it("should have 10% discount for MONTH_12", () => {
+        expect(CONTRACT_DURATION_DISCOUNTS.MONTH_12).toBe(10);
       });
 
       it("should have an entry for every contract duration", () => {

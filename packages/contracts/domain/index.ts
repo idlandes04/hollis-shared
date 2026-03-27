@@ -198,7 +198,9 @@ export {
     type RangeDerivation,
     type RangeDerivationModifier,
     type RangeDerivationStep,
-    type WearablesDataContract
+    type WearablesDataContract,
+    HealthMetricSummarySchema,
+    type HealthMetricSummaryContract
 } from "./health-metrics";
 
 // Exercise domain - exercise definitions, logs, and performance tracking

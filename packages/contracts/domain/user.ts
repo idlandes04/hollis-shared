@@ -22,13 +22,13 @@
 
 import { z } from "zod";
 
-import offerSheetData from "./offer-sheet.json";
 import {
     injurySchema,
     limitationSchema,
     medicalConditionSchema,
     medicationSchema,
 } from "./clinical";
+import offerSheetData from "./offer-sheet.json";
 
 // ============================================================================
 // OAUTH PROVIDER TYPES (DB-aligned)
@@ -511,6 +511,7 @@ export const PRIMARY_GOALS = [
   "gain_muscle",
   "maintain",
   "improve_health",
+  "other",
 ] as const;
 
 export const PrimaryGoalSchema = z.enum(PRIMARY_GOALS);
@@ -522,6 +523,7 @@ export const PRIMARY_GOAL = {
   GAIN_MUSCLE: "gain_muscle" as PrimaryGoal,
   MAINTAIN: "maintain" as PrimaryGoal,
   IMPROVE_HEALTH: "improve_health" as PrimaryGoal,
+  OTHER: "other" as PrimaryGoal,
 } as const;
 
 /** Human-readable labels for primary goals */
@@ -530,6 +532,7 @@ export const PRIMARY_GOAL_LABELS: Record<PrimaryGoal, string> = {
   gain_muscle: "Gain Muscle",
   maintain: "Maintain",
   improve_health: "Improve Health",
+  other: "Other",
 };
 
 // ============================================================================
@@ -654,10 +657,37 @@ export const WEEKDAY_LABELS: Record<Weekday, string> = {
  * Valid account status values.
  * Maps to isActive boolean in DB: 'active' = true, others = false
  */
-export const ACCOUNT_STATUSES = ["active", "suspended", "inactive"] as const;
+export const ACCOUNT_STATUSES = [
+  "active",
+  "suspended",
+  "inactive",
+  "archived",
+] as const;
+
+/**
+ * Settable account statuses — excludes "archived" which is only set
+ * via the dedicated archive endpoint (triggers PII anonymization).
+ */
+export const SETTABLE_ACCOUNT_STATUSES = [
+  "active",
+  "suspended",
+  "inactive",
+] as const;
+export const PATIENT_ACCOUNT_STATUS_FILTERS = [
+  ...ACCOUNT_STATUSES,
+  "all",
+] as const;
+export const SettableAccountStatusSchema = z.enum(SETTABLE_ACCOUNT_STATUSES);
+export type SettableAccountStatus = z.infer<typeof SettableAccountStatusSchema>;
 
 export const AccountStatusSchema = z.enum(ACCOUNT_STATUSES);
 export type AccountStatus = z.infer<typeof AccountStatusSchema>;
+export const PatientAccountStatusFilterSchema = z.enum(
+  PATIENT_ACCOUNT_STATUS_FILTERS,
+);
+export type PatientAccountStatusFilter = z.infer<
+  typeof PatientAccountStatusFilterSchema
+>;
 /** Type alias for backwards compatibility */
 export type AccountStatusValue = AccountStatus;
 
@@ -666,6 +696,7 @@ export const ACCOUNT_STATUS = {
   ACTIVE: "active" as AccountStatus,
   SUSPENDED: "suspended" as AccountStatus,
   INACTIVE: "inactive" as AccountStatus,
+  ARCHIVED: "archived" as AccountStatus,
 } as const;
 
 /** Human-readable labels for account statuses */
@@ -673,6 +704,7 @@ export const ACCOUNT_STATUS_LABELS: Record<AccountStatus, string> = {
   active: "Active",
   suspended: "Suspended",
   inactive: "Inactive",
+  archived: "Archived",
 };
 
 /** Canonical boolean flags persisted on the User record for account status. */
@@ -716,6 +748,14 @@ export function mapAccountStatusToFlags(
         isActive: false,
         accountSuspended: false,
       };
+    case "archived":
+      // Archived maps to same flags as inactive; the distinction is
+      // the presence of deletionRequestedAt in the DB. Archiving should
+      // only happen via the dedicated archive endpoint, not updateAdminControls.
+      return {
+        isActive: false,
+        accountSuspended: false,
+      };
   }
 }
 
@@ -743,14 +783,18 @@ export function isActiveAccountStatus(status: AccountStatusValue): boolean {
 export function deriveAccountStatus(
   isActive: boolean | undefined,
   accountSuspended: boolean | undefined,
+  deletedAt?: Date | string | null,
 ): AccountStatus {
   // Default to active if both flags are undefined
   if (isActive === undefined && accountSuspended === undefined) {
     return ACCOUNT_STATUS.ACTIVE;
   }
 
-  // If explicitly inactive (isActive=false), return inactive regardless of suspension flag
+  // If explicitly inactive (isActive=false), check if archived (soft-deleted)
   if (isActive === false) {
+    if (deletedAt != null) {
+      return ACCOUNT_STATUS.ARCHIVED;
+    }
     return ACCOUNT_STATUS.INACTIVE;
   }
 
@@ -773,8 +817,13 @@ export function deriveAccountStatus(
 export function normalizeAccountStatusFlags(
   isActive: boolean | undefined,
   accountSuspended: boolean | undefined,
+  deletedAt?: Date | string | null,
 ): CanonicalAccountState {
-  const accountStatus = deriveAccountStatus(isActive, accountSuspended);
+  const accountStatus = deriveAccountStatus(
+    isActive,
+    accountSuspended,
+    deletedAt,
+  );
 
   return {
     accountStatus,
@@ -916,6 +965,7 @@ export const UserProfileSchema = z.object({
   bio: z.string().nullable().optional(),
   occupation: z.string().nullable().optional(),
   primaryGoal: PrimaryGoalSchema.nullable().optional(),
+  primaryGoalNote: z.string().nullable().optional(),
   activityLevel: ActivityLevelSchema.nullable().optional(),
   experienceLevel: FitnessExperienceSchema.nullable().optional(),
   dateOfBirth: z.string().nullable().optional(),
@@ -1016,6 +1066,7 @@ export const physicalStatsFormSchema = z
     activityLevel: ActivityLevelSchema.nullable().optional(),
     experienceLevel: FitnessExperienceSchema.nullable().optional(),
     primaryGoal: PrimaryGoalSchema.nullable().optional(),
+    primaryGoalNote: z.string().nullable().optional(),
   })
   .passthrough();
 

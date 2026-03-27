@@ -300,8 +300,8 @@ describe('Business Analytics Domain Contracts', () => {
   // ============================================================================
 
   describe('USER_EVENT_TYPE', () => {
-    it('should contain exactly 11 event types', () => {
-      expect(USER_EVENT_TYPES).toHaveLength(11);
+    it('should contain exactly 12 event types', () => {
+      expect(USER_EVENT_TYPES).toHaveLength(12);
     });
 
     it('should contain all expected event types', () => {

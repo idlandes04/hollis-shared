@@ -365,6 +365,10 @@ export type HealthGoalsListResponse = z.infer<
 export const WearablesDataSchema = z.object({
   steps: z.number().int().optional(),
   sleepHours: z.number().optional(),
+  deepSleepPercent: z.number().nullable().optional(),
+  lightSleepPercent: z.number().nullable().optional(),
+  remSleepPercent: z.number().nullable().optional(),
+  awakeMinutes: z.number().int().nullable().optional(),
   restingHeartRate: z.number().int().optional(),
   activeCalories: z.number().int().optional(),
   flightsClimbed: z.number().int().optional(),
@@ -419,3 +423,54 @@ export const DailySummarySchema = z.object({
 });
 
 export type DailySummaryContract = z.infer<typeof DailySummarySchema>;
+
+// ============================================================================
+// HEALTH METRICS SUMMARY CONTRACT (unified biometrics + goals view)
+// ============================================================================
+
+/**
+ * Unified summary row for a single tracked metric.
+ * Merges MetricDefinition metadata, the latest reading, optional goal data,
+ * and a simple two-point trend into one response item for admin UI consumption.
+ *
+ * Used by: GET /api/admin/patients/:userId/health-metrics/summary
+ */
+export const HealthMetricSummarySchema = z.object({
+  /** MetricDefinition.code — stable identifier for this metric */
+  metricCode: z.string(),
+  /** Human-readable display name from MetricDefinition */
+  displayName: z.string(),
+  /** Canonical storage unit from MetricDefinition */
+  primaryUnit: z.string(),
+  /** Clinical grouping (e.g. "body_composition", "cardiovascular") — nullable */
+  healthCategory: z.string().nullable(),
+  /** Storage category: BIOMETRIC | LAB | COMPUTED */
+  category: z.string(),
+  /** Whether this metric participates in the goal system */
+  goalEligible: z.boolean(),
+  /** Optimization direction for trend interpretation */
+  trendDirection: z
+    .enum(["higher_better", "lower_better", "context"])
+    .nullable(),
+  // ---- Latest reading ----
+  /** Most recent numeric value, null when no data exists */
+  currentValue: z.number().nullable(),
+  /** ISO date string of the most recent reading */
+  currentValueDate: z.string().nullable(),
+  /** Unit of the most recent reading */
+  currentValueUnit: z.string().nullable(),
+  /** Source of the most recent reading (e.g. "LAB_REPORT", "USER_LOG") */
+  currentValueSource: z.string().nullable(),
+  // ---- Goal data (null for non-goal-eligible metrics) ----
+  /** Full goal contract when goalEligible is true, otherwise null */
+  goalData: HealthMetricGoalSchema.nullable(),
+  // ---- Simple two-point trend ----
+  /** Direction of change computed from the last two readings */
+  recentTrend: z.enum(["improving", "stable", "declining"]).nullable(),
+  /** Percent change between the two most recent readings */
+  recentChangePercent: z.number().nullable(),
+});
+
+export type HealthMetricSummaryContract = z.infer<
+  typeof HealthMetricSummarySchema
+>;
