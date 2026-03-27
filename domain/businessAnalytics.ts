@@ -125,6 +125,16 @@ export const USER_EVENT_TYPES = [
   "NOTIFICATION_SENT",
   "BILLING_DATE_CHANGED",
   "TIER_CHANGED",
+  /** Partial refund received on a subscription invoice — flagged for admin review */
+  "PARTIAL_REFUND_FLAGGED",
+  /** SCA/3DS verification email sent for payment_intent.requires_action */
+  "SCA_NOTIFICATION_SENT",
+  /** SCA/3DS verification email sent for invoice.payment_action_required */
+  "SCA_INVOICE_NOTIFICATION_SENT",
+  /** Transactional email send failed — queued for retry or admin review */
+  "EMAIL_SEND_FAILED",
+  /** Trial-ending notification sent 3 days before trial end */
+  "TRIAL_ENDING_NOTIFICATION_SENT",
 ] as const;
 
 /** Zod schema for user event type - derived from tuple */
@@ -144,6 +154,16 @@ export const USER_EVENT_TYPE = {
   NOTIFICATION_SENT: "NOTIFICATION_SENT" as UserEventType,
   BILLING_DATE_CHANGED: "BILLING_DATE_CHANGED" as UserEventType,
   TIER_CHANGED: "TIER_CHANGED" as UserEventType,
+  /** Partial refund received on a subscription invoice — flagged for admin review */
+  PARTIAL_REFUND_FLAGGED: "PARTIAL_REFUND_FLAGGED" as UserEventType,
+  /** SCA/3DS verification email sent for payment_intent.requires_action */
+  SCA_NOTIFICATION_SENT: "SCA_NOTIFICATION_SENT" as UserEventType,
+  /** SCA/3DS verification email sent for invoice.payment_action_required */
+  SCA_INVOICE_NOTIFICATION_SENT: "SCA_INVOICE_NOTIFICATION_SENT" as UserEventType,
+  /** Transactional email send failed — queued for retry or admin review */
+  EMAIL_SEND_FAILED: "EMAIL_SEND_FAILED" as UserEventType,
+  /** Trial-ending notification sent 3 days before trial end */
+  TRIAL_ENDING_NOTIFICATION_SENT: "TRIAL_ENDING_NOTIFICATION_SENT" as UserEventType,
 } as const;
 
 /** Human-readable labels for user event types */
@@ -159,6 +179,11 @@ export const USER_EVENT_TYPE_LABELS: Record<UserEventType, string> = {
   NOTIFICATION_SENT: "Notification Sent",
   BILLING_DATE_CHANGED: "Billing Date Changed",
   TIER_CHANGED: "Tier Changed",
+  PARTIAL_REFUND_FLAGGED: "Partial Refund Flagged",
+  SCA_NOTIFICATION_SENT: "SCA Notification Sent",
+  SCA_INVOICE_NOTIFICATION_SENT: "SCA Invoice Notification Sent",
+  EMAIL_SEND_FAILED: "Email Send Failed",
+  TRIAL_ENDING_NOTIFICATION_SENT: "Trial Ending Notification Sent",
 };
 
 /**

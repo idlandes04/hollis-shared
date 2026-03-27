@@ -754,14 +754,15 @@ describe("User Domain Contracts", () => {
   // ============================================================================
 
   describe("AccountStatus", () => {
-    it("should contain exactly 3 values", () => {
-      expect(ACCOUNT_STATUSES).toHaveLength(3);
+    it("should contain exactly 4 values", () => {
+      expect(ACCOUNT_STATUSES).toHaveLength(4);
     });
 
     it("should contain all expected values", () => {
       expect(ACCOUNT_STATUSES).toContain("active");
       expect(ACCOUNT_STATUSES).toContain("suspended");
       expect(ACCOUNT_STATUSES).toContain("inactive");
+      expect(ACCOUNT_STATUSES).toContain("archived");
     });
 
     it.each(ACCOUNT_STATUSES)(
@@ -775,6 +776,7 @@ describe("User Domain Contracts", () => {
       expect(ACCOUNT_STATUS.ACTIVE).toBe("active");
       expect(ACCOUNT_STATUS.SUSPENDED).toBe("suspended");
       expect(ACCOUNT_STATUS.INACTIVE).toBe("inactive");
+      expect(ACCOUNT_STATUS.ARCHIVED).toBe("archived");
     });
 
     it("should have a label for every value", () => {
@@ -817,6 +819,19 @@ describe("User Domain Contracts", () => {
         expect(deriveAccountStatus(undefined, true)).toBe(
           ACCOUNT_STATUS.SUSPENDED,
         );
+      });
+
+      it('should return "archived" when isActive=false and deletedAt is set', () => {
+        expect(deriveAccountStatus(false, false, new Date())).toBe(ACCOUNT_STATUS.ARCHIVED);
+        expect(deriveAccountStatus(false, true, new Date())).toBe(ACCOUNT_STATUS.ARCHIVED);
+      });
+
+      it('should return "inactive" when isActive=false and deletedAt is null', () => {
+        expect(deriveAccountStatus(false, false, null)).toBe(ACCOUNT_STATUS.INACTIVE);
+      });
+
+      it('should return "inactive" when isActive=false and deletedAt is undefined', () => {
+        expect(deriveAccountStatus(false, false, undefined)).toBe(ACCOUNT_STATUS.INACTIVE);
       });
 
       it("round-trips canonical suspended flags from the shared write helper", () => {

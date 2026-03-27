@@ -197,11 +197,15 @@ export const CONTRACT_DURATION_MONTHS: Record<ContractDuration, number> = {
   MONTH_12: 12,
 };
 
-/** Map duration to discount percentage */
+/**
+ * Map duration to discount percentage.
+ * Source of truth: shared/contracts/domain/offer-sheet.json
+ * 4mo = 0%, 8mo = 5%, 12mo = 10%
+ */
 export const CONTRACT_DURATION_DISCOUNTS: Record<ContractDuration, number> = {
-  MONTH_4: 5,
-  MONTH_8: 10,
-  MONTH_12: 15,
+  MONTH_4: 0,
+  MONTH_8: 5,
+  MONTH_12: 10,
 };
 
 /** Constant object for contract duration comparisons (avoids magic strings) */
@@ -287,6 +291,12 @@ export const CreateSubscriptionRequestSchema = z.object({
   billingSource: BillingSourceSchema.optional().default("DIRECT"),
   billingOrganizationId: z.string().uuid().optional(),
   paymentMethodId: z.string().optional(),
+  /**
+   * S3 key of the composite consent PDF generated after the signing flow.
+   * When present, the server links the consent PDF to the created subscription record.
+   * Set after a successful POST /api/admin/consent call in the ConsultationFlowModal.
+   */
+  pendingConsentKey: z.string().optional(),
 });
 export type CreateSubscriptionRequest = z.infer<
   typeof CreateSubscriptionRequestSchema

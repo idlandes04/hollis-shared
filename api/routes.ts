@@ -67,6 +67,11 @@ export const AUTH_ROUTES = {
   REFRESH: "/auth/refresh",
   /** POST - OAuth social sign-in (Apple or Google) with nonce + CSRF state verification */
   OAUTH_SIGN_IN: "/auth/oauth",
+  /**
+   * POST - OAuth social registration (Apple or Google) during barcode onboarding.
+   * Creates a new account by combining a social identity token with a barcode claim.
+   */
+  OAUTH_REGISTER: "/auth/oauth-register",
   /** POST - Sign out current session */
   LOGOUT: "/auth/logout",
   /** POST - Request password reset email */
@@ -956,6 +961,30 @@ export const ACCOUNT_ROUTES = {
 export type AccountRoute = (typeof ACCOUNT_ROUTES)[keyof typeof ACCOUNT_ROUTES];
 
 // ============================================================================
+// PUBLIC BILLING ROUTES (unauthenticated — token IS the credential)
+// ============================================================================
+
+/**
+ * Public billing API routes used by email-linked pages.
+ * These routes do NOT require a session cookie — the signed billing token
+ * embedded in the URL is the sole credential.  Base path: /public/billing
+ *
+ * @group PUBLIC_BILLING
+ */
+export const PUBLIC_BILLING_ROUTES = {
+  /**
+   * GET /public/billing/verify-token?token=<signed-token>
+   * Verifies an HMAC-signed billing action token and returns { userId }.
+   * Returns 400 for malformed tokens and 401 for expired/invalid tokens.
+   */
+  VERIFY_TOKEN: "/public/billing/verify-token",
+} as const;
+
+/** Type for public billing route values */
+export type PublicBillingRoute =
+  (typeof PUBLIC_BILLING_ROUTES)[keyof typeof PUBLIC_BILLING_ROUTES];
+
+// ============================================================================
 // PHI ROUTES
 // ============================================================================
 
@@ -1065,6 +1094,7 @@ export const API_ROUTES = {
   SSE: SSE_ROUTES,
   ACCOUNT: ACCOUNT_ROUTES,
   PHI: PHI_ROUTES,
+  PUBLIC_BILLING: PUBLIC_BILLING_ROUTES,
 } as const;
 
 // ============================================================================

@@ -134,9 +134,21 @@ export const ADMIN_PATIENT_ROUTES = {
   updateAdminControls: (userId: string) =>
     `/api/admin/patients/${userId}/admin-controls` as const,
 
+  /** POST - Archive (soft-delete) a patient */
+  archive: (userId: string) =>
+    `/api/admin/patients/${userId}/archive` as const,
+
   /** PUT - Update patient daily metrics */
   updateDailyMetrics: (userId: string, date: string) =>
     `/api/admin/patients/${userId}/daily-metrics/${date}` as const,
+
+  /** GET - Unified health metrics summary (biometrics + goals merged) */
+  healthMetricsSummary: (userId: string) =>
+    `/api/admin/patients/${userId}/health-metrics/summary` as const,
+
+  /** GET - Paginated biometric history for a single metric (admin-scoped) */
+  biometricHistory: (userId: string) =>
+    `/api/admin/patients/${userId}/biometrics` as const,
 } as const;
 
 // ============================================================================
@@ -905,6 +917,25 @@ export const ADMIN_LEADS_ROUTES = {
 } as const;
 
 // ============================================================================
+// ADMIN CONSENT ROUTES
+// ============================================================================
+
+/**
+ * Admin consent / legal document signing routes.
+ * Base path: /api/admin/consent
+ */
+export const ADMIN_CONSENT_ROUTES = {
+  /** POST - Submit all signed documents for a user (atomic) */
+  SUBMIT: "/api/admin/consent",
+
+  /** GET - List consent records for a user (admin audit) */
+  list: (userId: string) => `/api/admin/consent/${userId}` as const,
+
+  /** GET - Get presigned URL for composite consent PDF */
+  pdf: (userId: string) => `/api/admin/consent/${userId}/pdf` as const,
+} as const;
+
+// ============================================================================
 // AGGREGATED ADMIN ROUTES
 // ============================================================================
 
@@ -951,4 +982,5 @@ export const ADMIN_API_ROUTES = {
   AI_CHAT: ADMIN_AI_CHAT_ROUTES,
   TASKS: ADMIN_TASK_ROUTES,
   LEADS: ADMIN_LEADS_ROUTES,
+  CONSENT: ADMIN_CONSENT_ROUTES,
 } as const;

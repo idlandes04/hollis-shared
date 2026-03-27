@@ -14,6 +14,7 @@ import { z } from "zod";
 import {
     AccountStatusSchema,
     ActivityLevelSchema,
+    SettableAccountStatusSchema,
     BiologicalSexSchema,
     FitnessExperienceSchema,
     GoalDataSourceSchema,
@@ -102,9 +103,10 @@ export const patientSummarySchema = z.object({
   email: z.string().email(),
   name: z.string(),
   tier: UserTierSchema,
-  status: adminComplianceStatusSchema,
-  complianceScore: z.number().min(0).max(100),
-  lastLog: z.string(),
+  status: adminComplianceStatusSchema.nullable(),
+  complianceScore: z.number().min(0).max(100).nullable(),
+  lastLog: z.string().nullable(),
+  accountStatus: AccountStatusSchema,
 });
 export type PatientSummary = z.infer<typeof patientSummarySchema>;
 
@@ -243,7 +245,7 @@ export const patientAdminControlsPayloadSchema = z.object({
   role: UserRoleSchema.nullable().optional(),
   assignedClinicianId: z.string().nullable().optional(),
   assignedTrainerId: z.string().nullable().optional(),
-  accountStatus: AccountStatusSchema.optional(),
+  accountStatus: SettableAccountStatusSchema.optional(),
   timezone: z.string().nullable().optional(),
 });
 export type PatientAdminControlsPayload = z.infer<
@@ -335,6 +337,7 @@ export const prefilledProfileSchema = z.object({
   dateOfBirth: isoDateSchema.optional(),
   biologicalSex: BiologicalSexSchema.optional(),
   primaryGoal: PrimaryGoalSchema.optional(),
+  primaryGoalNote: z.string().max(500).optional(),
   /** Set by admin when rejecting a registration */
   rejectionReason: z.string().optional(),
   /** ISO timestamp when admin rejected the registration */
@@ -357,6 +360,8 @@ export const registeredUserSchema = z.object({
   registrationExpiresAt: z.string(),
   createdAt: z.string(),
   status: RegistrationStatusSchema,
+  /** Billing status — null for unclaimed registrations or claimed without Stripe setup */
+  billingStatus: z.string().nullable().optional(),
   registeredBy: z
     .object({
       id: z.string(),
