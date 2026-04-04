@@ -373,7 +373,9 @@ export const WearablesDataSchema = z.object({
   activeCalories: z.number().int().optional(),
   flightsClimbed: z.number().int().optional(),
   weight: z.number().optional(),
-  heartRateVariability: z.number().optional(),
+  heartRateVariability: z.number().optional(), // RMSSD — from Android Health Connect
+  /** SDNN from Apple HealthKit (HKQuantityTypeIdentifierHeartRateVariabilitySDNN). iOS only. */
+  hrvSdnn: z.number().min(0).max(300).optional(),
   oxygenSaturation: z.number().optional(),
   respiratoryRate: z.number().optional(),
   source: BiometricSourceSchema.optional(),

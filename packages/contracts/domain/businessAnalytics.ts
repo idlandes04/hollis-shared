@@ -266,7 +266,9 @@ export const BusinessDailySnapshotSchema = z.object({
   avgComplianceScore: z.number().min(0).max(100).default(0),
 
   // Clinical Outcomes
+  /** @deprecated Prefer studioTotalKgLost. Kept for backward-compatible API responses. */
   studioTotalLbsLost: z.number().default(0),
+  studioTotalKgLost: z.number().default(0),
   avgSleepScore: z.number().min(0).max(100).default(0),
   avgVo2MaxImprovement: z.number().default(0),
   clientsWithImprovedBiomarkers: z.number().int().default(0),
@@ -288,7 +290,9 @@ export const BusinessSnapshotTrendSchema = z.object({
       mrrPercent: z.number().optional(),
       activeUsers: z.number().optional(),
       avgComplianceScore: z.number().optional(),
+      /** @deprecated Prefer studioTotalKgLost. Kept for backward-compatible API responses. */
       studioTotalLbsLost: z.number().optional(),
+      studioTotalKgLost: z.number().optional(),
     })
     .optional(),
 });

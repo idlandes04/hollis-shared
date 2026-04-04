@@ -38,6 +38,21 @@ export const CONTACT_SOURCES = [
 export const ContactSourceSchema = z.enum(CONTACT_SOURCES);
 export type ContactSource = z.infer<typeof ContactSourceSchema>;
 
+/**
+ * Submission intent for public form flows that share the same endpoint.
+ */
+export const CONTACT_SUBMISSION_INTENTS = ["GENERAL", "WAITLIST"] as const;
+
+export const ContactSubmissionIntentSchema = z.enum(
+  CONTACT_SUBMISSION_INTENTS,
+);
+export type ContactSubmissionIntent = z.infer<
+  typeof ContactSubmissionIntentSchema
+>;
+
+/** Named constant for waitlist intent — avoids fragile index access into the tuple. */
+export const WAITLIST_INTENT: ContactSubmissionIntent = "WAITLIST";
+
 // ============================================================================
 // CONTACT FORM SCHEMA
 // ============================================================================
@@ -65,6 +80,9 @@ export const ContactFormSchema = z.object({
   /** Marketing attribution source */
   source: ContactSourceSchema.optional(),
 
+  /** Which public-site flow generated the submission */
+  submissionIntent: ContactSubmissionIntentSchema.optional(),
+
   /** How did you hear about us? Free text */
   referralInfo: z.string().max(200).optional(),
 
@@ -73,6 +91,12 @@ export const ContactFormSchema = z.object({
 });
 
 export type ContactFormInput = z.infer<typeof ContactFormSchema>;
+
+export function isWaitlistSubmission(
+  formData: Pick<ContactFormInput, "submissionIntent">,
+): boolean {
+  return formData.submissionIntent === WAITLIST_INTENT;
+}
 
 /**
  * Stricter schema for contact inquiries (name and message required).
