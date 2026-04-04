@@ -93,6 +93,9 @@ export * from "./clinical";
 // Sessions domain - session types, reset frequencies
 export * from "./sessions";
 
+// Recovery sessions domain - structured recovery modality logs
+export * from "./recovery-sessions";
+
 // Labs domain - lab result statuses and flags
 export * from "./labs";
 

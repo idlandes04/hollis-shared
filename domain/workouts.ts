@@ -2,7 +2,7 @@
  * @ai-context Workout contracts | workout session, plan, and set schemas for training features
  */
 import { z } from "zod";
-import { baseDocumentSchema, isoDateSchema } from "./common";
+import { baseDocumentSchema, isoDateSchema, isoTimestampSchema } from "./common";
 import { WeightUnitSchema } from "./units";
 
 // ============================================================================
@@ -94,3 +94,57 @@ export const workoutPlanSchema = baseDocumentSchema.extend({
 });
 
 export type WorkoutPlanContract = z.infer<typeof workoutPlanSchema>;
+
+// ============================================================================
+// WEARABLE WORKOUT SESSION
+// ============================================================================
+
+/**
+ * A single workout activity recorded by a wearable device (e.g., Apple Watch,
+ * Garmin, Whoop). Free-form sessions that do not map to structured exercise
+ * logs — stored in `wearable_workout_sessions` for longitudinal activity
+ * analytics and future AI context.
+ *
+ * Units contract:
+ * - `durationMinutes`: integer minutes (1–1440)
+ * - `activeCaloriesKcal`: integer kcal (0–50000)
+ * - `distanceKm`: decimal km (0–1000) — always stored in km regardless of device unit
+ */
+export const wearableWorkoutSessionSchema = z.object({
+  /** Unique identifier (UUID) — present on records read from DB, absent on create */
+  id: z.string().uuid().optional(),
+  userId: z.string(),
+  /** Activity type as reported by the wearable (e.g. "running", "cycling") */
+  type: z.string().min(1).max(100),
+  /** ISO 8601 UTC timestamp for workout start */
+  startTime: isoTimestampSchema,
+  /** ISO 8601 UTC timestamp for workout end */
+  endTime: isoTimestampSchema,
+  /** Duration in whole minutes (1–1440) */
+  durationMinutes: z.number().int().min(1).max(1440),
+  /** Active (exercise) calories burned in kcal */
+  activeCaloriesKcal: z.number().int().min(0).max(50000).optional(),
+  /** Distance covered in km (normalized from device unit at write time) */
+  distanceKm: z.number().min(0).max(1000).optional(),
+  /** Device or app source identifier (e.g. "com.apple.health", "whoop") */
+  source: z.string().min(1).max(200).optional(),
+  createdAt: isoTimestampSchema.optional(),
+  updatedAt: isoTimestampSchema.optional(),
+});
+
+export type WearableWorkoutSessionContract = z.infer<
+  typeof wearableWorkoutSessionSchema
+>;
+
+/**
+ * Schema used when a wearable client submits workout sessions in a daily sync
+ * payload. The `userId` and `id` fields are populated server-side.
+ */
+export const wearableWorkoutSyncSchema = wearableWorkoutSessionSchema.omit({
+  id: true,
+  userId: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type WearableWorkoutSync = z.infer<typeof wearableWorkoutSyncSchema>;

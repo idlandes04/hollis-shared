@@ -121,7 +121,12 @@ export type TierComplianceRequirements = z.infer<
 >;
 
 /**
- * Tier-specific compliance requirements.
+ * Tier-specific compliance requirements (weekly cadence).
+ * Used by calculateTierAwareCompliance and the canonical compliance engine.
+ *
+ * ESSENTIALS: minimal tracking expectations — 1 check-in/wk, no food logging required, 1 workout/wk
+ * CORE:       moderate engagement — bi-weekly check-ins, 4 food logs/wk, 2 workouts/wk
+ * CONCIERGE:  full engagement — daily check-ins, daily food logs, 4 workouts/wk
  */
 export const TIER_COMPLIANCE_REQUIREMENTS: Record<
   UserTier,
@@ -143,6 +148,121 @@ export const TIER_COMPLIANCE_REQUIREMENTS: Record<
     workoutsPerWeek: 4,
   },
 } as const;
+
+// ============================================================================
+// CANONICAL COMPLIANCE ENGINE — UNIFIED THRESHOLDS & WEIGHTS
+// ============================================================================
+
+/**
+ * Canonical compliance weights used by computeComplianceScore().
+ * All four dimensions must sum to 1.0.
+ *
+ * Rationale for values:
+ * - Workouts (0.35): Core service deliverable — most predictive of health outcomes
+ * - Food/nutrition logging (0.35): Nutrition adherence is equally critical
+ * - Check-ins / appointments (0.20): Engagement signal; penalizes no-shows without over-weighting
+ * - Wearable sync (0.10): Useful signal but not everyone has a device; lowest weight
+ */
+export const CANONICAL_COMPLIANCE_WEIGHTS = {
+  checkins: 0.2,
+  foodLogs: 0.35,
+  workouts: 0.35,
+  wearableSync: 0.1,
+} as const;
+
+/**
+ * Tier-specific denominators for the canonical compliance engine.
+ * All values represent expected counts over a 30-day window.
+ *
+ * Wearable sync values represent expected days with synced biometric data:
+ * - ESSENTIALS: sync at least half the days (low-commitment tier)
+ * - CORE:       sync most days (~2/3 of days)
+ * - CONCIERGE:  near-continuous sync (expected ~daily)
+ *
+ * Workout/checkin/foodLog counts are derived from TIER_COMPLIANCE_REQUIREMENTS × 4 weeks.
+ */
+export const TIER_COMPLIANCE_THRESHOLDS: Record<
+  UserTier,
+  {
+    checkinsPerMonth: number;
+    foodLogsPerMonth: number;
+    workoutsPerMonth: number;
+    wearableDaysPerMonth: number;
+  }
+> = {
+  ESSENTIALS: {
+    checkinsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.ESSENTIALS.checkinsPerWeek * 4,     // 4
+    foodLogsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.ESSENTIALS.foodLogsPerWeek * 4,     // 0
+    workoutsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.ESSENTIALS.workoutsPerWeek * 4,     // 4
+    wearableDaysPerMonth: 15, // Sync at least half the days
+  },
+  CORE: {
+    checkinsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CORE.checkinsPerWeek * 4,           // 2
+    foodLogsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CORE.foodLogsPerWeek * 4,           // 16
+    workoutsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CORE.workoutsPerWeek * 4,           // 8
+    wearableDaysPerMonth: 20, // More regular sync (~2/3 of days)
+  },
+  CONCIERGE: {
+    checkinsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CONCIERGE.checkinsPerWeek * 4,      // 28
+    foodLogsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CONCIERGE.foodLogsPerWeek * 4,      // 28
+    workoutsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CONCIERGE.workoutsPerWeek * 4,      // 16
+    wearableDaysPerMonth: 28, // Near-continuous sync
+  },
+} as const;
+
+/**
+ * Input shape for the canonical compliance engine.
+ * All counts represent actual activity over the scoring period (default: 30 days / 4 weeks).
+ * wearableSyncDays is optional — callers that don't have wearable data omit it (treated as 0).
+ */
+export const ComplianceEngineInputSchema = z.object({
+  tier: z.enum(["ESSENTIALS", "CORE", "CONCIERGE"] as const),
+  checkinsCount: z.number().int().min(0),
+  foodLogsCount: z.number().int().min(0),
+  workoutsCompleted: z.number().int().min(0),
+  /** Days with synced wearable biometric data. Omit or pass 0 when unavailable. */
+  wearableSyncDays: z.number().int().min(0).optional().default(0),
+  /** Period length in weeks. Default: 4 (one calendar month). */
+  periodWeeks: z.number().int().min(1).optional().default(4),
+});
+
+export type ComplianceEngineInput = z.infer<typeof ComplianceEngineInputSchema>;
+
+/**
+ * Result shape returned by the canonical compliance engine.
+ * Backward-compatible with TierAwareComplianceResult (score, status, tier, breakdown, periodWeeks)
+ * plus the new wearableSync dimension.
+ */
+export const ComplianceEngineResultSchema = z.object({
+  score: z.number().int().min(0).max(100),
+  status: z.enum(["excellent", "good", "at-risk", "non-compliant"] as const),
+  tier: z.enum(["ESSENTIALS", "CORE", "CONCIERGE"] as const),
+  periodWeeks: z.number().int().min(1),
+  breakdown: z.object({
+    checkins: z.object({
+      actual: z.number().min(0),
+      expected: z.number().min(0),
+      adherence: z.number().min(0).max(100),
+    }),
+    foodLogs: z.object({
+      actual: z.number().min(0),
+      expected: z.number().min(0),
+      adherence: z.number().min(0).max(100),
+    }),
+    workouts: z.object({
+      actual: z.number().min(0),
+      expected: z.number().min(0),
+      adherence: z.number().min(0).max(100),
+    }),
+    wearableSync: z.object({
+      actual: z.number().min(0),
+      expected: z.number().min(0),
+      adherence: z.number().min(0).max(100),
+    }),
+  }),
+});
+
+export type ComplianceEngineResult = z.infer<typeof ComplianceEngineResultSchema>;
 
 // ============================================================================
 // COMPLIANCE BREAKDOWN

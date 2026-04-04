@@ -39,6 +39,7 @@ import {
   AtRiskClientSchema,
   AtRiskClientsResponseSchema,
   BusinessDailySnapshotSchema,
+  BusinessSnapshotTrendSchema,
   calculateChurnRiskLevel,
   CHURN_RISK_LEVEL,
   CHURN_RISK_LEVELS,
@@ -104,6 +105,7 @@ function validBusinessDailySnapshot(id = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')
     atRiskUsers: 8,
     avgComplianceScore: 78,
     studioTotalLbsLost: 340,
+    studioTotalKgLost: 154.2,
     avgSleepScore: 82,
     avgVo2MaxImprovement: 3.5,
     clientsWithImprovedBiomarkers: 45,
@@ -300,8 +302,8 @@ describe('Business Analytics Domain Contracts', () => {
   // ============================================================================
 
   describe('USER_EVENT_TYPE', () => {
-    it('should contain exactly 12 event types', () => {
-      expect(USER_EVENT_TYPES).toHaveLength(12);
+    it('should contain exactly 16 event types', () => {
+      expect(USER_EVENT_TYPES).toHaveLength(16);
     });
 
     it('should contain all expected event types', () => {
@@ -480,6 +482,12 @@ describe('Business Analytics Domain Contracts', () => {
         expect(result.data.mrr).toBe(0);
         expect(result.data.activeUsers).toBe(0);
         expect(result.data.avgComplianceScore).toBe(0);
+        expect(
+          "studioTotalLbsLost" in result.data
+            ? result.data.studioTotalLbsLost
+            : undefined,
+        ).toBe(0);
+        expect(result.data.studioTotalKgLost).toBe(0);
       }
     });
 
@@ -508,6 +516,26 @@ describe('Business Analytics Domain Contracts', () => {
         ...validBusinessDailySnapshot(),
         id: 'not-a-uuid',
       }).success).toBe(false);
+    });
+  });
+
+  describe('BusinessSnapshotTrendSchema', () => {
+    it('should accept current and trend changes with both kg and backward-compatible lbs field names', () => {
+      const result = BusinessSnapshotTrendSchema.safeParse({
+        current: validBusinessDailySnapshot(),
+        previous: {
+          ...validBusinessDailySnapshot('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          studioTotalLbsLost: 331,
+          studioTotalKgLost: 150.1,
+        },
+        changes: {
+          studioTotalLbsLost: 9,
+          studioTotalKgLost: 4.1,
+          mrr: 2000,
+        },
+      });
+
+      expect(result.success).toBe(true);
     });
   });
 
@@ -1092,8 +1120,10 @@ describe('Business Analytics Domain Contracts', () => {
   // ============================================================================
 
   describe('HeartRateZonesSchema', () => {
-    it('should accept an empty heart rate zones object (all optional)', () => {
-      expect(HeartRateZonesSchema.safeParse({}).success).toBe(true);
+    it('should require notes while allowing all numeric zone fields to remain optional', () => {
+      expect(
+        HeartRateZonesSchema.safeParse({ notes: null }).success,
+      ).toBe(true);
     });
 
     it('should accept a fully populated heart rate zones object', () => {

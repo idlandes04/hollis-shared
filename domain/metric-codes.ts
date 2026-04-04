@@ -10,6 +10,20 @@ export const METRIC_DAILY_STEPS = "daily_steps" as const;
 export const METRIC_SLEEP_DURATION = "sleep_duration" as const;
 export const METRIC_RESTING_HEART_RATE = "resting_heart_rate" as const;
 export const METRIC_HRV_RMSSD = "hrv_rmssd" as const;
+/**
+ * SDNN (Standard Deviation of NN intervals) — provided by Apple HealthKit via
+ * HKQuantityTypeIdentifierHeartRateVariabilitySDNN.
+ *
+ * SDNN measures total heart rate variability (all frequency bands). It is
+ * clinically distinct from RMSSD, which captures short-term vagal activity.
+ * Typical reference ranges for healthy adults:
+ *   SDNN: 20–100 ms  (daily measurement; lower threshold at ~20 ms)
+ *   RMSSD: 19–75 ms  (daily measurement)
+ *
+ * iOS devices report SDNN; Android Health Connect reports RMSSD. Both are
+ * stored under separate codes to avoid cross-platform data conflation.
+ */
+export const METRIC_HRV_SDNN = "hrv_sdnn" as const;
 export const METRIC_ACTIVE_CALORIES = "active_calories" as const;
 
 // ── Blood Pressure ───────────────────────────────────────────
@@ -49,6 +63,7 @@ export const KNOWN_WEARABLE_CODES = [
   METRIC_SLEEP_DURATION,
   METRIC_RESTING_HEART_RATE,
   METRIC_HRV_RMSSD,
+  METRIC_HRV_SDNN,
   METRIC_ACTIVE_CALORIES,
 ] as const;
 
