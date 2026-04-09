@@ -6,6 +6,8 @@
 
 // ── Wearable / Daily Metrics ─────────────────────────────────
 export const METRIC_BODY_WEIGHT = "body_weight" as const;
+export const METRIC_BODY_FAT_PERCENTAGE = "body_fat_percentage" as const;
+export const METRIC_LEAN_BODY_MASS = "lean_body_mass" as const;
 export const METRIC_DAILY_STEPS = "daily_steps" as const;
 export const METRIC_SLEEP_DURATION = "sleep_duration" as const;
 export const METRIC_RESTING_HEART_RATE = "resting_heart_rate" as const;
@@ -59,6 +61,8 @@ export const METRIC_IRON_IBC_PERCENT_SAT = "iron_ibc_percent_sat" as const;
 /** All wearable/daily metric codes for sync and aggregation */
 export const KNOWN_WEARABLE_CODES = [
   METRIC_BODY_WEIGHT,
+  METRIC_BODY_FAT_PERCENTAGE,
+  METRIC_LEAN_BODY_MASS,
   METRIC_DAILY_STEPS,
   METRIC_SLEEP_DURATION,
   METRIC_RESTING_HEART_RATE,

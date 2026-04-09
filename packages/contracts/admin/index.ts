@@ -45,5 +45,8 @@ export * from "./notifications";
 // Labs admin contracts - metric search, creation, extraction, order management
 export * from "./labs";
 
+// DXA admin contracts - extraction and ingest
+export * from "./dxa";
+
 // Consent contracts - legal document signing schemas, constants, and route types
 export * from "./consent-schemas";

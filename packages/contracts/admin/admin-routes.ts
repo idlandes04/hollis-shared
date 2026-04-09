@@ -110,6 +110,10 @@ export const ADMIN_PATIENT_ROUTES = {
   createLabReport: (userId: string) =>
     `/api/admin/patients/${userId}/labs/reports` as const,
 
+  /** POST - Create DXA ingest for a patient */
+  createDxaResult: (userId: string) =>
+    `/api/admin/patients/${userId}/dxa-results` as const,
+
   /** DELETE - Delete lab report */
   deleteLabReport: (userId: string, reportId: string) =>
     `/api/admin/patients/${userId}/labs/reports/${reportId}` as const,
@@ -514,6 +518,19 @@ export const ADMIN_LAB_ROUTES = {
   /** PATCH - Attach observations to existing order */
   attachObservations: (userId: string, orderId: string) =>
     `/api/admin/patients/${userId}/labs/orders/${orderId}/observations` as const,
+} as const;
+
+// ============================================================================
+// ADMIN DXA ROUTES
+// ============================================================================
+
+/**
+ * Admin DXA data routes.
+ * Base path: /api/admin/dxa or /api/admin/patients/:userId/dxa-results
+ */
+export const ADMIN_DXA_ROUTES = {
+  /** POST - Extract DXA data from a PDF/image without persisting it */
+  EXTRACT: "/api/admin/dxa/extract",
 } as const;
 
 // ============================================================================
@@ -968,6 +985,7 @@ export const ADMIN_API_ROUTES = {
   ANALYTICS: ADMIN_ANALYTICS_ROUTES,
   USERS: ADMIN_USERS_ROUTES,
   LABS: ADMIN_LAB_ROUTES,
+  DXA: ADMIN_DXA_ROUTES,
   NUTRITION: ADMIN_NUTRITION_ROUTES,
   AI: ADMIN_AI_ROUTES,
   UPLOAD: ADMIN_UPLOAD_ROUTES,

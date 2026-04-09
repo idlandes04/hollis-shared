@@ -467,8 +467,8 @@ describe("User Domain Contracts", () => {
 
       it("should have correct prices", () => {
         expect(USER_TIER_PRICES_DOLLARS.ESSENTIALS).toBe(799);
-        expect(USER_TIER_PRICES_DOLLARS.CORE).toBe(1349);
-        expect(USER_TIER_PRICES_DOLLARS.CONCIERGE).toBe(1999);
+        expect(USER_TIER_PRICES_DOLLARS.CORE).toBe(1599);
+        expect(USER_TIER_PRICES_DOLLARS.CONCIERGE).toBe(2499);
       });
 
       it("prices should increase with tier level", () => {
@@ -494,7 +494,7 @@ describe("User Domain Contracts", () => {
 
       it("should keep the deprecated tier monthly price alias aligned in dollars", () => {
         expect(TIER_MONTHLY_PRICE).toBe(USER_TIER_PRICES_DOLLARS);
-        expect(TIER_MONTHLY_PRICE.CORE).toBe(1349);
+        expect(TIER_MONTHLY_PRICE.CORE).toBe(1599);
       });
     });
 

@@ -73,6 +73,7 @@ export const OfferPolicySetSchema = z.object({
   pauseRights: z.string().min(1),
   earlyTermination: z.string().min(1),
   thirdPartyDisclosure: z.string().min(1),
+  partnerFacilityDisclosure: z.string().min(1),
 });
 export type OfferPolicySet = z.infer<typeof OfferPolicySetSchema>;
 
@@ -141,12 +142,18 @@ export function getTierCardHighlights(tier: UserTier): string[] {
     getOfferComparisonValue("nutritionCoaching", tier) ?? "Included";
   const careCoordination =
     getOfferComparisonValue("careCoordination", tier) ?? "Included";
+  const clinicianVisits =
+    getOfferComparisonValue("clinicianVisits", tier) ?? "Included";
+  const labPanels =
+    getOfferComparisonValue("labPanels", tier) ?? "Included";
 
   return [
     `${trainingSessions} personal training sessions / month`,
     `Recovery modality access: ${recoveryAccess}`,
-    `Standard nutrition coaching: ${nutritionCoaching}`,
-    `Care coordination support: ${careCoordination}`,
-    MASTER_OFFER_SHEET.policies.thirdPartyDisclosure,
+    `Nutrition coaching: ${nutritionCoaching}`,
+    `Clinician visits: ${clinicianVisits}`,
+    `Lab panels: ${labPanels}`,
+    `Care coordination: ${careCoordination}`,
+    MASTER_OFFER_SHEET.policies.partnerFacilityDisclosure,
   ];
 }
