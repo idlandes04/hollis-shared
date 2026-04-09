@@ -79,3 +79,5 @@ export {
     sanitizeErrorObject
 } from "./errorSanitization";
 
+// Sentry sanitization (PHI protection across all surfaces)
+export { sanitizeSentryEvent, sanitizeSentryLog, type SentryEventLike, type SentryLogLike } from "./sentrySanitization";
