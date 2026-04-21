@@ -32,6 +32,8 @@ export const BiometricEntryContractSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   metricDefinition: MetricDefinitionSummarySchema.nullable().optional(),
+  /** Optional clinician/trainer note attached to this reading. Null when absent. */
+  notes: z.string().nullable().optional(),
 });
 
 /**

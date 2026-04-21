@@ -153,6 +153,13 @@ export const ADMIN_PATIENT_ROUTES = {
   /** GET - Paginated biometric history for a single metric (admin-scoped) */
   biometricHistory: (userId: string) =>
     `/api/admin/patients/${userId}/biometrics` as const,
+
+  /**
+   * POST - Admin create/upsert a biometric reading for a patient.
+   * Body includes patientId — no userId in URL (flat admin endpoint).
+   * See POST /api/biometrics (biometricsRouter) with requireAdmin middleware.
+   */
+  biometricCreate: () => `/api/biometrics` as const,
 } as const;
 
 // ============================================================================
