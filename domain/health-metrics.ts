@@ -440,6 +440,8 @@ export type DailySummaryContract = z.infer<typeof DailySummarySchema>;
 export const HealthMetricSummarySchema = z.object({
   /** MetricDefinition.code — stable identifier for this metric */
   metricCode: z.string(),
+  /** MetricDefinition.id — UUID FK required by POST /api/biometrics body */
+  metricDefinitionId: z.string().uuid(),
   /** Human-readable display name from MetricDefinition */
   displayName: z.string(),
   /** Canonical storage unit from MetricDefinition */
