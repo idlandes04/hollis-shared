@@ -67,9 +67,9 @@ function validAuditEntry() {
 
 describe('PHI Audit Domain Contracts', () => {
   describe('PHI_RESOURCES', () => {
-    it('should contain exactly 38 resource types', () => {
+    it('should contain exactly 40 resource types', () => {
       // Update this count when adding/removing PHI resources — deliberate protection against silent removal
-      expect(PHI_RESOURCES).toHaveLength(39);
+      expect(PHI_RESOURCES).toHaveLength(40);
     });
 
     it('should contain common PHI resource types', () => {

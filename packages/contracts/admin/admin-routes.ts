@@ -160,6 +160,14 @@ export const ADMIN_PATIENT_ROUTES = {
    * See POST /api/biometrics (biometricsRouter) with requireAdmin middleware.
    */
   biometricCreate: () => `/api/biometrics` as const,
+
+  /** GET - Paginated list of wearable workout sessions for a patient */
+  wearableSessions: (userId: string) =>
+    `/api/admin/patients/${userId}/wearable-sessions` as const,
+
+  /** GET - Aggregated activity summary (bar chart data) for a patient */
+  wearableActivitySummary: (userId: string) =>
+    `/api/admin/patients/${userId}/wearable-activity-summary` as const,
 } as const;
 
 // ============================================================================

@@ -300,3 +300,116 @@ export const exerciseLogEntryDraftSchema = z.object({
 });
 
 export type ExerciseLogEntryDraft = z.infer<typeof exerciseLogEntryDraftSchema>;
+
+// ============================================================================
+// WEARABLE SESSION ADMIN QUERY SCHEMAS
+// ============================================================================
+
+/**
+ * Query parameters for the admin wearable sessions list endpoint.
+ * GET /api/admin/patients/:userId/wearable-sessions
+ */
+export const WearableSessionListQuerySchema = z.object({
+  /** Page number (1-based). Defaults to 1. */
+  page: z
+    .string()
+    .optional()
+    .transform((v) => {
+      const n = v ? Number.parseInt(v, 10) : 1;
+      return Math.max(Number.isNaN(n) ? 1 : n, 1);
+    }),
+  /** Items per page. Defaults to 20, max 100. */
+  limit: z
+    .string()
+    .optional()
+    .transform((v) => {
+      const n = v ? Number.parseInt(v, 10) : 20;
+      const clamped = Number.isNaN(n) ? 20 : n;
+      return Math.min(Math.max(clamped, 1), 100);
+    }),
+  /** ISO date string (YYYY-MM-DD) — inclusive lower bound on startTime */
+  startDate: z.string().date().optional(),
+  /** ISO date string (YYYY-MM-DD) — inclusive upper bound on startTime */
+  endDate: z.string().date().optional(),
+  /** Filter by workout type (e.g. "running", "cycling") */
+  type: z.string().min(1).max(100).optional(),
+});
+
+export type WearableSessionListQuery = z.infer<
+  typeof WearableSessionListQuerySchema
+>;
+
+/**
+ * A single wearable session row in the admin list response.
+ * Contains only fields present in the current DB schema — no HR, GPS, or effort score.
+ */
+export const WearableSessionItemSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string(),
+  type: z.string(),
+  startTime: isoTimestampSchema,
+  endTime: isoTimestampSchema,
+  durationMinutes: z.number().int(),
+  activeCaloriesKcal: z.number().int().nullable(),
+  distanceKm: z.number().nullable(),
+  source: z.string().nullable(),
+  createdAt: isoTimestampSchema,
+  updatedAt: isoTimestampSchema,
+});
+
+export type WearableSessionItem = z.infer<typeof WearableSessionItemSchema>;
+
+/**
+ * Paginated response for the admin wearable sessions list endpoint.
+ * Shape: { data: WearableSessionItem[], pagination: { page, limit, total, totalPages, hasMore } }
+ */
+export const WearableSessionListResponseSchema = z.object({
+  data: z.array(WearableSessionItemSchema),
+  pagination: z.object({
+    page: z.number().int(),
+    limit: z.number().int(),
+    total: z.number().int(),
+    totalPages: z.number().int(),
+    hasMore: z.boolean(),
+  }),
+});
+
+export type WearableSessionListResponse = z.infer<
+  typeof WearableSessionListResponseSchema
+>;
+
+// ============================================================================
+// WEARABLE ACTIVITY SUMMARY SCHEMAS
+// ============================================================================
+
+/**
+ * Aggregated activity data for a single calendar day.
+ * Used in the CSS bar chart (ActivitySummaryChart).
+ */
+export const WearableActivityDaySummarySchema = z.object({
+  /** UTC date key in YYYY-MM-DD format */
+  date: z.string(),
+  /** Total active minutes across all sessions on this day */
+  totalActiveMins: z.number().int(),
+  /** Total active calories burned across all sessions on this day */
+  totalCalories: z.number().int(),
+  /** Number of workout sessions on this day */
+  sessionCount: z.number().int(),
+});
+
+export type WearableActivityDaySummary = z.infer<
+  typeof WearableActivityDaySummarySchema
+>;
+
+/**
+ * Response for the admin wearable activity summary endpoint.
+ * GET /api/admin/patients/:userId/wearable-activity-summary
+ */
+export const WearableActivitySummaryResponseSchema = z.object({
+  days: z.array(WearableActivityDaySummarySchema),
+  periodDays: z.number().int(),
+});
+
+export type WearableActivitySummaryResponse = z.infer<
+  typeof WearableActivitySummaryResponseSchema
+>;
