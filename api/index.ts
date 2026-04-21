@@ -30,3 +30,9 @@ export {
     type AssignmentRoute,
     type MfaRoute
 } from "./routes/mfa";
+
+// Workout Plans routes are defined in the modular routes/ directory (not in routes.ts).
+// Explicitly re-exported here so they are available via @hollis/contracts/api.
+export {
+    WORKOUT_PLANS_ROUTES
+} from "./routes/workouts";
