@@ -4,6 +4,8 @@ import { z } from "zod";
  * Physiologically reasonable clinical bounds: 20–500 kg.
  */
 export declare const bodyWeightKgSchema: z.ZodNumber;
+/** Backward-compat alias retained for consumers migrating off the original schema name. */
+export declare const weightKgSchema: z.ZodNumber;
 /**
  * Load weight validation schema (kilograms).
  * Training loads can be 0 kg for bodyweight or unloaded movements.
