@@ -7,6 +7,8 @@ export const bodyWeightKgSchema = z
     .number()
     .min(20, "Body weight must be at least 20 kg")
     .max(500, "Body weight cannot exceed 500 kg");
+/** Backward-compat alias retained for consumers migrating off the original schema name. */
+export const weightKgSchema = bodyWeightKgSchema;
 /**
  * Load weight validation schema (kilograms).
  * Training loads can be 0 kg for bodyweight or unloaded movements.
