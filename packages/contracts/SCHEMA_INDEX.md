@@ -29,21 +29,56 @@ documented here.
 | --- | --- |
 | `@hollis/contracts` | Primary barrel for common contracts, constants, schemas, and helpers |
 | `@hollis/contracts/api` | API route constants and request/response contracts |
+| `@hollis/contracts/api/routes/workouts` | Workout route constants used directly by admin workout generation consumers |
 | `@hollis/contracts/domain` | Domain-level contracts intentionally exported as a grouped barrel |
+| `@hollis/contracts/domain/admin-notifications` | Admin notification constants re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/admin-tasks` | Admin task constants and schemas used by admin task tests and consumers |
+| `@hollis/contracts/domain/appointment-config` | Appointment configuration constants re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/appointments` | Appointment contracts re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/biometrics` | Biometric contracts and test helpers used by mobile compatibility contracts |
+| `@hollis/contracts/domain/daily-metrics` | Daily metrics contracts re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/exercise` | Exercise contracts re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/health-metric-types` | Health metric type constants used by server goal data source logic |
+| `@hollis/contracts/domain/health-progress` | Health progress mocks and contract helpers used by mobile tests |
+| `@hollis/contracts/domain/journal` | Journal contracts re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/labs` | Lab contracts, constants, and mocks used by server/mobile lab consumers |
+| `@hollis/contracts/domain/messages` | Messaging contracts used by mobile message contract tests |
+| `@hollis/contracts/domain/metric-definition` | Metric definition summaries re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/nutrition` | Nutrition contracts re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/nutrition-plan` | Nutrition plan contracts re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/phi-audit` | PHI audit contracts re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/push` | Push contracts re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/realtime` | Realtime/SSE contracts re-exported by mobile compatibility contracts |
+| `@hollis/contracts/domain/registration` | Registration contracts used by preregistration compatibility modules |
+| `@hollis/contracts/domain/training` | Training constants and goal data source helpers used by server/admin consumers |
+| `@hollis/contracts/domain/training-strategy` | Training strategy generation contracts not re-exported by the domain barrel |
+| `@hollis/contracts/domain/user` | User role/tier constants used by mobile feature tests and compatibility code |
+| `@hollis/contracts/domain/workouts` | Workout contracts re-exported by mobile compatibility contracts |
 | `@hollis/contracts/schemas` | Shared route/query/body and JSON blob schemas |
 | `@hollis/contracts/constants` | Shared constants |
 | `@hollis/contracts/admin` | Admin portal contracts and schemas |
+| `@hollis/contracts/admin/admin-types` | Admin type definitions used directly by server AI service code |
+| `@hollis/contracts/admin/labs` | Admin lab operation contracts promoted as a stable narrow surface |
 | `@hollis/contracts/ai` | AI validation and generated-content contracts |
+| `@hollis/contracts/ai/ai-types` | AI type definitions used directly by server AI service code |
 | `@hollis/contracts/public` | Public web/contact/waitlist contracts |
+| `@hollis/contracts/public/contact` | Public contact and waitlist validation helpers used by server and web-public |
 | `@hollis/contracts/stripe` | Stripe-related contract helpers |
 | `@hollis/contracts/password` | Password policy, reset, and validation contracts |
 | `@hollis/contracts/primitives` | Cross-domain primitives and result helpers |
 | `@hollis/contracts/errors` | Shared error codes and result/error helpers |
 
-Private source paths such as `@hollis/contracts/domain/user` are not public
-unless they appear in `exports`. The deferred deep-subpath decision in
-`shared/contracts/package.json` remains deferred; cleanup work must either use
-the public barrels above or deliberately promote a subpath.
+Private source paths are not public unless they appear in `exports`. Do not add
+wildcard exports such as `@hollis/contracts/domain/*`; promote narrow subpaths
+only when an existing consumer needs them and the source file is a deliberate
+contract boundary.
+
+### Module Resolution
+
+Published package subpaths resolve to compiled ESM output under `dist/`.
+Types resolve to the matching `.d.ts` file. Root manifests and build config
+files are not part of the package runtime output; `tsconfig.json` includes only
+source TypeScript files and `domain/**/*.json` data needed by contracts.
 
 ---
 
