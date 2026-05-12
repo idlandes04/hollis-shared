@@ -59,14 +59,39 @@ export {
     PASSWORD_POLICY,
     ZXCVBN_SCORE_LABELS,
     checkPasswordBreached,
+    forgotPasswordRequestSchema,
     passwordLengthSchema,
     passwordResetResponseSchema,
     passwordSchema,
+    resetPasswordRequestSchema,
     validatePassword,
     validatePasswordStrength,
+    type ForgotPasswordRequest,
     type PasswordResetResponse,
-    type PasswordValidationResult
+    type PasswordValidationResult,
+    type ResetPasswordRequest
 } from "./password/index.js";
+
+// Legacy root aliases retained for consumers migrating off the old local barrels.
+export {
+    AccountStatusSchema as accountStatusSchema,
+    ActivityLevelSchema as activityLevelSchema,
+    BiologicalSexSchema as biologicalSexSchema,
+    FITNESS_EXPERIENCES as EXPERIENCE_LEVELS,
+    FitnessExperienceSchema as experienceLevelSchema,
+    PregnancyStatusSchema as pregnancyStatusSchema,
+    PrimaryGoalSchema as primaryGoalSchema,
+    UserAccountSchema as userAccountSchema,
+    UserGoalsSchema as userGoalsSchema,
+    UserMetricsSchema as userMetricsSchema,
+    UserPreferencesSchema as userPreferencesSchema,
+    UserProfileSchema as userProfileSchema
+} from "./domain/user.js";
+export { FoodSourceSchema as foodSourceSchema } from "./domain/nutrition.js";
+export {
+    DailySummarySchema as dailySummarySchema,
+    WearablesDataSchema as wearablesDataSchema
+} from "./domain/health-metrics.js";
 
 // Shared error classes
 export * from "./errors/index.js";

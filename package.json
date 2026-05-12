@@ -1,8 +1,10 @@
 {
-  "_comment_BUILD_001": "DEFERRED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Deferred — existing public barrel exports now point at dist ESM, but adding package.json 'exports' entries for all deep sub-paths (e.g. domain/user, domain/labs) still requires coordinating 155+ import sites across the monorepo. If revisited: Add explicit 'exports' entries mapping every deep sub-path, then update all deep imports to use package-root or mapped paths. Reviewed: 2026-05-12 (Phase C shared package ESM emit)",
+  "_comment_BUILD_001": "RESOLVED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Add explicit package.json exports only for currently consumed public subpaths. Do not add wildcard exports or local compatibility barrels. Reviewed: 2026-05-12 (Phase E/F shared extraction cleanup)",
   "name": "@hollis/contracts",
   "version": "1.0.0",
-  "private": true,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -17,10 +19,130 @@
       "import": "./dist/api/index.js",
       "default": "./dist/api/index.js"
     },
+    "./api/routes/workouts": {
+      "types": "./dist/api/routes/workouts.d.ts",
+      "import": "./dist/api/routes/workouts.js",
+      "default": "./dist/api/routes/workouts.js"
+    },
     "./domain": {
       "types": "./dist/domain/index.d.ts",
       "import": "./dist/domain/index.js",
       "default": "./dist/domain/index.js"
+    },
+    "./domain/admin-notifications": {
+      "types": "./dist/domain/admin-notifications.d.ts",
+      "import": "./dist/domain/admin-notifications.js",
+      "default": "./dist/domain/admin-notifications.js"
+    },
+    "./domain/admin-tasks": {
+      "types": "./dist/domain/admin-tasks.d.ts",
+      "import": "./dist/domain/admin-tasks.js",
+      "default": "./dist/domain/admin-tasks.js"
+    },
+    "./domain/appointment-config": {
+      "types": "./dist/domain/appointment-config.d.ts",
+      "import": "./dist/domain/appointment-config.js",
+      "default": "./dist/domain/appointment-config.js"
+    },
+    "./domain/appointments": {
+      "types": "./dist/domain/appointments.d.ts",
+      "import": "./dist/domain/appointments.js",
+      "default": "./dist/domain/appointments.js"
+    },
+    "./domain/biometrics": {
+      "types": "./dist/domain/biometrics.d.ts",
+      "import": "./dist/domain/biometrics.js",
+      "default": "./dist/domain/biometrics.js"
+    },
+    "./domain/daily-metrics": {
+      "types": "./dist/domain/daily-metrics.d.ts",
+      "import": "./dist/domain/daily-metrics.js",
+      "default": "./dist/domain/daily-metrics.js"
+    },
+    "./domain/exercise": {
+      "types": "./dist/domain/exercise.d.ts",
+      "import": "./dist/domain/exercise.js",
+      "default": "./dist/domain/exercise.js"
+    },
+    "./domain/health-metric-types": {
+      "types": "./dist/domain/health-metric-types.d.ts",
+      "import": "./dist/domain/health-metric-types.js",
+      "default": "./dist/domain/health-metric-types.js"
+    },
+    "./domain/health-progress": {
+      "types": "./dist/domain/health-progress.d.ts",
+      "import": "./dist/domain/health-progress.js",
+      "default": "./dist/domain/health-progress.js"
+    },
+    "./domain/journal": {
+      "types": "./dist/domain/journal.d.ts",
+      "import": "./dist/domain/journal.js",
+      "default": "./dist/domain/journal.js"
+    },
+    "./domain/labs": {
+      "types": "./dist/domain/labs.d.ts",
+      "import": "./dist/domain/labs.js",
+      "default": "./dist/domain/labs.js"
+    },
+    "./domain/messages": {
+      "types": "./dist/domain/messages.d.ts",
+      "import": "./dist/domain/messages.js",
+      "default": "./dist/domain/messages.js"
+    },
+    "./domain/metric-definition": {
+      "types": "./dist/domain/metric-definition.d.ts",
+      "import": "./dist/domain/metric-definition.js",
+      "default": "./dist/domain/metric-definition.js"
+    },
+    "./domain/nutrition": {
+      "types": "./dist/domain/nutrition.d.ts",
+      "import": "./dist/domain/nutrition.js",
+      "default": "./dist/domain/nutrition.js"
+    },
+    "./domain/nutrition-plan": {
+      "types": "./dist/domain/nutrition-plan.d.ts",
+      "import": "./dist/domain/nutrition-plan.js",
+      "default": "./dist/domain/nutrition-plan.js"
+    },
+    "./domain/phi-audit": {
+      "types": "./dist/domain/phi-audit.d.ts",
+      "import": "./dist/domain/phi-audit.js",
+      "default": "./dist/domain/phi-audit.js"
+    },
+    "./domain/push": {
+      "types": "./dist/domain/push.d.ts",
+      "import": "./dist/domain/push.js",
+      "default": "./dist/domain/push.js"
+    },
+    "./domain/realtime": {
+      "types": "./dist/domain/realtime.d.ts",
+      "import": "./dist/domain/realtime.js",
+      "default": "./dist/domain/realtime.js"
+    },
+    "./domain/registration": {
+      "types": "./dist/domain/registration.d.ts",
+      "import": "./dist/domain/registration.js",
+      "default": "./dist/domain/registration.js"
+    },
+    "./domain/training": {
+      "types": "./dist/domain/training.d.ts",
+      "import": "./dist/domain/training.js",
+      "default": "./dist/domain/training.js"
+    },
+    "./domain/training-strategy": {
+      "types": "./dist/domain/training-strategy.d.ts",
+      "import": "./dist/domain/training-strategy.js",
+      "default": "./dist/domain/training-strategy.js"
+    },
+    "./domain/user": {
+      "types": "./dist/domain/user.d.ts",
+      "import": "./dist/domain/user.js",
+      "default": "./dist/domain/user.js"
+    },
+    "./domain/workouts": {
+      "types": "./dist/domain/workouts.d.ts",
+      "import": "./dist/domain/workouts.js",
+      "default": "./dist/domain/workouts.js"
     },
     "./schemas": {
       "types": "./dist/schemas/index.d.ts",
@@ -37,15 +159,35 @@
       "import": "./dist/admin/index.js",
       "default": "./dist/admin/index.js"
     },
+    "./admin/admin-types": {
+      "types": "./dist/admin/admin-types.d.ts",
+      "import": "./dist/admin/admin-types.js",
+      "default": "./dist/admin/admin-types.js"
+    },
+    "./admin/labs": {
+      "types": "./dist/admin/labs.d.ts",
+      "import": "./dist/admin/labs.js",
+      "default": "./dist/admin/labs.js"
+    },
     "./ai": {
       "types": "./dist/ai/index.d.ts",
       "import": "./dist/ai/index.js",
       "default": "./dist/ai/index.js"
     },
+    "./ai/ai-types": {
+      "types": "./dist/ai/ai-types.d.ts",
+      "import": "./dist/ai/ai-types.js",
+      "default": "./dist/ai/ai-types.js"
+    },
     "./public": {
       "types": "./dist/public/index.d.ts",
       "import": "./dist/public/index.js",
       "default": "./dist/public/index.js"
+    },
+    "./public/contact": {
+      "types": "./dist/public/contact.d.ts",
+      "import": "./dist/public/contact.js",
+      "default": "./dist/public/contact.js"
     },
     "./stripe": {
       "types": "./dist/stripe/index.d.ts",
