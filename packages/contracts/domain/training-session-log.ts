@@ -11,6 +11,18 @@ export const PROGRAM_PHASES = [
   "maintenance",
 ] as const;
 
+export const ProgramPhaseSchema = z.enum(PROGRAM_PHASES);
+export type ProgramPhase = z.infer<typeof ProgramPhaseSchema>;
+
+export const RepClassSchema = z.enum(["S", "H", "E"]);
+export type RepClass = z.infer<typeof RepClassSchema>;
+
+export const CanonicalizationStatusSchema = z.enum(["matched", "unmatched", "ignored"]);
+export type CanonicalizationStatus = z.infer<typeof CanonicalizationStatusSchema>;
+
+export const ExerciseTrackingModeSchema = z.enum(["reps", "timed", "cardio", "stretch"]);
+export type ExerciseTrackingMode = z.infer<typeof ExerciseTrackingModeSchema>;
+
 export const SessionSetSchema = z.object({
   setNumber: z.number().int().min(1),
   weightKg: z.number().min(0),
@@ -26,7 +38,7 @@ export const SessionSetSchema = z.object({
   setGroupId: z.string().nullable().optional(),
   side: z.enum(["left", "right"]).nullable().optional(),
   originExerciseId: z.string().nullable().optional(),
-  repClass: z.enum(["S", "H", "E"]).optional(),
+  repClass: RepClassSchema.optional(),
   isMiss: z.boolean().optional(),
   leftReps: z.number().int().min(0).nullable().optional(),
   rightReps: z.number().int().min(0).nullable().optional(),
@@ -56,10 +68,10 @@ export const SessionExerciseSchema = z
     order: z.number().int().min(0),
     sets: z.array(SessionSetSchema),
     isFromProgram: z.boolean(),
-    canonicalizationStatus: z.enum(["matched", "unmatched", "ignored"]),
+    canonicalizationStatus: CanonicalizationStatusSchema,
     cardioData: CardioSessionDataSchema.nullable().default(null),
     stretchData: StretchSessionDataSchema.nullable().default(null),
-    trackingMode: z.enum(["reps", "timed", "cardio", "stretch"]).optional(),
+    trackingMode: ExerciseTrackingModeSchema.optional(),
   })
   .refine(
     (data) => {
@@ -113,7 +125,7 @@ const TrainingSessionLogBaseSchema = z.object({
   untrackedVolume: z.number().min(0).optional(),
   aiOutlierLabel: z.string().nullable().optional(),
   schemaVersion: z.number().optional(),
-  programPhase: z.enum(PROGRAM_PHASES).optional(),
+  programPhase: ProgramPhaseSchema.optional(),
   skippedExerciseIds: z.array(z.string()).optional(),
 });
 
@@ -125,6 +137,8 @@ export const TrainingSessionLogSchema = TrainingSessionLogBaseSchema.extend({
   exercises: z.array(SessionExerciseSchema).min(1),
 });
 
+export type StretchSet = z.infer<typeof StretchSetSchema>;
+export type StretchSessionData = z.infer<typeof StretchSessionDataSchema>;
 export type SessionSet = z.infer<typeof SessionSetSchema>;
 export type SessionExercise = z.infer<typeof SessionExerciseSchema>;
 export type QuestionnaireResponse = z.infer<typeof QuestionnaireResponseSchema>;

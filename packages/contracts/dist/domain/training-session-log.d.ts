@@ -1,5 +1,32 @@
 import { z } from "zod";
 export declare const PROGRAM_PHASES: readonly ["hypertrophy", "strength", "peaking", "deload", "maintenance"];
+export declare const ProgramPhaseSchema: z.ZodEnum<{
+    strength: "strength";
+    hypertrophy: "hypertrophy";
+    peaking: "peaking";
+    deload: "deload";
+    maintenance: "maintenance";
+}>;
+export type ProgramPhase = z.infer<typeof ProgramPhaseSchema>;
+export declare const RepClassSchema: z.ZodEnum<{
+    S: "S";
+    H: "H";
+    E: "E";
+}>;
+export type RepClass = z.infer<typeof RepClassSchema>;
+export declare const CanonicalizationStatusSchema: z.ZodEnum<{
+    matched: "matched";
+    unmatched: "unmatched";
+    ignored: "ignored";
+}>;
+export type CanonicalizationStatus = z.infer<typeof CanonicalizationStatusSchema>;
+export declare const ExerciseTrackingModeSchema: z.ZodEnum<{
+    reps: "reps";
+    cardio: "cardio";
+    timed: "timed";
+    stretch: "stretch";
+}>;
+export type ExerciseTrackingMode = z.infer<typeof ExerciseTrackingModeSchema>;
 export declare const SessionSetSchema: z.ZodObject<{
     setNumber: z.ZodNumber;
     weightKg: z.ZodNumber;
@@ -531,6 +558,8 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
         }>>;
     }, z.core.$strip>>;
 }, z.core.$strip>;
+export type StretchSet = z.infer<typeof StretchSetSchema>;
+export type StretchSessionData = z.infer<typeof StretchSessionDataSchema>;
 export type SessionSet = z.infer<typeof SessionSetSchema>;
 export type SessionExercise = z.infer<typeof SessionExerciseSchema>;
 export type QuestionnaireResponse = z.infer<typeof QuestionnaireResponseSchema>;

@@ -1,4 +1,30 @@
 import { z } from "zod";
+export declare const SetTypeSchema: z.ZodEnum<{
+    normal: "normal";
+    warmup: "warmup";
+    drop_set: "drop_set";
+    rest_pause: "rest_pause";
+    superset: "superset";
+}>;
+export type SetType = z.infer<typeof SetTypeSchema>;
+export declare const ProgressionModeSchema: z.ZodEnum<{
+    weight_first: "weight_first";
+    reps_first: "reps_first";
+    duration_first: "duration_first";
+}>;
+export type ProgressionMode = z.infer<typeof ProgressionModeSchema>;
+export declare const ExerciseGoalModeSchema: z.ZodEnum<{
+    maintain: "maintain";
+    progress: "progress";
+    track_only: "track_only";
+}>;
+export type ExerciseGoalMode = z.infer<typeof ExerciseGoalModeSchema>;
+export declare const ProgramTypeSchema: z.ZodEnum<{
+    custom: "custom";
+    linear: "linear";
+    mesocycle: "mesocycle";
+}>;
+export type ProgramType = z.infer<typeof ProgramTypeSchema>;
 export declare const ProgramSetSchema: z.ZodObject<{
     setNumber: z.ZodNumber;
     targetWeightKg: z.ZodNullable<z.ZodNumber>;
@@ -442,6 +468,8 @@ export declare const ProgramSchema: z.ZodObject<{
     updatedAt: z.ZodCoercedDate<unknown>;
     schemaVersion: z.ZodOptional<z.ZodNumber>;
 }, z.core.$strip>;
+export type CardioTargets = z.infer<typeof CardioTargetsSchema>;
+export type MaintenanceTarget = z.infer<typeof MaintenanceTargetSchema>;
 export type ProgramSet = z.infer<typeof ProgramSetSchema>;
 export type ProgramExercise = z.infer<typeof ProgramExerciseSchema>;
 export type ProgramDay = z.infer<typeof ProgramDaySchema>;

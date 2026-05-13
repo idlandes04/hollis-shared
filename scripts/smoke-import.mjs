@@ -8,6 +8,7 @@ const packageDirs = [
   "packages/contracts",
   "packages/design-tokens",
   "packages/utils",
+  "packages/auth-client",
 ];
 
 function readJson(filePath) {

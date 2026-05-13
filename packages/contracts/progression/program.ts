@@ -1,5 +1,17 @@
 import { z } from "zod";
 
+export const SetTypeSchema = z.enum(["normal", "warmup", "drop_set", "rest_pause", "superset"]);
+export type SetType = z.infer<typeof SetTypeSchema>;
+
+export const ProgressionModeSchema = z.enum(["weight_first", "reps_first", "duration_first"]);
+export type ProgressionMode = z.infer<typeof ProgressionModeSchema>;
+
+export const ExerciseGoalModeSchema = z.enum(["progress", "maintain", "track_only"]);
+export type ExerciseGoalMode = z.infer<typeof ExerciseGoalModeSchema>;
+
+export const ProgramTypeSchema = z.enum(["linear", "mesocycle", "custom"]);
+export type ProgramType = z.infer<typeof ProgramTypeSchema>;
+
 export const ProgramSetSchema = z.object({
   setNumber: z.number().int().min(1),
   targetWeightKg: z.number().min(0).nullable(),
@@ -7,7 +19,7 @@ export const ProgramSetSchema = z.object({
   targetDurationSeconds: z.number().int().min(1).nullable().optional(),
   targetRIR: z.number().int().min(0).max(10),
   isWarmup: z.boolean(),
-  setType: z.enum(["normal", "warmup", "drop_set", "rest_pause", "superset"]).default("normal"),
+  setType: SetTypeSchema.default("normal"),
   setGroupId: z.string().nullable().optional(),
   originExerciseId: z.string().nullable().optional(),
 });
@@ -30,9 +42,9 @@ export const ProgramExerciseSchema = z
     canonicalExerciseId: z.string().min(1),
     order: z.number().int().min(0),
     sets: z.array(ProgramSetSchema),
-    goalMode: z.enum(["progress", "maintain", "track_only"]).optional(),
+    goalMode: ExerciseGoalModeSchema.optional(),
     useSmartProgress: z.boolean().optional(),
-    progressionMode: z.enum(["weight_first", "reps_first", "duration_first"]),
+    progressionMode: ProgressionModeSchema,
     repThresholdForWeightJump: z.number().int().min(1).nullable(),
     cardioTargets: CardioTargetsSchema.nullable().default(null),
     maintenanceTarget: MaintenanceTargetSchema.nullable().default(null),
@@ -56,7 +68,7 @@ export const ProgramSchema = z.object({
   userId: z.string().min(1),
   name: z.string().min(1),
   description: z.string().optional(),
-  type: z.enum(["linear", "mesocycle", "custom"]),
+  type: ProgramTypeSchema,
   startDate: z.coerce.date(),
   endDate: z.coerce.date().optional(),
   durationWeeks: z.number().int().min(1),
@@ -69,6 +81,8 @@ export const ProgramSchema = z.object({
   schemaVersion: z.number().optional(),
 });
 
+export type CardioTargets = z.infer<typeof CardioTargetsSchema>;
+export type MaintenanceTarget = z.infer<typeof MaintenanceTargetSchema>;
 export type ProgramSet = z.infer<typeof ProgramSetSchema>;
 export type ProgramExercise = z.infer<typeof ProgramExerciseSchema>;
 export type ProgramDay = z.infer<typeof ProgramDaySchema>;

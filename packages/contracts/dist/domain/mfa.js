@@ -275,8 +275,11 @@ export const authSessionProfileSchema = z.object({
     email: emailSchema,
     fullName: z.string().optional(),
     role: UserRoleSchema,
+    /** Health-specific; will be moved under `claims.hollisHealth.*` once Identity Service is live. */
     tier: UserTierSchema.optional(),
+    /** Health-specific; will be moved under `claims.hollisHealth.*` once Identity Service is live. */
     onboardingCompleted: z.boolean().optional(),
+    /** Health-specific; will be moved under `claims.hollisHealth.*` once Identity Service is live. */
     organizationId: z.string().optional(),
     isActive: z.boolean().optional(),
     createdAt: z.string().optional(),

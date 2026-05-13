@@ -84,6 +84,7 @@ export const MetricBasketSnapshotSchema = z.object({
   repRangePivot: RepRangePivotSchema.nullable().optional(),
 });
 
+export type MetricGateRejectReason = z.infer<typeof MetricGateRejectReasonSchema>;
 export type GatedE1RMSample = z.infer<typeof GatedE1RMSampleSchema>;
 export type BestQualifyingSet = z.infer<typeof BestQualifyingSetSchema>;
 export type WeeklyHardSetsEntry = z.infer<typeof WeeklyHardSetsEntrySchema>;

@@ -1,0 +1,311 @@
+/**
+ * @ai-context @hollis/auth-client | Thin middleware for consumer apps to verify Identity Service tokens
+ *
+ * Consumer apps (Health, Workouts) import this package instead of implementing
+ * their own token verification. All verification ultimately delegates to the
+ * Hollis Identity Service at `identity.hollis.health`.
+ *
+ * Public surface:
+ * - createAuthClient    — factory returning a configured middleware + verifyToken
+ * - requireAuth         — Express middleware that enforces a valid access token
+ * - verifyToken         — low-level verification call to Identity Service /verify
+ * - AuthClientMiddleware — Express middleware type
+ *
+ * Re-exports (so consumers import only from '@hollis/auth-client'):
+ * - AccessTokenClaims, Audience, validateAudience
+ *
+ * deps: @hollis/contracts, jsonwebtoken | consumers: hollis-health-app server, Hollis-Workouts server
+ */
+
+import jwt from "jsonwebtoken";
+import {
+  AccessTokenClaimsSchema,
+  APP_ERROR_CODES,
+  type AppError,
+  type Audience,
+} from "@hollis/contracts";
+
+// Re-export contract types so consumers only need one import
+export type { AccessTokenClaims, Audience } from "@hollis/contracts";
+export { validateAudience, AudienceSchema, AUDIENCES } from "@hollis/contracts";
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+/**
+ * Minimal Express-compatible request shape.
+ * The middleware attaches `userId` and `tokenClaims` to the request object.
+ * Consumer apps should augment this interface to get full type safety:
+ *
+ * @example
+ * // express.d.ts in the consumer app
+ * import type { AccessTokenClaims } from '@hollis/auth-client';
+ * declare global {
+ *   namespace Express {
+ *     interface Request {
+ *       userId: string;
+ *       tokenClaims: AccessTokenClaims;
+ *     }
+ *   }
+ * }
+ */
+export interface AuthenticatedRequest {
+  headers: { authorization?: string; [key: string]: string | string[] | undefined };
+  userId?: string;
+  tokenClaims?: import("@hollis/contracts").AccessTokenClaims;
+  [key: string]: unknown;
+}
+
+/** Express-style response with a minimal json/status surface */
+export interface AuthResponse {
+  status(code: number): this;
+  json(body: unknown): unknown;
+}
+
+/** Express-style next function */
+export type AuthNextFunction = (err?: unknown) => void;
+
+/** Express-compatible middleware signature produced by createAuthClient */
+export type AuthClientMiddleware = (
+  req: AuthenticatedRequest,
+  res: AuthResponse,
+  next: AuthNextFunction,
+) => void | Promise<void>;
+
+// ============================================================================
+// OPTIONS
+// ============================================================================
+
+export interface AuthClientOptions {
+  /**
+   * Base URL of the Hollis Identity Service (no trailing slash).
+   * Example: 'https://identity.hollis.health'
+   */
+  identityServiceUrl: string;
+
+  /**
+   * The audience string this app expects in every token's `aud` claim.
+   * Tokens not listing this audience will be rejected.
+   */
+  audience: Audience;
+
+  /**
+   * Optional: provide a PEM-encoded RSA public key (or symmetric secret) to
+   * verify JWT signatures locally without a network call.
+   * When omitted, verification delegates to the Identity Service /verify endpoint.
+   *
+   * TODO(W6h): Implement JWKS-fetching path — fetch public keys lazily from
+   * `identityServiceUrl + '/.well-known/jwks.json'` and cache them with
+   * a configurable TTL. This eliminates the per-request network hop for local
+   * signature verification while remaining key-rotation aware.
+   */
+  jwksSecret?: string;
+
+  /**
+   * Timeout in milliseconds for calls to the Identity Service /verify endpoint.
+   * Default: 5000 (5 seconds)
+   */
+  verifyTimeoutMs?: number;
+}
+
+// ============================================================================
+// AUTH CLIENT FACTORY
+// ============================================================================
+
+export interface AuthClient {
+  /**
+   * Express middleware. Extracts the Bearer token, verifies it, and attaches
+   * `req.userId` and `req.tokenClaims` for downstream handlers.
+   * Calls next(error) with an AppError on failure.
+   */
+  requireAuth: () => AuthClientMiddleware;
+
+  /**
+   * Low-level token verification. Returns parsed AccessTokenClaims on success
+   * or throws an AppError-shaped object on failure.
+   *
+   * Use this when you need the claims outside of an Express middleware context
+   * (e.g. WebSocket upgrade handlers, background jobs).
+   */
+  verifyToken: (token: string) => Promise<import("@hollis/contracts").AccessTokenClaims>;
+}
+
+/**
+ * Creates a configured auth client for a consumer app server.
+ *
+ * @example
+ * import { createAuthClient } from '@hollis/auth-client';
+ *
+ * const auth = createAuthClient({
+ *   identityServiceUrl: process.env.IDENTITY_SERVICE_URL,
+ *   audience: 'hollis-health',
+ * });
+ *
+ * router.get('/protected', auth.requireAuth(), (req, res) => {
+ *   res.json({ userId: req.userId });
+ * });
+ */
+export function createAuthClient(opts: AuthClientOptions): AuthClient {
+  const { identityServiceUrl, audience, jwksSecret, verifyTimeoutMs = 5000 } = opts;
+
+  async function verifyToken(
+    token: string,
+  ): Promise<import("@hollis/contracts").AccessTokenClaims> {
+    // Fast path: local JWT verification when a secret/key is provided.
+    // This avoids a network call to the Identity Service on every request.
+    if (jwksSecret) {
+      return verifyTokenLocally(token, jwksSecret, audience);
+    }
+
+    // Slow path: delegate to Identity Service /verify endpoint.
+    // TODO(W6h): Replace this with JWKS-fetching local verification once the
+    // Identity Service exposes /.well-known/jwks.json and key rotation is stable.
+    return verifyTokenRemote(token, identityServiceUrl, audience, verifyTimeoutMs);
+  }
+
+  function requireAuth(): AuthClientMiddleware {
+    return async (req, _res, next) => {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        const error: AppError = {
+          code: APP_ERROR_CODES.AUTH_REQUIRED,
+          message: "Authorization header missing or malformed",
+        };
+        next(error);
+        return;
+      }
+
+      const token = authHeader.slice(7);
+      try {
+        const claims = await verifyToken(token);
+        req.userId = claims.userId;
+        req.tokenClaims = claims;
+        next();
+      } catch (err) {
+        next(err);
+      }
+    };
+  }
+
+  return { requireAuth, verifyToken };
+}
+
+// ============================================================================
+// LOCAL VERIFICATION (fast path)
+// ============================================================================
+
+/**
+ * Verifies a JWT locally using a known secret or public key.
+ * Used when `jwksSecret` is provided to createAuthClient.
+ */
+function verifyTokenLocally(
+  token: string,
+  secret: string,
+  audience: Audience,
+): import("@hollis/contracts").AccessTokenClaims {
+  let decoded: unknown;
+  try {
+    decoded = jwt.verify(token, secret);
+  } catch (e) {
+    const error: AppError = {
+      code: APP_ERROR_CODES.AUTH_REQUIRED,
+      message: `Token verification failed: ${e instanceof Error ? e.message : String(e)}`,
+    };
+    throw error;
+  }
+
+  return parseClaims(decoded, audience);
+}
+
+// ============================================================================
+// REMOTE VERIFICATION (slow path — delegates to Identity Service)
+// ============================================================================
+
+/**
+ * Calls the Identity Service /verify endpoint to validate a token.
+ * Returns AccessTokenClaims on success; throws AppError on failure.
+ *
+ * TODO(W6): Once the Identity Service is live, wire up the actual HTTP call here.
+ * The stub below documents the expected request/response contract.
+ *
+ * Expected request:  POST `{identityServiceUrl}/verify`
+ *                    Body: { token: string }
+ *                    Header: Content-Type: application/json
+ *
+ * Expected response: { ok: true, claims: AccessTokenClaims }
+ *                 or HTTP 401 { ok: false, code: string, message: string }
+ */
+async function verifyTokenRemote(
+  token: string,
+  identityServiceUrl: string,
+  audience: Audience,
+  timeoutMs: number,
+): Promise<import("@hollis/contracts").AccessTokenClaims> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  let response: Response;
+  try {
+    response = await fetch(`${identityServiceUrl}/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, audience }),
+      signal: controller.signal,
+    });
+  } catch (e) {
+    const error: AppError = {
+      code: APP_ERROR_CODES.INTERNAL_ERROR,
+      message: `Identity Service unreachable: ${e instanceof Error ? e.message : String(e)}`,
+    };
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (!response.ok) {
+    const error: AppError = {
+      code: APP_ERROR_CODES.AUTH_REQUIRED,
+      message: `Identity Service rejected token (HTTP ${response.status})`,
+    };
+    throw error;
+  }
+
+  const body = (await response.json()) as { claims?: unknown };
+  return parseClaims(body.claims, audience);
+}
+
+// ============================================================================
+// INTERNAL HELPERS
+// ============================================================================
+
+/**
+ * Parses and validates raw JWT payload against AccessTokenClaimsSchema.
+ * Throws AppError if validation fails or audience check does not pass.
+ */
+function parseClaims(
+  raw: unknown,
+  requiredAudience: Audience,
+): import("@hollis/contracts").AccessTokenClaims {
+  const result = AccessTokenClaimsSchema.safeParse(raw);
+  if (!result.success) {
+    const error: AppError = {
+      code: APP_ERROR_CODES.AUTH_REQUIRED,
+      message: "Token payload does not match expected claims schema",
+      details: result.error.issues,
+    };
+    throw error;
+  }
+
+  const claims = result.data;
+
+  if (!claims.aud.includes(requiredAudience)) {
+    const error: AppError = {
+      code: APP_ERROR_CODES.FORBIDDEN,
+      message: `Token not valid for audience '${requiredAudience}'`,
+    };
+    throw error;
+  }
+
+  return claims;
+}
