@@ -1692,5 +1692,9 @@ export declare const DeletionRequestInputSchema: z.ZodObject<{
     reason: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type DeletionRequestInput = z.infer<typeof DeletionRequestInputSchema>;
+export declare const deletionRequestBodySchema: z.ZodDefault<z.ZodObject<{
+    reason: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>>;
+export type DeletionRequestBody = z.infer<typeof deletionRequestBodySchema>;
 export declare const buildVisibilityMap: (order: string[], hidden: string[], existing?: Record<string, boolean>) => Record<string, boolean>;
 //# sourceMappingURL=user.d.ts.map

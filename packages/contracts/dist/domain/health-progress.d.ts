@@ -46,6 +46,14 @@
 import { z } from "zod";
 import { type BiometricSource } from "./clinical.js";
 import { type HealthMetricDirection } from "./health-metric-types.js";
+export declare const healthProgressQuerySchema: z.ZodObject<{
+    months: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
+}, z.core.$strip>;
+export type HealthProgressQuery = z.infer<typeof healthProgressQuerySchema>;
+export declare const healthProgressHistoryQuerySchema: z.ZodObject<{
+    limit: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
+}, z.core.$strip>;
+export type HealthProgressHistoryQuery = z.infer<typeof healthProgressHistoryQuerySchema>;
 /**
  * Improvement direction for a metric:
  * - lower_better: Decreasing value = improvement (e.g., A1C, LDL, body fat)

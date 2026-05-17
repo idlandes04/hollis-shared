@@ -252,6 +252,24 @@ export declare const UpdateOrganizationRequestSchema: z.ZodObject<{
     }, z.core.$strip>>;
 }, z.core.$strip>;
 export type UpdateOrganizationRequest = z.infer<typeof UpdateOrganizationRequestSchema>;
+export declare const organizationsListQuerySchema: z.ZodObject<{
+    status: z.ZodOptional<z.ZodEnum<{
+        ONBOARDING: "ONBOARDING";
+        ACTIVE: "ACTIVE";
+        SUSPENDED: "SUSPENDED";
+        ARCHIVED: "ARCHIVED";
+    }>>;
+    search: z.ZodOptional<z.ZodString>;
+    limit: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
+    offset: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
+}, z.core.$strip>;
+export type OrganizationsListQuery = z.infer<typeof organizationsListQuerySchema>;
+export declare const organizationUsersQuerySchema: z.ZodObject<{
+    search: z.ZodOptional<z.ZodString>;
+    limit: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
+    offset: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
+}, z.core.$strip>;
+export type OrganizationUsersQuery = z.infer<typeof organizationUsersQuerySchema>;
 /**
  * Organization summary (for lists, dropdowns).
  */

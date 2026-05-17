@@ -10,6 +10,7 @@
  */
 export * from "./csrf.js";
 export * from "./endpoints.js";
+export * from "./health-clinical-schemas.js";
 export * from "./response.js";
 export * from "./routes.js";
 // Legacy ./routes.ts takes precedence over ./routes/index.ts during resolution,
@@ -22,4 +23,6 @@ export { ASSIGNMENT_ROUTES, MFA_ROUTES } from "./routes/mfa.js";
 // Workout Plans routes are defined in the modular routes/ directory (not in routes.ts).
 // Explicitly re-exported here so they are available via @hollis/contracts/api.
 export { WORKOUT_PLANS_ROUTES } from "./routes/workouts.js";
+// Health app route request/query/param schemas promoted from server validation.
+export * from "./routes/health-route-contracts.js";
 //# sourceMappingURL=index.js.map

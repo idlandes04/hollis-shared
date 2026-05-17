@@ -57,9 +57,9 @@ export declare const MfaEventTypeSchema: z.ZodEnum<{
 export declare const STEP_UP_AUTH_ACTIONS: readonly ["EXPORT_DATA", "CHANGE_ROLE", "RESET_PASSWORD", "DELETE_ACCOUNT", "MODIFY_MFA", "ASSIGN_CLINICIAN", "REVOKE_ASSIGNMENT", "VIEW_AUDIT_LOGS", "MODIFY_PERMISSIONS", "BULK_OPERATIONS", "RESET_USER_MFA"];
 export type StepUpAuthAction = z.infer<typeof StepUpAuthActionSchema>;
 export declare const StepUpAuthActionSchema: z.ZodEnum<{
-    RESET_PASSWORD: "RESET_PASSWORD";
     EXPORT_DATA: "EXPORT_DATA";
     CHANGE_ROLE: "CHANGE_ROLE";
+    RESET_PASSWORD: "RESET_PASSWORD";
     DELETE_ACCOUNT: "DELETE_ACCOUNT";
     MODIFY_MFA: "MODIFY_MFA";
     ASSIGN_CLINICIAN: "ASSIGN_CLINICIAN";
@@ -286,9 +286,9 @@ export type MfaSessionReverifyRequestContract = z.infer<typeof mfaSessionReverif
  */
 export declare const stepUpAuthRequestSchema: z.ZodObject<{
     action: z.ZodEnum<{
-        RESET_PASSWORD: "RESET_PASSWORD";
         EXPORT_DATA: "EXPORT_DATA";
         CHANGE_ROLE: "CHANGE_ROLE";
+        RESET_PASSWORD: "RESET_PASSWORD";
         DELETE_ACCOUNT: "DELETE_ACCOUNT";
         MODIFY_MFA: "MODIFY_MFA";
         ASSIGN_CLINICIAN: "ASSIGN_CLINICIAN";
@@ -358,6 +358,10 @@ export declare const adminMfaResetRequestSchema: z.ZodObject<{
     reason: z.ZodString;
 }, z.core.$strip>;
 export type AdminMfaResetRequest = z.infer<typeof adminMfaResetRequestSchema>;
+export declare const mfaCredentialIdParamsSchema: z.ZodObject<{
+    credentialId: z.ZodString;
+}, z.core.$strip>;
+export type MfaCredentialIdParams = z.infer<typeof mfaCredentialIdParamsSchema>;
 /**
  * Unwrapped response payload from admin MFA reset.
  *

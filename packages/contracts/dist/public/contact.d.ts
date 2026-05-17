@@ -119,6 +119,18 @@ export declare const NewsletterSignupSchema: z.ZodObject<{
     }>>;
 }, z.core.$strip>;
 export type NewsletterSignupInput = z.infer<typeof NewsletterSignupSchema>;
+export declare const billingVerifyTokenQuerySchema: z.ZodObject<{
+    token: z.ZodString;
+}, z.core.$strip>;
+export type BillingVerifyTokenQuery = z.infer<typeof billingVerifyTokenQuerySchema>;
+export declare const unsubscribeTokenQuerySchema: z.ZodObject<{
+    token: z.ZodString;
+}, z.core.$strip>;
+export type UnsubscribeTokenQuery = z.infer<typeof unsubscribeTokenQuerySchema>;
+export declare const unsubscribeTokenBodySchema: z.ZodObject<{
+    token: z.ZodString;
+}, z.core.$strip>;
+export type UnsubscribeTokenBody = z.infer<typeof unsubscribeTokenBodySchema>;
 /**
  * API response for contact form submission.
  */

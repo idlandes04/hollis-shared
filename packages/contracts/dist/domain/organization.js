@@ -155,6 +155,17 @@ export const UpdateOrganizationRequestSchema = z.object({
     address: OrganizationAddressSchema.partial().optional(),
     billingInfo: OrganizationBillingInfoSchema.partial().optional(),
 });
+export const organizationsListQuerySchema = z.object({
+    status: OrganizationStatusSchema.optional(),
+    search: z.string().trim().min(1).max(100).optional(),
+    limit: z.coerce.number().int().min(1).max(200).default(50),
+    offset: z.coerce.number().int().min(0).max(10000).default(0),
+});
+export const organizationUsersQuerySchema = z.object({
+    search: z.string().trim().min(1).max(100).optional(),
+    limit: z.coerce.number().int().min(1).max(200).default(50),
+    offset: z.coerce.number().int().min(0).max(10000).default(0),
+});
 /**
  * Organization summary (for lists, dropdowns).
  */

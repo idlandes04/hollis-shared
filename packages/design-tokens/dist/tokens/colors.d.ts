@@ -174,8 +174,8 @@ export declare const lightColors: {
     readonly secondary: "#C6B2A1";
     readonly secondaryLight: "#DBC7B6";
     readonly secondaryDark: "#A89485";
-    readonly background: "#F4F0EB";
-    readonly surface: "#EBE6DF";
+    readonly background: "#F8F6F3";
+    readonly surface: "#F2EEE9";
     readonly surfaceElevated: "#FFFFFF";
     readonly card: "#FFFFFF";
     readonly text: "#01314A";
@@ -203,7 +203,7 @@ export declare const lightColors: {
     readonly active: "rgba(1, 49, 74, 0.12)";
     readonly focus: "rgba(147, 179, 205, 0.35)";
     readonly disabled: "#E2E8F0";
-    readonly inputBackground: "#F4F0EB";
+    readonly inputBackground: "#F8F6F3";
     readonly inputBorder: "rgba(1, 49, 74, 0.20)";
     readonly inputText: "#01314A";
     readonly inputPlaceholder: "rgba(1, 49, 74, 0.45)";

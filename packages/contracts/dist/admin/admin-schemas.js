@@ -10,7 +10,7 @@
  * deps: zod, domain types | consumers: web-admin/*, server/src/routes/admin/*
  */
 import { z } from "zod";
-import { AccountStatusSchema, ActivityLevelSchema, aiPermanentNoteSchema, SettableAccountStatusSchema, BiologicalSexSchema, FitnessExperienceSchema, GoalDataSourceSchema, LegacyGoalDataSourceSchema, PregnancyStatusSchema, PrimaryGoalSchema, RegistrationStatusSchema, StrategyStatusSchema, StrategyTypeSchema, UserRoleSchema, UserTierSchema, isoDateSchema, isoTimestampSchema, normalizeGoalDataSource, workoutSessionNoteSchema, } from "../domain/index.js";
+import { AccountStatusSchema, ActivityLevelSchema, aiPermanentNoteSchema, SettableAccountStatusSchema, BiologicalSexSchema, FitnessExperienceSchema, GoalDataSourceSchema, LegacyGoalDataSourceSchema, LeadStageSchema, PregnancyStatusSchema, PrimaryGoalSchema, RegistrationStatusSchema, StrategyStatusSchema, StrategyTypeSchema, UserRoleSchema, UserTierSchema, isoDateSchema, isoTimestampSchema, normalizeGoalDataSource, workoutSessionNoteSchema, } from "../domain/index.js";
 import { AdminTaskPrioritySchema, AdminTaskStatusSchema, AdminTaskTypeSchema, } from "../domain/admin-tasks.js";
 import { InjuryRecoveryStatusSchema, LimitationSeveritySchema, MedicalConditionStatusSchema, } from "../domain/clinical.js";
 import { LabMappingStatusSchema, LabMetricCategorySchema, LabMetricDirectionalitySchema, MetricApprovalStatusSchema, } from "../domain/labs.js";
@@ -901,5 +901,85 @@ export const adminTaskListResponseSchema = createPaginatedListSchema(adminTaskSc
  */
 export const adminTaskDetailResponseSchema = z.object({
     task: adminTaskSchema,
+});
+// ============================================================================
+// ADMIN ROUTE PARAM/BODY/QUERY CONTRACTS
+// ============================================================================
+export const adminInventoryAdjustmentBodySchema = z.object({
+    changeQuantity: z.number().int(),
+    reason: z.string(),
+    notes: z.string().optional(),
+});
+export const adminBillingDisputeIdParamSchema = z.object({
+    disputeId: z.string().uuid(),
+});
+export const adminBillingChurnQuerySchema = z.object({
+    startDate: z.string().datetime().optional(),
+    endDate: z.string().datetime().optional(),
+});
+export const taskIdParamSchema = z.object({
+    taskId: z.string().uuid("taskId must be a valid UUID"),
+});
+export const refundApprovalBodySchema = z.object({
+    notes: z.string().optional(),
+});
+export const refundRejectionBodySchema = z.object({
+    reason: z.string().min(1, "reason is required"),
+});
+export const adminConsentUserIdParamSchema = z.object({
+    userId: z.string().min(1),
+});
+export const adminLeadStageUpdateBodySchema = z.object({
+    stage: LeadStageSchema,
+});
+export const adminMessagesThreadParamsSchema = z.object({
+    userId: z
+        .string()
+        .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+    partnerId: z
+        .string()
+        .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+});
+export const adminMessageIdParamSchema = z.object({
+    messageId: z.string().uuid(),
+});
+/** Registration IDs are HH-XXXXXX barcodes, not UUIDs. */
+export const adminRegistrationIdParamSchema = z.object({
+    id: z
+        .string()
+        .regex(USER_ID_REGEX, "Invalid registration ID format (expected HH-XXXXXX)"),
+});
+export const adminRegistrationBarcodeParamSchema = z.object({
+    barcode: z.string().min(1).max(50),
+});
+export const adminStrategyParamSchema = z.object({
+    userId: z
+        .string()
+        .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+    strategyId: z.string(),
+});
+export const adminStrategyGoalParamSchema = z.object({
+    userId: z
+        .string()
+        .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+    strategyId: z.string(),
+    goalId: z.string(),
+});
+export const adminStrategyPhaseParamSchema = z.object({
+    userId: z
+        .string()
+        .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+    strategyId: z.string(),
+    phaseId: z.string(),
+});
+export const adminWearableActivitySummaryQuerySchema = z.object({
+    periodDays: z
+        .string()
+        .optional()
+        .transform((v) => {
+        const n = v ? Number.parseInt(v, 10) : 30;
+        const clamped = Number.isNaN(n) ? 30 : n;
+        return Math.min(Math.max(clamped, 1), 90);
+    }),
 });
 //# sourceMappingURL=admin-schemas.js.map

@@ -106,11 +106,11 @@ export declare const PHI_RESOURCE: {
  */
 export declare const PHI_ACTIONS: readonly ["READ", "CREATE", "UPDATE", "DELETE", "LIST"];
 export declare const PhiActionSchema: z.ZodEnum<{
-    DELETE: "DELETE";
-    LIST: "LIST";
+    READ: "READ";
     CREATE: "CREATE";
     UPDATE: "UPDATE";
-    READ: "READ";
+    DELETE: "DELETE";
+    LIST: "LIST";
 }>;
 export type PhiAction = z.infer<typeof PhiActionSchema>;
 /**
@@ -200,11 +200,11 @@ export declare const phiResourceSchema: z.ZodEnum<{
 }>;
 /** @deprecated Use PhiActionSchema instead */
 export declare const phiActionSchema: z.ZodEnum<{
-    DELETE: "DELETE";
-    LIST: "LIST";
+    READ: "READ";
     CREATE: "CREATE";
     UPDATE: "UPDATE";
-    READ: "READ";
+    DELETE: "DELETE";
+    LIST: "LIST";
 }>;
 /** @deprecated Use PhiAccessReasonSchema instead */
 export declare const phiAccessReasonSchema: z.ZodEnum<{
@@ -265,11 +265,11 @@ export declare const phiAuditLogEntrySchema: z.ZodObject<{
         wearable_workout: "wearable_workout";
     }>;
     action: z.ZodEnum<{
-        DELETE: "DELETE";
-        LIST: "LIST";
+        READ: "READ";
         CREATE: "CREATE";
         UPDATE: "UPDATE";
-        READ: "READ";
+        DELETE: "DELETE";
+        LIST: "LIST";
     }>;
     method: z.ZodString;
     path: z.ZodString;

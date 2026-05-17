@@ -58,6 +58,8 @@ export const extractLabDataInputSchema = z.object({
     /** MIME type of the file (e.g., 'application/pdf', 'image/jpeg') */
     mimeType: z.string().min(1, "mimeType is required"),
 });
+/** Route body for POST /api/admin/lab-extraction. */
+export const labExtractionBodySchema = extractLabDataInputSchema;
 // ============================================================================
 // LAB ORDERS & OBSERVATIONS
 // ============================================================================

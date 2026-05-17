@@ -20,6 +20,7 @@ import {
     FitnessExperienceSchema,
     GoalDataSourceSchema,
     LegacyGoalDataSourceSchema,
+    LeadStageSchema,
     PregnancyStatusSchema,
     PrimaryGoalSchema,
     RegistrationStatusSchema,
@@ -1144,4 +1145,142 @@ export const adminTaskDetailResponseSchema = z.object({
 });
 export type AdminTaskDetailResponseFromSchema = z.infer<
   typeof adminTaskDetailResponseSchema
+>;
+
+// ============================================================================
+// ADMIN ROUTE PARAM/BODY/QUERY CONTRACTS
+// ============================================================================
+
+export const adminInventoryAdjustmentBodySchema = z.object({
+  changeQuantity: z.number().int(),
+  reason: z.string(),
+  notes: z.string().optional(),
+});
+export type AdminInventoryAdjustmentBody = z.infer<
+  typeof adminInventoryAdjustmentBodySchema
+>;
+
+export const adminBillingDisputeIdParamSchema = z.object({
+  disputeId: z.string().uuid(),
+});
+export type AdminBillingDisputeIdParam = z.infer<
+  typeof adminBillingDisputeIdParamSchema
+>;
+
+export const adminBillingChurnQuerySchema = z.object({
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+});
+export type AdminBillingChurnQuery = z.infer<
+  typeof adminBillingChurnQuerySchema
+>;
+
+export const taskIdParamSchema = z.object({
+  taskId: z.string().uuid("taskId must be a valid UUID"),
+});
+export type TaskIdParam = z.infer<typeof taskIdParamSchema>;
+
+export const refundApprovalBodySchema = z.object({
+  notes: z.string().optional(),
+});
+export type RefundApprovalBody = z.infer<typeof refundApprovalBodySchema>;
+
+export const refundRejectionBodySchema = z.object({
+  reason: z.string().min(1, "reason is required"),
+});
+export type RefundRejectionBody = z.infer<typeof refundRejectionBodySchema>;
+
+export const adminConsentUserIdParamSchema = z.object({
+  userId: z.string().min(1),
+});
+export type AdminConsentUserIdParam = z.infer<
+  typeof adminConsentUserIdParamSchema
+>;
+
+export const adminLeadStageUpdateBodySchema = z.object({
+  stage: LeadStageSchema,
+});
+export type AdminLeadStageUpdateBody = z.infer<
+  typeof adminLeadStageUpdateBodySchema
+>;
+
+export const adminMessagesThreadParamsSchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  partnerId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+});
+export type AdminMessagesThreadParams = z.infer<
+  typeof adminMessagesThreadParamsSchema
+>;
+
+export const adminMessageIdParamSchema = z.object({
+  messageId: z.string().uuid(),
+});
+export type AdminMessageIdParam = z.infer<typeof adminMessageIdParamSchema>;
+
+/** Registration IDs are HH-XXXXXX barcodes, not UUIDs. */
+export const adminRegistrationIdParamSchema = z.object({
+  id: z
+    .string()
+    .regex(
+      USER_ID_REGEX,
+      "Invalid registration ID format (expected HH-XXXXXX)",
+    ),
+});
+export type AdminRegistrationIdParam = z.infer<
+  typeof adminRegistrationIdParamSchema
+>;
+
+export const adminRegistrationBarcodeParamSchema = z.object({
+  barcode: z.string().min(1).max(50),
+});
+export type AdminRegistrationBarcodeParam = z.infer<
+  typeof adminRegistrationBarcodeParamSchema
+>;
+
+export const adminStrategyParamSchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  strategyId: z.string(),
+});
+export type AdminStrategyParam = z.infer<typeof adminStrategyParamSchema>;
+
+export const adminStrategyGoalParamSchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  strategyId: z.string(),
+  goalId: z.string(),
+});
+export type AdminStrategyGoalParam = z.infer<
+  typeof adminStrategyGoalParamSchema
+>;
+
+export const adminStrategyPhaseParamSchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  strategyId: z.string(),
+  phaseId: z.string(),
+});
+export type AdminStrategyPhaseParam = z.infer<
+  typeof adminStrategyPhaseParamSchema
+>;
+
+export const adminWearableActivitySummaryQuerySchema = z.object({
+  periodDays: z
+    .string()
+    .optional()
+    .transform((v) => {
+      const n = v ? Number.parseInt(v, 10) : 30;
+      const clamped = Number.isNaN(n) ? 30 : n;
+      return Math.min(Math.max(clamped, 1), 90);
+    }),
+});
+export type AdminWearableActivitySummaryQuery = z.infer<
+  typeof adminWearableActivitySummaryQuerySchema
 >;

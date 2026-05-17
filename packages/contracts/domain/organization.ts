@@ -194,6 +194,25 @@ export type UpdateOrganizationRequest = z.infer<
   typeof UpdateOrganizationRequestSchema
 >;
 
+export const organizationsListQuerySchema = z.object({
+  status: OrganizationStatusSchema.optional(),
+  search: z.string().trim().min(1).max(100).optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  offset: z.coerce.number().int().min(0).max(10000).default(0),
+});
+export type OrganizationsListQuery = z.infer<
+  typeof organizationsListQuerySchema
+>;
+
+export const organizationUsersQuerySchema = z.object({
+  search: z.string().trim().min(1).max(100).optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  offset: z.coerce.number().int().min(0).max(10000).default(0),
+});
+export type OrganizationUsersQuery = z.infer<
+  typeof organizationUsersQuerySchema
+>;
+
 /**
  * Organization summary (for lists, dropdowns).
  */

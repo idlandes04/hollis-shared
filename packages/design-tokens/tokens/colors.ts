@@ -158,9 +158,9 @@ export const lightColors = {
   secondaryLight: brandShades.tan.light,
   secondaryDark: brandShades.tan.dark,
 
-  // Surfaces — warmed background so white cards lift off the page
-  background: "#F4F0EB",
-  surface: "#EBE6DF",
+  // Surfaces — warm-neutral, kept pale so search/table chrome stays subdued
+  background: "#F8F6F3",
+  surface: "#F2EEE9",
   surfaceElevated: "#FFFFFF",
   card: "#FFFFFF",
 
@@ -200,8 +200,8 @@ export const lightColors = {
   focus: "rgba(147, 179, 205, 0.35)",
   disabled: "#E2E8F0",
 
-  // Inputs — sunken treatment: tinted bg, navy-tinted border
-  inputBackground: "#F4F0EB",
+  // Inputs — sunken treatment: pale warm bg, navy-tinted border
+  inputBackground: "#F8F6F3",
   inputBorder: "rgba(1, 49, 74, 0.20)",
   inputText: brandColors.navy,
   inputPlaceholder: "rgba(1, 49, 74, 0.45)",

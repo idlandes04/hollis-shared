@@ -1347,6 +1347,7 @@ export const adminProfileFormSchema = z.object({
 export const DeletionRequestInputSchema = z.object({
     reason: z.string().max(500).optional(),
 });
+export const deletionRequestBodySchema = DeletionRequestInputSchema.strip().default({});
 // ============================================================================
 // HELPER UTILITIES
 // ============================================================================

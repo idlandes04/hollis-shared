@@ -124,6 +124,23 @@ export const NewsletterSignupSchema = z.object({
 
 export type NewsletterSignupInput = z.infer<typeof NewsletterSignupSchema>;
 
+export const billingVerifyTokenQuerySchema = z.object({
+  token: z.string().min(1, "token is required"),
+});
+export type BillingVerifyTokenQuery = z.infer<
+  typeof billingVerifyTokenQuerySchema
+>;
+
+export const unsubscribeTokenQuerySchema = z.object({
+  token: z.string().min(1, "token is required"),
+});
+export type UnsubscribeTokenQuery = z.infer<typeof unsubscribeTokenQuerySchema>;
+
+export const unsubscribeTokenBodySchema = z.object({
+  token: z.string().min(1, "token is required"),
+});
+export type UnsubscribeTokenBody = z.infer<typeof unsubscribeTokenBodySchema>;
+
 // ============================================================================
 // RESPONSE TYPES
 // ============================================================================

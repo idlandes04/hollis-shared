@@ -385,6 +385,13 @@ export const adminMfaResetRequestSchema = z.object({
 });
 export type AdminMfaResetRequest = z.infer<typeof adminMfaResetRequestSchema>;
 
+export const mfaCredentialIdParamsSchema = z.object({
+  credentialId: z.string().uuid("Invalid credential ID format"),
+});
+export type MfaCredentialIdParams = z.infer<
+  typeof mfaCredentialIdParamsSchema
+>;
+
 /**
  * Unwrapped response payload from admin MFA reset.
  *

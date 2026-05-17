@@ -68,7 +68,7 @@ export * from "./documents.js";
 export * from "./realtime.js";
 // Health Progress domain - health metrics, trends, data quality
 // Canonical source for HEALTH_METRIC_* enums and utility functions
-export { DATA_QUALITY, DATA_QUALITY_LABELS, DATA_QUALITY_LEVELS, DataQualityLevelSchema, HEALTH_METRIC_CATEGORIES, HEALTH_METRIC_CATEGORY_LABELS, HEALTH_METRIC_DIRECTIONS, HEALTH_TREND, HEALTH_TRENDS, HEALTH_TREND_LABELS, HealthMetricCategorySchema, HealthMetricDirectionSchema, HealthMetricKeySchema, HealthTrendSchema, SOURCE_WEIGHTS, VERIFICATION_MULTIPLIER, determineTrendFromDirection, getDataPointWeight, isDataQualityLevel, isHealthTrend } from "./health-progress.js";
+export { DATA_QUALITY, DATA_QUALITY_LABELS, DATA_QUALITY_LEVELS, DataQualityLevelSchema, HEALTH_METRIC_CATEGORIES, HEALTH_METRIC_CATEGORY_LABELS, HEALTH_METRIC_DIRECTIONS, HEALTH_TREND, HEALTH_TRENDS, HEALTH_TREND_LABELS, HealthMetricCategorySchema, HealthMetricDirectionSchema, HealthMetricKeySchema, HealthTrendSchema, healthProgressHistoryQuerySchema, healthProgressQuerySchema, SOURCE_WEIGHTS, VERIFICATION_MULTIPLIER, determineTrendFromDirection, getDataPointWeight, isDataQualityLevel, isHealthTrend } from "./health-progress.js";
 // Health Metrics domain - unified health metric types, utilities, and schemas
 // Provides additional utility functions (calculateInRangeScore, etc.),
 // and related types (MetricChange, ConcernArea, HealthProgressOverview, etc.)

@@ -44,6 +44,12 @@
  * deps: zod | consumers: all codebases
  */
 import { z } from "zod";
+export const healthProgressQuerySchema = z.object({
+    months: z.coerce.number().int().min(1).max(24).default(6),
+});
+export const healthProgressHistoryQuerySchema = z.object({
+    limit: z.coerce.number().int().min(1).max(52).default(12),
+});
 // ============================================================================
 // HEALTH METRIC DIRECTION
 // ============================================================================

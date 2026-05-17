@@ -86,4 +86,13 @@ export const NewsletterSignupSchema = z.object({
     name: z.string().max(100).optional(),
     source: ContactSourceSchema.optional(),
 });
+export const billingVerifyTokenQuerySchema = z.object({
+    token: z.string().min(1, "token is required"),
+});
+export const unsubscribeTokenQuerySchema = z.object({
+    token: z.string().min(1, "token is required"),
+});
+export const unsubscribeTokenBodySchema = z.object({
+    token: z.string().min(1, "token is required"),
+});
 //# sourceMappingURL=contact.js.map

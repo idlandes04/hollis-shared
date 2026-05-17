@@ -48,6 +48,18 @@ import { z } from "zod";
 import { type BiometricSource } from "./clinical.js";
 import { type HealthMetricDirection } from "./health-metric-types.js";
 
+export const healthProgressQuerySchema = z.object({
+  months: z.coerce.number().int().min(1).max(24).default(6),
+});
+export type HealthProgressQuery = z.infer<typeof healthProgressQuerySchema>;
+
+export const healthProgressHistoryQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(52).default(12),
+});
+export type HealthProgressHistoryQuery = z.infer<
+  typeof healthProgressHistoryQuerySchema
+>;
+
 // ============================================================================
 // HEALTH METRIC DIRECTION
 // ============================================================================

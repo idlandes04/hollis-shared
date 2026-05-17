@@ -11,6 +11,7 @@
 
 export * from "./csrf.js";
 export * from "./endpoints.js";
+export * from "./health-clinical-schemas.js";
 export * from "./response.js";
 export * from "./routes.js";
 
@@ -36,3 +37,6 @@ export {
 export {
     WORKOUT_PLANS_ROUTES
 } from "./routes/workouts.js";
+
+// Health app route request/query/param schemas promoted from server validation.
+export * from "./routes/health-route-contracts.js";

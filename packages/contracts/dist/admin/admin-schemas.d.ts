@@ -1858,4 +1858,85 @@ export declare const adminTaskDetailResponseSchema: z.ZodObject<{
     }, z.core.$strip>;
 }, z.core.$strip>;
 export type AdminTaskDetailResponseFromSchema = z.infer<typeof adminTaskDetailResponseSchema>;
+export declare const adminInventoryAdjustmentBodySchema: z.ZodObject<{
+    changeQuantity: z.ZodNumber;
+    reason: z.ZodString;
+    notes: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+export type AdminInventoryAdjustmentBody = z.infer<typeof adminInventoryAdjustmentBodySchema>;
+export declare const adminBillingDisputeIdParamSchema: z.ZodObject<{
+    disputeId: z.ZodString;
+}, z.core.$strip>;
+export type AdminBillingDisputeIdParam = z.infer<typeof adminBillingDisputeIdParamSchema>;
+export declare const adminBillingChurnQuerySchema: z.ZodObject<{
+    startDate: z.ZodOptional<z.ZodString>;
+    endDate: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+export type AdminBillingChurnQuery = z.infer<typeof adminBillingChurnQuerySchema>;
+export declare const taskIdParamSchema: z.ZodObject<{
+    taskId: z.ZodString;
+}, z.core.$strip>;
+export type TaskIdParam = z.infer<typeof taskIdParamSchema>;
+export declare const refundApprovalBodySchema: z.ZodObject<{
+    notes: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+export type RefundApprovalBody = z.infer<typeof refundApprovalBodySchema>;
+export declare const refundRejectionBodySchema: z.ZodObject<{
+    reason: z.ZodString;
+}, z.core.$strip>;
+export type RefundRejectionBody = z.infer<typeof refundRejectionBodySchema>;
+export declare const adminConsentUserIdParamSchema: z.ZodObject<{
+    userId: z.ZodString;
+}, z.core.$strip>;
+export type AdminConsentUserIdParam = z.infer<typeof adminConsentUserIdParamSchema>;
+export declare const adminLeadStageUpdateBodySchema: z.ZodObject<{
+    stage: z.ZodEnum<{
+        INQUIRY: "INQUIRY";
+        CONSULTATION_BOOKED: "CONSULTATION_BOOKED";
+        CONSULTATION_COMPLETED: "CONSULTATION_COMPLETED";
+        PROPOSAL_SENT: "PROPOSAL_SENT";
+        ACTIVE_MEMBER: "ACTIVE_MEMBER";
+        CHURNED: "CHURNED";
+    }>;
+}, z.core.$strip>;
+export type AdminLeadStageUpdateBody = z.infer<typeof adminLeadStageUpdateBodySchema>;
+export declare const adminMessagesThreadParamsSchema: z.ZodObject<{
+    userId: z.ZodString;
+    partnerId: z.ZodString;
+}, z.core.$strip>;
+export type AdminMessagesThreadParams = z.infer<typeof adminMessagesThreadParamsSchema>;
+export declare const adminMessageIdParamSchema: z.ZodObject<{
+    messageId: z.ZodString;
+}, z.core.$strip>;
+export type AdminMessageIdParam = z.infer<typeof adminMessageIdParamSchema>;
+/** Registration IDs are HH-XXXXXX barcodes, not UUIDs. */
+export declare const adminRegistrationIdParamSchema: z.ZodObject<{
+    id: z.ZodString;
+}, z.core.$strip>;
+export type AdminRegistrationIdParam = z.infer<typeof adminRegistrationIdParamSchema>;
+export declare const adminRegistrationBarcodeParamSchema: z.ZodObject<{
+    barcode: z.ZodString;
+}, z.core.$strip>;
+export type AdminRegistrationBarcodeParam = z.infer<typeof adminRegistrationBarcodeParamSchema>;
+export declare const adminStrategyParamSchema: z.ZodObject<{
+    userId: z.ZodString;
+    strategyId: z.ZodString;
+}, z.core.$strip>;
+export type AdminStrategyParam = z.infer<typeof adminStrategyParamSchema>;
+export declare const adminStrategyGoalParamSchema: z.ZodObject<{
+    userId: z.ZodString;
+    strategyId: z.ZodString;
+    goalId: z.ZodString;
+}, z.core.$strip>;
+export type AdminStrategyGoalParam = z.infer<typeof adminStrategyGoalParamSchema>;
+export declare const adminStrategyPhaseParamSchema: z.ZodObject<{
+    userId: z.ZodString;
+    strategyId: z.ZodString;
+    phaseId: z.ZodString;
+}, z.core.$strip>;
+export type AdminStrategyPhaseParam = z.infer<typeof adminStrategyPhaseParamSchema>;
+export declare const adminWearableActivitySummaryQuerySchema: z.ZodObject<{
+    periodDays: z.ZodPipe<z.ZodOptional<z.ZodString>, z.ZodTransform<number, string | undefined>>;
+}, z.core.$strip>;
+export type AdminWearableActivitySummaryQuery = z.infer<typeof adminWearableActivitySummaryQuerySchema>;
 //# sourceMappingURL=admin-schemas.d.ts.map

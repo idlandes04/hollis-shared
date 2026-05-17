@@ -58,6 +58,12 @@ export declare const extractLabDataInputSchema: z.ZodObject<{
 }, z.core.$strip>;
 /** Input for extracting lab data from a document (PDF or image) */
 export type ExtractLabDataInput = z.input<typeof extractLabDataInputSchema>;
+/** Route body for POST /api/admin/lab-extraction. */
+export declare const labExtractionBodySchema: z.ZodObject<{
+    fileBase64: z.ZodString;
+    mimeType: z.ZodString;
+}, z.core.$strip>;
+export type LabExtractionBody = z.input<typeof labExtractionBodySchema>;
 /**
  * Zod schema for LabOrderDetailResponse — validates the GET /lab-orders/:id response.
  */

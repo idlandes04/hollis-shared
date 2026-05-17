@@ -307,6 +307,9 @@ export const backupCodesResponseSchema = z.object({
 export const adminMfaResetRequestSchema = z.object({
     reason: z.string().min(1).max(500),
 });
+export const mfaCredentialIdParamsSchema = z.object({
+    credentialId: z.string().uuid("Invalid credential ID format"),
+});
 /**
  * Unwrapped response payload from admin MFA reset.
  *

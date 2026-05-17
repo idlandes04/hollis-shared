@@ -90,6 +90,10 @@ export const extractLabDataInputSchema = z.object({
 /** Input for extracting lab data from a document (PDF or image) */
 export type ExtractLabDataInput = z.input<typeof extractLabDataInputSchema>;
 
+/** Route body for POST /api/admin/lab-extraction. */
+export const labExtractionBodySchema = extractLabDataInputSchema;
+export type LabExtractionBody = z.input<typeof labExtractionBodySchema>;
+
 // ============================================================================
 // LAB ORDERS & OBSERVATIONS
 // ============================================================================

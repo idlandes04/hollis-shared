@@ -1790,6 +1790,11 @@ export const DeletionRequestInputSchema = z.object({
 
 export type DeletionRequestInput = z.infer<typeof DeletionRequestInputSchema>;
 
+export const deletionRequestBodySchema = DeletionRequestInputSchema.strip().default(
+  {},
+);
+export type DeletionRequestBody = z.infer<typeof deletionRequestBodySchema>;
+
 // ============================================================================
 // HELPER UTILITIES
 // ============================================================================
